@@ -17,6 +17,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeSection, onSelectSection, logo,
     { id: AppSection.CLIENTS, label: 'Clientes', icon: 'fa-users' },
     { id: AppSection.FINANCES, label: 'Finanças', icon: 'fa-sack-dollar' },
     { id: AppSection.AGENDA, label: 'Agenda & Prazos', icon: 'fa-calendar-days' },
+    { id: AppSection.HEARINGS, label: 'Audiências', icon: 'fa-building-columns' },
     { id: AppSection.REPORTS, label: 'Relatórios', icon: 'fa-file-lines' },
     { id: AppSection.SETTINGS, label: 'Configurações', icon: 'fa-gear' },
   ];

@@ -116,6 +116,7 @@ export enum AppSection {
   CLIENTS = 'clients',
   FINANCES = 'finances',
   AGENDA = 'agenda',
+  HEARINGS = 'audiencias',
   REPORTS = 'reports',
   SETTINGS = 'settings'
 }

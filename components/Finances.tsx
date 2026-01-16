@@ -7,10 +7,11 @@ interface FinancesProps {
   clients: Client[];
   onUpdateClient: (client: Client) => void;
   onAddNotification: (type: 'success' | 'info' | 'alert', title: string, message: string) => void;
+  initialTab?: 'PARTICULAR' | 'DEFENSORIA' | 'GERAL';
 }
 
-const Finances: React.FC<FinancesProps> = ({ clients, onUpdateClient, onAddNotification }) => {
-  const [activeTab, setActiveTab] = useState<'PARTICULAR' | 'DEFENSORIA' | 'GERAL'>('GERAL');
+const Finances: React.FC<FinancesProps> = ({ clients, onUpdateClient, onAddNotification, initialTab }) => {
+  const [activeTab, setActiveTab] = useState<'PARTICULAR' | 'DEFENSORIA' | 'GERAL'>(initialTab || 'GERAL');
   const [searchTerm, setSearchTerm] = useState('');
   const [editingClient, setEditingClient] = useState<Client | null>(null);
 
@@ -26,7 +27,7 @@ const Finances: React.FC<FinancesProps> = ({ clients, onUpdateClient, onAddNotif
           if (c.financials.initialPaymentStatus === 'paid') recebidos += c.financials.initialPayment;
           else aReceber += c.financials.initialPayment;
         }
-        
+
         // Parcelas
         c.financials.installments.forEach(inst => {
           if (inst.status === 'paid') recebidos += inst.value;
@@ -35,19 +36,19 @@ const Finances: React.FC<FinancesProps> = ({ clients, onUpdateClient, onAddNotif
 
         // Êxito / Trabalhista / Previdenciário (Simulação de expectativa)
         if (c.financials.successFeeStatus === 'paid') {
-            const val = (c.financials.totalAgreed * (c.financials.successFeePercentage || 0)) / 100;
-            recebidos += val;
+          const val = (c.financials.totalAgreed * (c.financials.successFeePercentage || 0)) / 100;
+          recebidos += val;
         }
       }
-      
+
       if (c.origin === 'Defensoria' && c.financials) {
         if (c.caseType === 'Criminal') {
           const val70 = c.financials.defensoriaValue70 || (c.financials.totalAgreed * 0.7);
           const val30 = c.financials.defensoriaValue30 || (c.financials.totalAgreed * 0.3);
-          
+
           if (c.financials.defensoriaStatus70 === 'Pago pelo Estado') recebidos += val70;
           else defensoriaPendente += val70;
-          
+
           if (c.financials.hasRecourse) {
             if (c.financials.defensoriaStatus30 === 'Pago pelo Estado') recebidos += val30;
             else defensoriaPendente += val30;
@@ -80,14 +81,14 @@ const Finances: React.FC<FinancesProps> = ({ clients, onUpdateClient, onAddNotif
     const isPaying = !currentIsPaid;
 
     if (itemId.startsWith('inst_')) {
-      newFinancials.installments = newFinancials.installments.map(inst => 
-        inst.id === itemId ? { 
-          ...inst, 
+      newFinancials.installments = newFinancials.installments.map(inst =>
+        inst.id === itemId ? {
+          ...inst,
           status: isPaying ? 'paid' : 'pending',
-          paidAt: isPaying ? new Date().toISOString() : undefined 
+          paidAt: isPaying ? new Date().toISOString() : undefined
         } : inst
       );
-    } 
+    }
     else if (itemId.startsWith('in-')) {
       newFinancials.initialPaymentStatus = isPaying ? 'paid' : 'pending';
     }
@@ -97,8 +98,8 @@ const Finances: React.FC<FinancesProps> = ({ clients, onUpdateClient, onAddNotif
 
     onUpdateClient({ ...client, financials: newFinancials });
     onAddNotification(
-      isPaying ? 'success' : 'info', 
-      isPaying ? 'Pagamento Confirmado' : 'Pagamento Estornado', 
+      isPaying ? 'success' : 'info',
+      isPaying ? 'Pagamento Confirmado' : 'Pagamento Estornado',
       `O status do lançamento de ${client.name} foi alterado para ${isPaying ? 'PAGO' : 'PENDENTE'}.`
     );
   };
@@ -128,63 +129,63 @@ const Finances: React.FC<FinancesProps> = ({ clients, onUpdateClient, onAddNotif
         if (client.origin === 'Particular') {
           // Entrada
           if (client.financials.initialPayment) {
-            data.push({ 
-                id: `in-${client.id}`, 
-                client, 
-                type: 'ENTRADA / SINAL', 
-                date: client.createdAt, 
-                value: client.financials.initialPayment, 
-                status: translateStatus(client.financials.initialPaymentStatus || 'paid'),
-                isParticular: true 
+            data.push({
+              id: `in-${client.id}`,
+              client,
+              type: 'ENTRADA / SINAL',
+              date: client.createdAt,
+              value: client.financials.initialPayment,
+              status: translateStatus(client.financials.initialPaymentStatus || 'paid'),
+              isParticular: true
             });
           }
           // Parcelas (Cível/Criminal)
           client.financials.installments.forEach(inst => {
-            data.push({ 
-                id: inst.id, 
-                client, 
-                type: `PARCELA ${inst.number.toString().padStart(2, '0')}`, 
-                date: inst.dueDate, 
-                value: inst.value, 
-                status: translateStatus(inst.status),
-                isParticular: true
+            data.push({
+              id: inst.id,
+              client,
+              type: `PARCELA ${inst.number.toString().padStart(2, '0')}`,
+              date: inst.dueDate,
+              value: inst.value,
+              status: translateStatus(inst.status),
+              isParticular: true
             });
           });
           // Honorários de Êxito (Trabalhista / Previdenciário / Cláusula de Êxito)
           if (client.financials.successFeePercentage && client.financials.successFeePercentage > 0) {
-              const label = client.caseType === 'Previdenciário' ? `ÊXITO (${client.financials.successFeePercentage}%) + ${client.financials.benefitInstallmentsCount} PARC. BENEF.` : `ÊXITO (${client.financials.successFeePercentage}%)`;
-              data.push({
-                  id: `success-${client.id}`,
-                  client,
-                  type: label,
-                  date: 'Fim do Processo',
-                  value: client.financials.totalAgreed > 0 ? (client.financials.totalAgreed * client.financials.successFeePercentage / 100) : 0,
-                  status: translateStatus(client.financials.successFeeStatus || 'pending'),
-                  isParticular: true,
-                  isExpectancy: true
-              });
+            const label = client.caseType === 'Previdenciário' ? `ÊXITO (${client.financials.successFeePercentage}%) + ${client.financials.benefitInstallmentsCount} PARC. BENEF.` : `ÊXITO (${client.financials.successFeePercentage}%)`;
+            data.push({
+              id: `success-${client.id}`,
+              client,
+              type: label,
+              date: 'Fim do Processo',
+              value: client.financials.totalAgreed > 0 ? (client.financials.totalAgreed * client.financials.successFeePercentage / 100) : 0,
+              status: translateStatus(client.financials.successFeeStatus || 'pending'),
+              isParticular: true,
+              isExpectancy: true
+            });
           }
         } else {
           // Lógica Defensoria
           if (client.caseType === 'Criminal') {
-            data.push({ 
-              id: `def70-${client.id}`, 
-              client, 
-              type: 'CERTIDÃO (70%)', 
-              date: client.financials.appointmentDate || client.createdAt, 
-              value: client.financials.defensoriaValue70 || (client.financials.totalAgreed * 0.7), 
+            data.push({
+              id: `def70-${client.id}`,
+              client,
+              type: 'CERTIDÃO (70%)',
+              date: client.financials.appointmentDate || client.createdAt,
+              value: client.financials.defensoriaValue70 || (client.financials.totalAgreed * 0.7),
               status: client.financials.defensoriaStatus70?.toUpperCase() || 'PENDENTE',
               isEstimated: !client.financials.defensoriaValue70,
               paymentMonth: client.financials.defensoriaPaymentMonth70,
               isParticular: false
             });
             if (client.financials.hasRecourse) {
-              data.push({ 
-                id: `def30-${client.id}`, 
-                client, 
-                type: 'CERTIDÃO (30%)', 
-                date: client.financials.appointmentDate || client.createdAt, 
-                value: client.financials.defensoriaValue30 || (client.financials.totalAgreed * 0.3), 
+              data.push({
+                id: `def30-${client.id}`,
+                client,
+                type: 'CERTIDÃO (30%)',
+                date: client.financials.appointmentDate || client.createdAt,
+                value: client.financials.defensoriaValue30 || (client.financials.totalAgreed * 0.3),
                 status: client.financials.defensoriaStatus30?.toUpperCase() || 'PENDENTE',
                 isEstimated: !client.financials.defensoriaValue30,
                 paymentMonth: client.financials.defensoriaPaymentMonth30,
@@ -192,12 +193,12 @@ const Finances: React.FC<FinancesProps> = ({ clients, onUpdateClient, onAddNotif
               });
             }
           } else {
-            data.push({ 
-              id: `def100-${client.id}`, 
-              client, 
-              type: 'CERTIDÃO INTEGRAL', 
-              date: client.financials.appointmentDate || client.createdAt, 
-              value: client.financials.defensoriaValue100 || client.financials.totalAgreed, 
+            data.push({
+              id: `def100-${client.id}`,
+              client,
+              type: 'CERTIDÃO INTEGRAL',
+              date: client.financials.appointmentDate || client.createdAt,
+              value: client.financials.defensoriaValue100 || client.financials.totalAgreed,
               status: client.financials.defensoriaStatus100?.toUpperCase() || 'PENDENTE',
               isEstimated: !client.financials.defensoriaValue100,
               paymentMonth: client.financials.defensoriaPaymentMonth100,
@@ -209,17 +210,17 @@ const Finances: React.FC<FinancesProps> = ({ clients, onUpdateClient, onAddNotif
     });
 
     return data.filter(item => {
-      const matchesTab = 
-        activeTab === 'GERAL' || 
+      const matchesTab =
+        activeTab === 'GERAL' ||
         (activeTab === 'PARTICULAR' && item.client.origin === 'Particular') ||
         (activeTab === 'DEFENSORIA' && item.client.origin === 'Defensoria');
-      
+
       const matchesSearch = item.client.name.toLowerCase().includes(searchTerm.toLowerCase());
       return matchesTab && matchesSearch;
     }).sort((a, b) => {
-        const dateA = a.paymentMonth || a.date;
-        const dateB = b.paymentMonth || b.date;
-        return dateB.localeCompare(dateA);
+      const dateA = a.paymentMonth || a.date;
+      const dateB = b.paymentMonth || b.date;
+      return dateB.localeCompare(dateA);
     });
   }, [clients, activeTab, searchTerm]);
 
@@ -241,13 +242,13 @@ const Finances: React.FC<FinancesProps> = ({ clients, onUpdateClient, onAddNotif
         </div>
         <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-50 transition-all hover:shadow-md group">
           <p className="text-[10px] font-black text-indigo-600 uppercase tracking-widest mb-2 flex items-center gap-2">
-             <i className="fa-solid fa-clock"></i> Particular Pendente
+            <i className="fa-solid fa-clock"></i> Particular Pendente
           </p>
           <h3 className="text-3xl font-black text-indigo-600 group-hover:scale-105 transition-transform origin-left">R$ {stats.aReceber.toLocaleString('pt-BR')}</h3>
         </div>
         <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-50 transition-all hover:shadow-md group">
           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-2">
-             <i className="fa-solid fa-file-invoice"></i> Defensoria (Total Estimado)
+            <i className="fa-solid fa-file-invoice"></i> Defensoria (Total Estimado)
           </p>
           <h3 className="text-3xl font-black text-slate-800 group-hover:scale-105 transition-transform origin-left">R$ {stats.defensoriaPendente.toLocaleString('pt-BR')}</h3>
         </div>
@@ -289,19 +290,18 @@ const Finances: React.FC<FinancesProps> = ({ clients, onUpdateClient, onAddNotif
                   </span>
                 </td>
                 <td className="px-6 py-6">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{item.type}</p>
-                    <div className="flex items-center gap-1.5 mt-1">
-                        <span className="text-[9px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded font-black uppercase">{item.client.financials?.method}</span>
-                        <p className="text-[9px] text-slate-400 font-bold uppercase tracking-tighter italic">Data: {item.date.includes('T') ? new Date(item.date).toLocaleDateString('pt-BR') : item.date.split('-').reverse().join('/')}</p>
-                    </div>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{item.type}</p>
+                  <div className="flex items-center gap-1.5 mt-1">
+                    <span className="text-[9px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded font-black uppercase">{item.client.financials?.method}</span>
+                    <p className="text-[9px] text-slate-400 font-bold uppercase tracking-tighter italic">Data: {item.date.includes('T') ? new Date(item.date).toLocaleDateString('pt-BR') : item.date.split('-').reverse().join('/')}</p>
+                  </div>
                 </td>
                 <td className="px-6 py-6 text-[10px] font-black text-slate-600 uppercase tracking-widest">{item.client.caseType}</td>
                 <td className="px-6 py-6 text-center">
                   <div className="flex flex-col items-center gap-1">
-                    <span className={`px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest ${
-                      item.status === 'PAGO' || item.status === 'PAGO PELO ESTADO' ? 'bg-emerald-50 text-emerald-500' : 
-                      item.status === 'CERTIDÃO EMITIDA' ? 'bg-indigo-50 text-indigo-500' : 'bg-amber-50 text-amber-500'
-                    }`}>
+                    <span className={`px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest ${item.status === 'PAGO' || item.status === 'PAGO PELO ESTADO' ? 'bg-emerald-50 text-emerald-500' :
+                        item.status === 'CERTIDÃO EMITIDA' ? 'bg-indigo-50 text-indigo-500' : 'bg-amber-50 text-amber-500'
+                      }`}>
                       {item.status}
                     </span>
                     {item.paymentMonth && (
@@ -312,34 +312,33 @@ const Finances: React.FC<FinancesProps> = ({ clients, onUpdateClient, onAddNotif
                   </div>
                 </td>
                 <td className="px-10 py-6 text-right">
-                   <p className="font-black text-slate-800">
-                     {item.isExpectancy && item.value === 0 ? 'A Definir' : `R$ ${item.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
-                   </p>
-                   {item.client.origin === 'Defensoria' && (
-                     <p className={`text-[9px] font-black uppercase tracking-tight ${item.isEstimated ? 'text-amber-500 italic' : 'text-emerald-500'}`}>
-                       {item.isEstimated ? 'Previsão inicial' : 'Valor Confirmado'}
-                     </p>
-                   )}
-                   {item.isExpectancy && (
-                     <p className="text-[9px] font-black uppercase tracking-tight text-indigo-500 italic">Expectativa de Êxito</p>
-                   )}
+                  <p className="font-black text-slate-800">
+                    {item.isExpectancy && item.value === 0 ? 'A Definir' : `R$ ${item.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
+                  </p>
+                  {item.client.origin === 'Defensoria' && (
+                    <p className={`text-[9px] font-black uppercase tracking-tight ${item.isEstimated ? 'text-amber-500 italic' : 'text-emerald-500'}`}>
+                      {item.isEstimated ? 'Previsão inicial' : 'Valor Confirmado'}
+                    </p>
+                  )}
+                  {item.isExpectancy && (
+                    <p className="text-[9px] font-black uppercase tracking-tight text-indigo-500 italic">Expectativa de Êxito</p>
+                  )}
                 </td>
                 <td className="px-6 py-6 text-right">
                   <div className="flex justify-end gap-2">
                     {item.isParticular && !item.isExpectancy && (
-                      <button 
+                      <button
                         onClick={() => togglePaymentStatus(item.client, item.id, item.status)}
-                        className={`h-10 w-10 rounded-xl transition-all flex items-center justify-center ${
-                          item.status === 'PAGO' ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100' : 'bg-slate-50 text-slate-300 hover:text-emerald-600 hover:bg-emerald-50'
-                        }`}
+                        className={`h-10 w-10 rounded-xl transition-all flex items-center justify-center ${item.status === 'PAGO' ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100' : 'bg-slate-50 text-slate-300 hover:text-emerald-600 hover:bg-emerald-50'
+                          }`}
                         title={item.status === 'PAGO' ? "Marcar como Pendente" : "Confirmar Recebimento"}
                       >
                         <i className={`fa-solid ${item.status === 'PAGO' ? 'fa-check-double' : 'fa-check'}`}></i>
                       </button>
                     )}
-                    <button 
-                      onClick={() => setEditingClient(item.client)} 
-                      className="h-10 w-10 bg-slate-50 rounded-xl text-slate-300 hover:text-indigo-600 hover:bg-indigo-50 transition-all flex items-center justify-center" 
+                    <button
+                      onClick={() => setEditingClient(item.client)}
+                      className="h-10 w-10 bg-slate-50 rounded-xl text-slate-300 hover:text-indigo-600 hover:bg-indigo-50 transition-all flex items-center justify-center"
                       title="Editar Plano de Pagamento"
                     >
                       <i className="fa-solid fa-file-pen text-sm"></i>
@@ -357,7 +356,7 @@ const Finances: React.FC<FinancesProps> = ({ clients, onUpdateClient, onAddNotif
       </div>
 
       {editingClient && (
-        <FinancialRegistration 
+        <FinancialRegistration
           origin={editingClient.origin}
           caseType={editingClient.caseType}
           clientName={editingClient.name}

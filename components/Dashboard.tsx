@@ -1,22 +1,30 @@
 
 import React, { useMemo } from 'react';
-import { Client, CourtMovement, ActivityLog } from '../types';
+import { Client, CourtMovement, ActivityLog, AppSection } from '../types';
 
 interface DashboardProps {
   clients: Client[];
   movements: CourtMovement[];
   activities?: ActivityLog[];
+  onSelectSection: (section: AppSection, tab?: string) => void;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ clients, movements, activities = [] }) => {
+const Dashboard: React.FC<DashboardProps> = ({ clients, movements, activities = [], onSelectSection }) => {
   const financialStats = useMemo(() => {
     let totalAgreed = 0;
+    let totalDefensoria = 0;
+
     clients.forEach(c => {
       if (c.origin === 'Particular') {
         totalAgreed += c.financials?.totalAgreed || 0;
+      } else if (c.origin === 'Defensoria') {
+        const f = c.financials;
+        if (f) {
+          totalDefensoria += (f.defensoriaValue70 || 0) + (f.defensoriaValue30 || 0) + (f.defensoriaValue100 || 0);
+        }
       }
     });
-    return { totalAgreed };
+    return { totalAgreed, totalDefensoria };
   }, [clients]);
 
   const formatCurrency = (val: number) =>
@@ -26,34 +34,47 @@ const Dashboard: React.FC<DashboardProps> = ({ clients, movements, activities = 
     {
       label: 'Clientes Ativos',
       value: clients.length.toString(),
-      badge: 'Total',
-      badgeColor: 'text-emerald-500 bg-emerald-50',
+      badge: 'Ver Todos',
+      badgeColor: 'text-blue-500 bg-blue-50',
       icon: 'fa-user-tie',
-      iconColor: 'text-blue-500 bg-blue-50'
+      iconColor: 'text-blue-500 bg-blue-50',
+      action: () => onSelectSection(AppSection.CLIENTS)
     },
     {
       label: 'Prazos Próximos',
       value: movements.filter(m => m.type === 'Deadline').length.toString(),
-      badge: 'Agenda',
+      badge: 'Ver Agenda',
       badgeColor: 'text-orange-500 bg-orange-50',
       icon: 'fa-calendar-check',
-      iconColor: 'text-purple-500 bg-purple-50'
+      iconColor: 'text-purple-500 bg-purple-50',
+      action: () => onSelectSection(AppSection.AGENDA)
     },
     {
-      label: 'Faturamento Estimado',
+      label: 'Faturamento Particular',
       value: formatCurrency(financialStats.totalAgreed),
-      badge: 'Total Particular',
-      badgeColor: 'text-emerald-500 bg-emerald-50',
+      badge: 'Financeiro',
+      badgeColor: 'text-indigo-500 bg-indigo-50',
       icon: 'fa-wallet',
-      iconColor: 'text-orange-500 bg-orange-50'
+      iconColor: 'text-orange-500 bg-orange-50',
+      action: () => onSelectSection(AppSection.FINANCES, 'Particular')
+    },
+    {
+      label: 'Faturamento Convênio',
+      value: formatCurrency(financialStats.totalDefensoria),
+      badge: 'Defensoria',
+      badgeColor: 'text-emerald-500 bg-emerald-50',
+      icon: 'fa-landmark',
+      iconColor: 'text-emerald-500 bg-emerald-50',
+      action: () => onSelectSection(AppSection.FINANCES, 'Defensoria')
     },
     {
       label: 'Audiências',
       value: movements.filter(m => m.type === 'Hearing').length.toString(),
-      badge: 'Total',
+      badge: 'Ver Tudo',
       badgeColor: 'text-pink-500 bg-pink-50',
       icon: 'fa-building-columns',
-      iconColor: 'text-pink-500 bg-pink-50'
+      iconColor: 'text-pink-500 bg-pink-50',
+      action: () => onSelectSection(AppSection.HEARINGS)
     }
   ];
 
@@ -81,11 +102,15 @@ const Dashboard: React.FC<DashboardProps> = ({ clients, movements, activities = 
   return (
     <div className="space-y-8 animate-in fade-in duration-700">
       {/* Top Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
         {stats.map((item, idx) => (
-          <div key={idx} className="bg-white p-6 rounded-3xl shadow-sm border border-slate-50 flex flex-col justify-between h-44 transition-all hover:shadow-md">
+          <button
+            key={idx}
+            onClick={item.action}
+            className="bg-white p-6 rounded-3xl shadow-sm border border-slate-50 flex flex-col justify-between h-44 transition-all hover:shadow-md hover:-translate-y-1 text-left group"
+          >
             <div className="flex justify-between items-start">
-              <div className={`h-12 w-12 rounded-2xl flex items-center justify-center text-xl ${item.iconColor}`}>
+              <div className={`h-12 w-12 rounded-2xl flex items-center justify-center text-xl transition-transform group-hover:scale-110 ${item.iconColor}`}>
                 <i className={`fa-solid ${item.icon}`}></i>
               </div>
               <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${item.badgeColor}`}>
@@ -96,7 +121,7 @@ const Dashboard: React.FC<DashboardProps> = ({ clients, movements, activities = 
               <p className="text-sm font-medium text-slate-400">{item.label}</p>
               <h3 className="text-2xl font-black text-slate-800 tracking-tight mt-1">{item.value}</h3>
             </div>
-          </div>
+          </button>
         ))}
       </div>
 

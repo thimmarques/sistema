@@ -9,6 +9,7 @@ import Reports from './components/Reports';
 import Settings from './components/Settings';
 import Finances from './components/Finances';
 import Auth from './components/Auth';
+import Hearings from './components/Hearings';
 import { supabase } from './lib/supabase';
 import { Session } from '@supabase/supabase-js';
 
@@ -21,6 +22,12 @@ const App: React.FC = () => {
   const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [activeSubTab, setActiveSubTab] = useState<string | undefined>(undefined);
+
+  const handleNavigation = (section: AppSection, tab?: string) => {
+    setActiveSection(section);
+    setActiveSubTab(tab);
+  };
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -460,19 +467,21 @@ const App: React.FC = () => {
       {(() => {
         switch (activeSection) {
           case AppSection.DASHBOARD:
-            return <Dashboard clients={clients} movements={movements} activities={activityLogs} />;
+            return <Dashboard clients={clients} movements={movements} activities={activityLogs} onSelectSection={handleNavigation} />;
           case AppSection.CLIENTS:
             return <ClientList clients={clients} onAddClient={addClient} onUpdateClient={updateClient} onDeleteClient={deleteClient} settings={settings} />;
           case AppSection.FINANCES:
-            return <Finances clients={clients} onUpdateClient={updateClient} onAddNotification={addNotification} />;
+            return <Finances clients={clients} onUpdateClient={updateClient} onAddNotification={addNotification} initialTab={activeSubTab as any} />;
           case AppSection.AGENDA:
             return <Agenda movements={movements} onAddMovement={addMovement} onUpdateMovement={updateMovement} clients={clients} />;
+          case AppSection.HEARINGS:
+            return <Hearings movements={movements} clients={clients} />;
           case AppSection.REPORTS:
             return <Reports clients={clients} movements={movements} settings={settings} />;
           case AppSection.SETTINGS:
             return <Settings settings={settings} onUpdateSettings={updateSettings} onAddNotification={addNotification} />;
           default:
-            return <Dashboard clients={clients} movements={movements} activities={activityLogs} />;
+            return <Dashboard clients={clients} movements={movements} activities={activityLogs} onSelectSection={handleNavigation} />;
         }
       })()}
     </Layout>
