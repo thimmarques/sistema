@@ -14,6 +14,9 @@ interface ClientListProps {
 
 const ClientList: React.FC<ClientListProps> = ({ clients, onAddClient, onUpdateClient, onDeleteClient, settings }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [activeTab, setActiveTab] = useState<'Geral' | 'Particular' | 'Defensoria'>('Geral');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
   const [originFilter, setOriginFilter] = useState<ClientOrigin>('Particular');
   const [showFormModal, setShowFormModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -44,10 +47,22 @@ const ClientList: React.FC<ClientListProps> = ({ clients, onAddClient, onUpdateC
       const matchesSearch = name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         cpf.includes(searchTerm) ||
         caseNum.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesOrigin = client.origin === originFilter;
-      return matchesSearch && matchesOrigin;
+
+      const matchesTab = activeTab === 'Geral' || client.origin === activeTab;
+
+      return matchesSearch && matchesTab;
     });
-  }, [clients, searchTerm, originFilter]);
+  }, [clients, searchTerm, activeTab]);
+
+  const totalPages = Math.ceil(filteredClients.length / itemsPerPage);
+  const paginatedClients = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredClients.slice(start, start + itemsPerPage);
+  }, [filteredClients, currentPage]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, activeTab]);
 
   const handleOpenCreate = () => {
     setIsEditing(false);
@@ -102,17 +117,41 @@ const ClientList: React.FC<ClientListProps> = ({ clients, onAddClient, onUpdateC
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-        <div className="flex p-1 bg-slate-100 rounded-xl w-fit">
-          <button onClick={() => setOriginFilter('Particular')} className={`px-8 py-2.5 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${originFilter === 'Particular' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-400'}`}>Particular</button>
-          <button onClick={() => setOriginFilter('Defensoria')} className={`px-8 py-2.5 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${originFilter === 'Defensoria' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-400'}`}>Defensoria</button>
+      <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+        <div className="space-y-1">
+          <h2 className="text-3xl font-black text-slate-800 tracking-tight">Gestão de Clientes</h2>
+          <p className="text-slate-500 font-medium font-bold uppercase text-[10px] tracking-widest">Base de Dados Jurídica</p>
         </div>
-        <div className="flex-1 flex gap-3 w-full max-w-2xl">
-          <div className="relative flex-1 group">
-            <i className="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"></i>
-            <input type="text" placeholder="Pesquisar cliente ou processo..." className="w-full bg-white border border-slate-200 rounded-2xl pl-12 pr-4 py-3 outline-none focus:border-indigo-500 transition-all text-sm" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
-          </div>
-          <button onClick={handleOpenCreate} className="bg-indigo-600 text-white px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg hover:scale-105 transition-all">+ Novo</button>
+        <button onClick={handleOpenCreate} className="bg-indigo-600 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-indigo-100 hover:bg-indigo-700 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-3">
+          <i className="fa-solid fa-plus text-sm"></i>
+          Novo Cliente
+        </button>
+      </div>
+
+      <div className="flex flex-col md:flex-row gap-4">
+        <div className="flex p-1 bg-slate-100 rounded-[1.2rem] w-fit shadow-inner">
+          {(['Geral', 'Particular', 'Defensoria'] as const).map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`px-8 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all ${activeTab === tab
+                ? 'bg-white text-indigo-600 shadow-sm'
+                : 'text-slate-400 hover:text-slate-600'
+                }`}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+        <div className="flex-1 relative group">
+          <i className="fa-solid fa-magnifying-glass absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-indigo-500 transition-colors"></i>
+          <input
+            type="text"
+            placeholder="Buscar por nome, CPF ou processo..."
+            className="w-full pl-14 pr-6 py-4 bg-white border border-slate-200 rounded-2xl focus:border-indigo-500 outline-none transition-all text-sm font-medium"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
       </div>
 
@@ -127,7 +166,7 @@ const ClientList: React.FC<ClientListProps> = ({ clients, onAddClient, onUpdateC
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-50">
-            {filteredClients.map(client => (
+            {paginatedClients.map(client => (
               <tr key={client.id} className="hover:bg-slate-50/50 transition-colors group/row">
                 <td className="px-10 py-6">
                   <p className="font-bold text-slate-700 text-base">{client.name}</p>
@@ -181,6 +220,39 @@ const ClientList: React.FC<ClientListProps> = ({ clients, onAddClient, onUpdateC
             ))}
           </tbody>
         </table>
+
+        {totalPages > 1 && (
+          <div className="p-6 bg-slate-50/50 border-t border-slate-100 flex items-center justify-between">
+            <p className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em]">
+              Página <span className="text-slate-600">{currentPage}</span> de <span className="text-slate-600">{totalPages}</span>
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="h-10 px-4 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-indigo-600 hover:border-indigo-100 disabled:opacity-30 disabled:pointer-events-none transition-all shadow-sm"
+              >
+                Anterior
+              </button>
+              <button
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="h-10 px-4 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-indigo-600 hover:border-indigo-100 disabled:opacity-30 disabled:pointer-events-none transition-all shadow-sm"
+              >
+                Próxima
+              </button>
+            </div>
+          </div>
+        )}
+
+        {paginatedClients.length === 0 && (
+          <div className="py-20 text-center space-y-4">
+            <div className="h-20 w-20 bg-slate-50 text-slate-200 rounded-full flex items-center justify-center text-3xl mx-auto mb-4">
+              <i className="fa-solid fa-users-slash"></i>
+            </div>
+            <p className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">Nenhum cliente encontrado</p>
+          </div>
+        )}
       </div>
 
       {showFormModal && (
@@ -205,7 +277,20 @@ const ClientList: React.FC<ClientListProps> = ({ clients, onAddClient, onUpdateC
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in">
                     <div className="col-span-2">
                       <label className={labelClass}>Tipo de Contratação</label>
-                      <select className={inputClass} value={formData.origin} onChange={e => setFormData({ ...formData, origin: e.target.value as ClientOrigin })}>
+                      <select
+                        className={inputClass}
+                        value={formData.origin}
+                        onChange={e => {
+                          const newOrigin = e.target.value as ClientOrigin;
+                          setFormData(prev => ({
+                            ...prev,
+                            origin: newOrigin,
+                            caseType: newOrigin === 'Defensoria' && !['Cível', 'Criminal'].includes(prev.caseType)
+                              ? 'Cível'
+                              : prev.caseType
+                          }));
+                        }}
+                      >
                         <option value="Particular">Particular / Contratual</option>
                         <option value="Defensoria">Convênio Defensoria Pública (OAB)</option>
                       </select>
@@ -253,11 +338,15 @@ const ClientList: React.FC<ClientListProps> = ({ clients, onAddClient, onUpdateC
                       <label className={labelClass}>Área Jurídica</label>
                       <select className={inputClass} value={formData.caseType} onChange={e => setFormData({ ...formData, caseType: e.target.value })}>
                         <option value="Cível">Cível</option>
-                        <option value="Trabalhista">Trabalhista</option>
                         <option value="Criminal">Criminal</option>
-                        <option value="Família">Família</option>
-                        <option value="Tributário">Tributário</option>
-                        <option value="Previdenciário">Previdenciário</option>
+                        {formData.origin === 'Particular' && (
+                          <>
+                            <option value="Trabalhista">Trabalhista</option>
+                            <option value="Família">Família</option>
+                            <option value="Tributário">Tributário</option>
+                            <option value="Previdenciário">Previdenciário</option>
+                          </>
+                        )}
                       </select>
                     </div>
                     <div className="col-span-2"><label className={labelClass}>Objeto / Descrição</label><textarea className={`${inputClass} h-32 resize-none`} value={formData.caseDescription} onChange={e => setFormData({ ...formData, caseDescription: e.target.value })} /></div>
@@ -295,8 +384,8 @@ const ClientList: React.FC<ClientListProps> = ({ clients, onAddClient, onUpdateC
               <p className="text-sm text-slate-500">Deseja realmente remover o cliente <b>{clientToDelete?.name}</b>?</p>
             </div>
             <div className="flex flex-col gap-3">
-              <button onClick={() => { onDeleteClient(clientToDelete!.id); setShowDeleteModal(false); }} className="w-full bg-rose-600 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest">Excluir Permanente</button>
-              <button onClick={() => setShowDeleteModal(false)} className="w-full py-4 text-xs font-black uppercase text-slate-400">Cancelar</button>
+              <button onClick={() => { onDeleteClient(clientToDelete!.id); setShowDeleteModal(false); }} className="w-full bg-rose-600 text-white py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-rose-700 transition-all">Excluir Permanente</button>
+              <button onClick={() => setShowDeleteModal(false)} className="w-full py-3 text-xs font-black uppercase text-slate-400 hover:text-slate-600 transition-all">Cancelar</button>
             </div>
           </div>
         </div>
