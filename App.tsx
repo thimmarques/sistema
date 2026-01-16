@@ -243,12 +243,12 @@ const App: React.FC = () => {
     }
   };
 
-  const addMovement = async (movementData: Omit<CourtMovement, 'id'>) => {
+  const addMovement = async (movementData: CourtMovement) => {
     try {
       const { data, error } = await supabase
         .from('movements')
         .insert([{
-          client_id: movementData.clientId,
+          client_id: movementData.clientId || null,
           case_number: movementData.caseNumber,
           date: movementData.date,
           time: movementData.time,
@@ -279,7 +279,7 @@ const App: React.FC = () => {
       const { error } = await supabase
         .from('movements')
         .update({
-          client_id: updatedMovement.clientId,
+          client_id: updatedMovement.clientId || null,
           case_number: updatedMovement.caseNumber,
           date: updatedMovement.date,
           time: updatedMovement.time,

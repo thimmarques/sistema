@@ -148,7 +148,6 @@ const Agenda: React.FC<AgendaProps> = ({ movements, onAddMovement, onUpdateMovem
     }
 
     setShowForm(false);
-    handleSelectDay(formData.date);
     setEditingMovementId(null);
 
     setFormData({
