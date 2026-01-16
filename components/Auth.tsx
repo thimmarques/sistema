@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { supabase } from '../src/lib/supabase';
+import { supabase } from '../lib/supabase';
 
 interface AuthProps {
     onSuccess: () => void;

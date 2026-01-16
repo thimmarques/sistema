@@ -9,7 +9,7 @@ import Reports from './components/Reports';
 import Settings from './components/Settings';
 import Finances from './components/Finances';
 import Auth from './components/Auth';
-import { supabase } from './src/lib/supabase';
+import { supabase } from './lib/supabase';
 import { Session } from '@supabase/supabase-js';
 
 const App: React.FC = () => {

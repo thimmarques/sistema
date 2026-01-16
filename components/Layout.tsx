@@ -15,6 +15,7 @@ interface LayoutProps {
     setShowNotifications: (show: boolean) => void;
     markNotificationRead: (id: string) => void;
     isLoading: boolean;
+    onLogout: () => void;
 }
 
 const Layout: React.FC<LayoutProps> = ({
