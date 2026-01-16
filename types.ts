@@ -39,6 +39,8 @@ export interface ClientFinancials {
   hasRecourse?: boolean;
   appointmentDate?: string;
   dueDay?: number;
+  laborFinalValue?: number;
+  laborPaymentDate?: string;
 }
 
 export interface Client {

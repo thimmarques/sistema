@@ -170,7 +170,9 @@ const Finances: React.FC<FinancesProps> = ({ clients, onUpdateClient, onAddNotif
               value: client.financials.totalAgreed > 0 ? (client.financials.totalAgreed * client.financials.successFeePercentage / 100) : 0,
               status: translateStatus(client.financials.successFeeStatus || 'pending'),
               isParticular: true,
-              isExpectancy: true
+              isExpectancy: true,
+              laborFinalValue: client.financials.laborFinalValue,
+              laborPaymentDate: client.financials.laborPaymentDate
             });
           }
         } else {
@@ -360,9 +362,16 @@ const Finances: React.FC<FinancesProps> = ({ clients, onUpdateClient, onAddNotif
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-[9px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded font-black uppercase">{item.client.financials?.method}</span>
-                          <p className="text-[9px] text-slate-400 font-bold uppercase tracking-tighter italic">Data: {item.date.includes('T') ? new Date(item.date).toLocaleDateString('pt-BR') : item.date.split('-').reverse().join('/')}</p>
+                        <div className="flex flex-col gap-1 mt-1">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[9px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded font-black uppercase">{item.client.financials?.method}</span>
+                            <p className="text-[9px] text-slate-400 font-bold uppercase tracking-tighter italic">
+                              {item.laborPaymentDate ? `Pago em: ${item.laborPaymentDate.split('-').reverse().join('/')}` : `Data: ${item.date.includes('T') ? new Date(item.date).toLocaleDateString('pt-BR') : item.date.split('-').reverse().join('/')}`}
+                            </p>
+                          </div>
+                          {item.laborFinalValue > 0 && (
+                            <p className="text-[9px] text-indigo-500 font-black uppercase tracking-widest">Base condenação: R$ {item.laborFinalValue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+                          )}
                         </div>
                       </td>
                       <td className="px-6 py-4 text-[9px] font-bold text-slate-400 uppercase tracking-widest italic">{item.client.caseType}</td>
