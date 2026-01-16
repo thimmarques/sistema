@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { AppSection, Client, CourtMovement, AppNotification, UserSettings } from './types';
+import { AppSection, Client, CourtMovement, AppNotification, UserSettings, ActivityLog } from './types';
 import Layout from './components/Layout';
 import Dashboard from './components/Dashboard';
 import ClientList from './components/ClientList';
@@ -18,6 +18,7 @@ const App: React.FC = () => {
   const [clients, setClients] = useState<Client[]>([]);
   const [movements, setMovements] = useState<CourtMovement[]>([]);
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
+  const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -147,6 +148,28 @@ const App: React.FC = () => {
         if (mappedClients.length === 0) {
           addNotification('info', 'Sistema LexAI Pronto', `Cadastre seu primeiro cliente para começar.`);
         }
+
+        // Fetch activity logs
+        const { data: logsData, error: logsError } = await supabase
+          .from('activity_logs')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(20);
+
+        if (!logsError && logsData) {
+          const mappedLogs: ActivityLog[] = logsData.map(l => ({
+            id: l.id,
+            userId: l.user_id,
+            userName: l.user_name,
+            actionType: l.action_type as any,
+            entityType: l.entity_type as any,
+            entityId: l.entity_id,
+            description: l.description,
+            details: l.details,
+            createdAt: l.created_at
+          }));
+          setActivityLogs(mappedLogs);
+        }
       } catch (error: any) {
         addNotification('alert', 'Erro de Conexão', error.message || 'Não foi possível carregar os dados.');
       } finally {
@@ -167,6 +190,50 @@ const App: React.FC = () => {
       read: false
     };
     setNotifications(prev => [newNotif, ...prev]);
+  };
+
+  const logActivity = async (
+    actionType: 'CREATE' | 'UPDATE' | 'DELETE' | 'LOGIN',
+    entityType: 'CLIENT' | 'MOVEMENT' | 'PROFILE' | 'SYSTEM',
+    entityId: string | undefined,
+    description: string,
+    details?: any
+  ) => {
+    try {
+      if (!session) return;
+
+      const { error } = await supabase
+        .from('activity_logs')
+        .insert([{
+          user_id: session.user.id,
+          user_name: settings.name || session.user.email,
+          action_type: actionType,
+          entity_type: entityType,
+          entity_id: entityId,
+          description,
+          details
+        }]);
+
+      if (error) {
+        console.error('Error logging activity:', error);
+      } else {
+        // Optimistic update for logs if we are on dashboard or just to keep state sync
+        const newLog: ActivityLog = {
+          id: Math.random().toString(), // Temporary ID for state
+          userId: session.user.id,
+          userName: settings.name || session.user.email || 'Usuário',
+          actionType: actionType,
+          entityType: entityType,
+          entityId: entityId,
+          description: description,
+          details: details,
+          createdAt: new Date().toISOString()
+        };
+        setActivityLogs(prev => [newLog, ...prev].slice(0, 20));
+      }
+    } catch (err) {
+      console.error('Failed to log activity:', err);
+    }
   };
 
   const addMovement = async (movementData: Omit<CourtMovement, 'id'>) => {
@@ -194,6 +261,7 @@ const App: React.FC = () => {
       };
       setMovements(prev => [newMovement, ...prev]);
       addNotification('success', 'Evento Agendado', `O evento "${movementData.description}" foi salvo.`);
+      logActivity('CREATE', 'MOVEMENT', data.id, `Agendou ${movementData.type}: ${movementData.description}`);
     } catch (error: any) {
       addNotification('alert', 'Erro ao Agendar', error.message || 'Não foi possível salvar o evento.');
     }
@@ -219,6 +287,7 @@ const App: React.FC = () => {
 
       setMovements(prev => prev.map(m => m.id === updatedMovement.id ? updatedMovement : m));
       addNotification('info', 'Evento Atualizado', 'As alterações na agenda foram salvas.');
+      logActivity('UPDATE', 'MOVEMENT', updatedMovement.id, `Atualizou evento: ${updatedMovement.description}`);
     } catch (error: any) {
       addNotification('alert', 'Erro ao Atualizar', error.message || 'Não foi possível salvar as alterações.');
     }
@@ -260,6 +329,7 @@ const App: React.FC = () => {
 
       setClients(prev => prev.map(c => c.id === updatedClient.id ? updatedClient : c));
       addNotification('success', 'Cliente Atualizado', 'As informações foram salvas com sucesso.');
+      logActivity('UPDATE', 'CLIENT', updatedClient.id, `Atualizou dados do cliente: ${updatedClient.name}`);
     } catch (error: any) {
       addNotification('alert', 'Erro ao Atualizar', error.message || 'Não foi possível salvar as alterações.');
     }
@@ -276,6 +346,7 @@ const App: React.FC = () => {
 
       setClients(prev => prev.filter(c => c.id !== id));
       addNotification('alert', 'Cliente Removido', 'Os dados do cliente foram excluídos do sistema.');
+      logActivity('DELETE', 'CLIENT', id, `Removeu cliente do sistema`);
     } catch (error: any) {
       addNotification('alert', 'Erro ao Remover', error.message || 'Não foi possível excluir o cliente.');
     }
@@ -324,6 +395,7 @@ const App: React.FC = () => {
 
       setClients(prev => [...prev, newClient]);
       addNotification('success', 'Novo Cliente', `${newClient.name} foi cadastrado com sucesso.`);
+      logActivity('CREATE', 'CLIENT', data.id, `Cadastrou novo cliente: ${newClient.name}`);
     } catch (error: any) {
       addNotification('alert', 'Erro ao Salvar', error.message || 'Não foi possível salvar o cliente.');
     }
@@ -357,6 +429,7 @@ const App: React.FC = () => {
 
       if (error) throw error;
       setSettings(newSettings);
+      logActivity('UPDATE', 'PROFILE', session.user.id, `Atualizou o perfil profissional`);
     } catch (error: any) {
       addNotification('alert', 'Erro ao Salvar Perfil', error.message || 'Não foi possível salvar as configurações.');
       throw error;
@@ -387,7 +460,7 @@ const App: React.FC = () => {
       {(() => {
         switch (activeSection) {
           case AppSection.DASHBOARD:
-            return <Dashboard clients={clients} movements={movements} />;
+            return <Dashboard clients={clients} movements={movements} activities={activityLogs} />;
           case AppSection.CLIENTS:
             return <ClientList clients={clients} onAddClient={addClient} onUpdateClient={updateClient} onDeleteClient={deleteClient} settings={settings} />;
           case AppSection.FINANCES:
@@ -399,7 +472,7 @@ const App: React.FC = () => {
           case AppSection.SETTINGS:
             return <Settings settings={settings} onUpdateSettings={updateSettings} onAddNotification={addNotification} />;
           default:
-            return <Dashboard clients={clients} movements={movements} />;
+            return <Dashboard clients={clients} movements={movements} activities={activityLogs} />;
         }
       })()}
     </Layout>

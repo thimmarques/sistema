@@ -1,13 +1,14 @@
 
 import React, { useMemo } from 'react';
-import { Client, CourtMovement } from '../types';
+import { Client, CourtMovement, ActivityLog } from '../types';
 
 interface DashboardProps {
   clients: Client[];
   movements: CourtMovement[];
+  activities?: ActivityLog[];
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ clients, movements }) => {
+const Dashboard: React.FC<DashboardProps> = ({ clients, movements, activities = [] }) => {
   const financialStats = useMemo(() => {
     let totalAgreed = 0;
     clients.forEach(c => {
@@ -57,6 +58,17 @@ const Dashboard: React.FC<DashboardProps> = ({ clients, movements }) => {
   ];
 
   const recentActivities = useMemo(() => {
+    if (activities.length > 0) {
+      return activities.map(act => ({
+        type: act.entityType.toLowerCase(),
+        title: act.description,
+        detail: `Por ${act.userName || 'Sistema'}`,
+        time: new Date(act.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+        color: act.actionType === 'CREATE' ? 'bg-emerald-500' :
+          act.actionType === 'DELETE' ? 'bg-rose-500' : 'bg-amber-500'
+      }));
+    }
+
     return clients.slice(0, 3).map(c => ({
       type: 'client',
       title: 'Cliente Cadastrado',
@@ -64,7 +76,7 @@ const Dashboard: React.FC<DashboardProps> = ({ clients, movements }) => {
       time: new Date(c.createdAt).toLocaleDateString('pt-BR'),
       color: 'bg-indigo-500'
     }));
-  }, [clients]);
+  }, [activities, clients]);
 
   return (
     <div className="space-y-8 animate-in fade-in duration-700">

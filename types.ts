@@ -106,7 +106,7 @@ export interface UserSettings {
   cpf: string;
   address: string;
   profileImage?: string;
-  logo?: string; 
+  logo?: string;
   notifyDeadlines: boolean;
   deadlineThresholdDays: number;
 }
@@ -130,4 +130,16 @@ export interface GmailEmail {
   date: string;
   hasAttachments: boolean;
   status: 'new' | 'processed';
+}
+
+export interface ActivityLog {
+  id: string;
+  userId?: string;
+  userName?: string;
+  actionType: 'CREATE' | 'UPDATE' | 'DELETE' | 'LOGIN';
+  entityType: 'CLIENT' | 'MOVEMENT' | 'PROFILE' | 'SYSTEM';
+  entityId?: string;
+  description: string;
+  details?: any;
+  createdAt: string;
 }
