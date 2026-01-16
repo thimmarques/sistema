@@ -145,7 +145,7 @@ const App: React.FC = () => {
           date: m.date,
           time: m.time || '',
           description: m.description,
-          type: m.type as any,
+          type: m.type === 'Hearing' ? 'Audiência' : (m.type as any),
           modality: m.modality as any,
           source: m.source || ''
         }));
@@ -253,7 +253,7 @@ const App: React.FC = () => {
           date: movementData.date,
           time: movementData.time,
           description: movementData.description,
-          type: movementData.type,
+          type: movementData.type === 'Audiência' ? 'Hearing' : movementData.type,
           modality: movementData.modality,
           source: movementData.source
         }])
@@ -284,7 +284,7 @@ const App: React.FC = () => {
           date: updatedMovement.date,
           time: updatedMovement.time,
           description: updatedMovement.description,
-          type: updatedMovement.type,
+          type: updatedMovement.type === 'Audiência' ? 'Hearing' : updatedMovement.type,
           modality: updatedMovement.modality,
           source: updatedMovement.source
         })
