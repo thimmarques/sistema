@@ -50,162 +50,73 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!session) {
+        setClients([]);
+        setMovements([]);
+        return;
+      }
+
       setIsLoading(true);
       try {
-        await new Promise(resolve => setTimeout(resolve, 800));
+        const { data: clientsData, error: clientsError } = await supabase
+          .from('clients')
+          .select('*')
+          .order('created_at', { ascending: false });
 
-        const initialClients: Client[] = [
-          {
-            id: 'c_1',
-            name: 'Roberto Mendonça de Alvarenga',
-            email: 'roberto.mendonca@email.com',
-            phone: '16998887766',
-            cpf_cnpj: '111.222.333-44',
-            rg: '12.345.678-0',
-            rgIssuingBody: 'SSP/SP',
-            nationality: 'brasileiro',
-            maritalStatus: 'casado',
-            profession: 'Engenheiro Civil',
-            address: 'Rua das Flores',
-            addressNumber: '120',
-            neighborhood: 'Centro',
-            zipCode: '14.160-000',
-            city: 'Sertãozinho',
-            state: 'São Paulo',
-            origin: 'Particular',
-            caseNumber: '1002233-44.2024.8.26.0597',
-            caseType: 'Cível',
-            caseDescription: 'Ação de Indenização por Danos Morais e Materiais contra concessionária de energia.',
-            status: 'Active',
-            createdAt: '2024-03-10T09:00:00.000Z',
-            financials: {
-              totalAgreed: 5000,
-              initialPayment: 2000,
-              initialPaymentStatus: 'paid',
-              method: 'PIX',
-              plan: 'Installments',
-              installments: [
-                { id: 'inst_r1', number: 1, value: 1500, dueDate: '2024-04-10', status: 'paid', paidAt: '2024-04-09' },
-                { id: 'inst_r2', number: 2, value: 1500, dueDate: '2024-05-10', status: 'pending' }
-              ]
-            }
-          },
-          {
-            id: 'c_2',
-            name: 'Luciana Ferreira da Costa',
-            email: 'luciana.costa@provedor.net',
-            phone: '16997776655',
-            cpf_cnpj: '555.666.777-88',
-            rg: '23.456.789-1',
-            origin: 'Defensoria',
-            caseNumber: '0005566-77.2024.8.26.0597',
-            caseType: 'Cível',
-            caseDescription: 'Ação de Alimentos e Regulamentação de Guarda.',
-            status: 'Active',
-            createdAt: '2024-04-05T14:20:00.000Z',
-            financials: {
-              totalAgreed: 1845.50,
-              method: 'Certidão Estadual',
-              plan: 'DefensoriaStandard',
-              installments: [],
-              defensoriaStatus100: 'Aguardando Sentença',
-              appointmentDate: '2024-04-01'
-            }
-          },
-          {
-            id: 'c_3',
-            name: 'Carlos Alberto Souza',
-            email: 'carlos.alberto@gmail.com',
-            phone: '16991112233',
-            cpf_cnpj: '222.333.444-55',
-            origin: 'Particular',
-            caseNumber: '0001234-55.2024.8.26.0597',
-            caseType: 'Trabalhista',
-            caseDescription: 'Reclamação Trabalhista - Horas Extras e Verbas Rescisórias.',
-            status: 'Active',
-            createdAt: '2024-01-15T10:00:00.000Z',
-            financials: {
-              totalAgreed: 10000,
-              method: 'Transferência',
-              plan: 'OnSuccess',
-              successFeePercentage: 30,
-              successFeeStatus: 'pending',
-              installments: []
-            }
-          },
-          {
-            id: 'c_4',
-            name: 'Marcos Paulo de Oliveira',
-            email: 'marcos.paulo@outlook.com',
-            phone: '16995554433',
-            cpf_cnpj: '333.444.555-66',
-            origin: 'Defensoria',
-            caseNumber: '1500600-11.2024.8.26.0597',
-            caseType: 'Criminal',
-            caseDescription: 'Defesa Criminal - Rito Comum Ordinário.',
-            status: 'Active',
-            createdAt: '2024-02-20T16:45:00.000Z',
-            financials: {
-              totalAgreed: 3500,
-              method: 'Certidão Estadual',
-              plan: 'DefensoriaStandard',
-              hasRecourse: true,
-              defensoriaStatus70: 'Certidão Emitida',
-              defensoriaValue70: 2450,
-              defensoriaPaymentMonth70: '2024-06',
-              defensoriaStatus30: 'Pendente',
-              defensoriaValue30: 1050,
-              appointmentDate: '2024-02-15',
-              installments: []
-            }
-          },
-          {
-            id: 'c_5',
-            name: 'Fernanda Lima Duarte',
-            email: 'fernanda.duarte@empresa.com.br',
-            phone: '16994445566',
-            cpf_cnpj: '44.555.666/0001-77',
-            origin: 'Particular',
-            caseNumber: '1008899-22.2024.8.26.0597',
-            caseType: 'Tributário',
-            caseDescription: 'Anulação de Débito Fiscal - ICMS.',
-            status: 'Active',
-            createdAt: '2024-05-01T11:30:00.000Z',
-            financials: {
-              totalAgreed: 15000,
-              initialPayment: 5000,
-              initialPaymentStatus: 'paid',
-              method: 'Boleto',
-              plan: 'Installments',
-              installments: [
-                { id: 'inst_f1', number: 1, value: 2500, dueDate: '2024-06-01', status: 'pending' },
-                { id: 'inst_f2', number: 2, value: 2500, dueDate: '2024-07-01', status: 'pending' },
-                { id: 'inst_f3', number: 3, value: 2500, dueDate: '2024-08-01', status: 'pending' },
-                { id: 'inst_f4', number: 4, value: 2500, dueDate: '2024-09-01', status: 'pending' }
-              ]
-            }
-          }
-        ];
+        if (clientsError) throw clientsError;
 
+        const mappedClients: Client[] = (clientsData || []).map(c => ({
+          id: c.id,
+          name: c.name,
+          email: c.email || '',
+          phone: c.phone || '',
+          cpf_cnpj: c.cpf_cnpj || '',
+          rg: c.rg || '',
+          rgIssuingBody: c.rg_issuing_body || '',
+          nationality: c.nationality || '',
+          birthDate: c.birth_date || '',
+          maritalStatus: c.marital_status || '',
+          profession: c.profession || '',
+          monthlyIncome: c.monthly_income ? Number(c.monthly_income) : undefined,
+          address: c.address || '',
+          addressNumber: c.address_number || '',
+          complement: c.complement || '',
+          neighborhood: c.neighborhood || '',
+          city: c.city || '',
+          state: c.state || '',
+          zipCode: c.zip_code || '',
+          origin: c.origin as any,
+          caseNumber: c.case_number || '',
+          caseType: c.case_type || '',
+          caseDescription: c.case_description || '',
+          status: c.status as any,
+          createdAt: c.created_at,
+          financials: c.financials
+        }));
+
+        setClients(mappedClients);
+
+        // Fetch movements (TODO: Connect movements to Supabase as well)
         const initialMovements: CourtMovement[] = [
           { id: 'm1', clientId: 'c_1', caseNumber: '1002233-44.2024.8.26.0597', date: '2024-05-28', description: 'Prazo para réplica à contestação', type: 'Deadline', source: 'TJSP' },
           { id: 'm2', clientId: 'c_2', caseNumber: '0005566-77.2024.8.26.0597', date: '2024-06-15', description: 'Audiência de Conciliação - CEJUSC', type: 'Hearing', modality: 'Online', source: 'Portal e-SAJ', time: '14:00' },
           { id: 'm3', clientId: 'c_4', caseNumber: '1500600-11.2024.8.26.0597', date: '2024-05-30', description: 'Audiência de Instrução e Julgamento', type: 'Hearing', modality: 'Presencial', source: 'Fórum de Sertãozinho', time: '13:30' },
           { id: 'm4', clientId: 'c_3', caseNumber: '0001234-55.2024.8.26.0597', date: '2024-06-05', description: 'Prazo para manifestação sobre Laudo Pericial', type: 'Deadline', source: 'TRT15' }
         ];
-
-        setClients(initialClients);
         setMovements(initialMovements);
-        addNotification('info', 'Sistema LexAI Pronto', `Configure seu perfil para começar.`);
-      } catch (error) {
-        addNotification('alert', 'Erro de Conexão', 'Não foi possível carregar os dados.');
+
+        if (mappedClients.length === 0) {
+          addNotification('info', 'Sistema LexAI Pronto', `Cadastre seu primeiro cliente para começar.`);
+        }
+      } catch (error: any) {
+        addNotification('alert', 'Erro de Conexão', error.message || 'Não foi possível carregar os dados.');
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchData();
-  }, []);
+  }, [session]);
 
   const addNotification = (type: 'success' | 'info' | 'alert', title: string, message: string) => {
     const newNotif: AppNotification = {
@@ -230,22 +141,108 @@ const App: React.FC = () => {
   };
 
   const updateClient = async (updatedClient: Client) => {
-    setClients(prev => prev.map(c => c.id === updatedClient.id ? updatedClient : c));
+    try {
+      const { error } = await supabase
+        .from('clients')
+        .update({
+          name: updatedClient.name,
+          email: updatedClient.email,
+          phone: updatedClient.phone,
+          cpf_cnpj: updatedClient.cpf_cnpj,
+          rg: updatedClient.rg,
+          rg_issuing_body: updatedClient.rgIssuingBody,
+          nationality: updatedClient.nationality,
+          birth_date: updatedClient.birthDate,
+          marital_status: updatedClient.maritalStatus,
+          profession: updatedClient.profession,
+          monthly_income: updatedClient.monthlyIncome,
+          address: updatedClient.address,
+          address_number: updatedClient.addressNumber,
+          complement: updatedClient.complement,
+          neighborhood: updatedClient.neighborhood,
+          city: updatedClient.city,
+          state: updatedClient.state,
+          zip_code: updatedClient.zipCode,
+          origin: updatedClient.origin,
+          case_number: updatedClient.caseNumber,
+          case_type: updatedClient.caseType,
+          case_description: updatedClient.caseDescription,
+          status: updatedClient.status,
+          financials: updatedClient.financials
+        })
+        .eq('id', updatedClient.id);
+
+      if (error) throw error;
+
+      setClients(prev => prev.map(c => c.id === updatedClient.id ? updatedClient : c));
+      addNotification('success', 'Cliente Atualizado', 'As informações foram salvas com sucesso.');
+    } catch (error: any) {
+      addNotification('alert', 'Erro ao Atualizar', error.message || 'Não foi possível salvar as alterações.');
+    }
   };
 
   const deleteClient = async (id: string) => {
-    setClients(prev => prev.filter(c => c.id !== id));
-    addNotification('alert', 'Cliente Removido', 'Os dados do cliente foram excluídos do sistema.');
+    try {
+      const { error } = await supabase
+        .from('clients')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setClients(prev => prev.filter(c => c.id !== id));
+      addNotification('alert', 'Cliente Removido', 'Os dados do cliente foram excluídos do sistema.');
+    } catch (error: any) {
+      addNotification('alert', 'Erro ao Remover', error.message || 'Não foi possível excluir o cliente.');
+    }
   };
 
-  const addClient = async (client: Omit<Client, 'id' | 'createdAt'>) => {
-    const newClient: Client = {
-      ...client,
-      id: 'c_' + Date.now(),
-      createdAt: new Date().toISOString()
-    } as Client;
-    setClients(prev => [...prev, newClient]);
-    addNotification('success', 'Novo Cliente', `${newClient.name} foi cadastrado com sucesso.`);
+  const addClient = async (clientData: Omit<Client, 'id' | 'createdAt'>) => {
+    try {
+      const { data, error } = await supabase
+        .from('clients')
+        .insert([{
+          name: clientData.name,
+          email: clientData.email,
+          phone: clientData.phone,
+          cpf_cnpj: clientData.cpf_cnpj,
+          rg: clientData.rg,
+          rg_issuing_body: clientData.rgIssuingBody,
+          nationality: clientData.nationality,
+          birth_date: clientData.birthDate,
+          marital_status: clientData.maritalStatus,
+          profession: clientData.profession,
+          monthly_income: clientData.monthlyIncome,
+          address: clientData.address,
+          address_number: clientData.addressNumber,
+          complement: clientData.complement,
+          neighborhood: clientData.neighborhood,
+          city: clientData.city,
+          state: clientData.state,
+          zip_code: clientData.zipCode,
+          origin: clientData.origin,
+          case_number: clientData.caseNumber,
+          case_type: clientData.caseType,
+          case_description: clientData.caseDescription,
+          status: clientData.status,
+          financials: clientData.financials
+        }])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      const newClient: Client = {
+        ...clientData,
+        id: data.id,
+        createdAt: data.created_at
+      } as Client;
+
+      setClients(prev => [...prev, newClient]);
+      addNotification('success', 'Novo Cliente', `${newClient.name} foi cadastrado com sucesso.`);
+    } catch (error: any) {
+      addNotification('alert', 'Erro ao Salvar', error.message || 'Não foi possível salvar o cliente.');
+    }
   };
 
   const markNotificationRead = (id: string) => {
