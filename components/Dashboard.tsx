@@ -18,49 +18,53 @@ const Dashboard: React.FC<DashboardProps> = ({ clients, movements }) => {
     return { totalAgreed };
   }, [clients]);
 
-  const formatCurrency = (val: number) => 
+  const formatCurrency = (val: number) =>
     new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(val);
 
   const stats = [
-    { 
-      label: 'Processos Ativos', 
-      value: '124', 
-      badge: '+12%', 
+    {
+      label: 'Clientes Ativos',
+      value: clients.length.toString(),
+      badge: 'Total',
       badgeColor: 'text-emerald-500 bg-emerald-50',
-      icon: 'fa-briefcase',
+      icon: 'fa-user-tie',
       iconColor: 'text-blue-500 bg-blue-50'
     },
-    { 
-      label: 'Prazos Próximos', 
-      value: `0${movements.filter(m => m.type === 'Deadline').length}`, 
-      badge: 'Hoje', 
+    {
+      label: 'Prazos Próximos',
+      value: movements.filter(m => m.type === 'Deadline').length.toString(),
+      badge: 'Agenda',
       badgeColor: 'text-orange-500 bg-orange-50',
       icon: 'fa-calendar-check',
       iconColor: 'text-purple-500 bg-purple-50'
     },
-    { 
-      label: 'Faturamento Mensal', 
-      value: formatCurrency(financialStats.totalAgreed), 
-      badge: '+R$ 2.4k', 
+    {
+      label: 'Faturamento Estimado',
+      value: formatCurrency(financialStats.totalAgreed),
+      badge: 'Total Particular',
       badgeColor: 'text-emerald-500 bg-emerald-50',
       icon: 'fa-wallet',
       iconColor: 'text-orange-500 bg-orange-50'
     },
-    { 
-      label: 'Documentos Pendentes', 
-      value: '15', 
-      badge: 'Pendente', 
-      badgeColor: 'text-slate-400 bg-slate-100',
-      icon: 'fa-hourglass-half',
+    {
+      label: 'Audiências',
+      value: movements.filter(m => m.type === 'Hearing').length.toString(),
+      badge: 'Total',
+      badgeColor: 'text-pink-500 bg-pink-50',
+      icon: 'fa-building-columns',
       iconColor: 'text-pink-500 bg-pink-50'
     }
   ];
 
-  const recentActivities = [
-    { type: 'protocol', title: 'Petição protocolada', detail: 'Processo Roberto Alvarenga', time: '2 horas atrás', color: 'bg-indigo-500' },
-    { type: 'payment', title: 'Pagamento Confirmado', detail: 'Parcela 03/12 - Carlos Eduardo', time: '5 horas atrás', color: 'bg-emerald-500' },
-    { type: 'client', title: 'Novo Cadastro Realizado', detail: 'Fernanda Souza de Oliveira', time: 'Ontem', color: 'bg-amber-500' },
-  ];
+  const recentActivities = useMemo(() => {
+    return clients.slice(0, 3).map(c => ({
+      type: 'client',
+      title: 'Cliente Cadastrado',
+      detail: c.name,
+      time: new Date(c.createdAt).toLocaleDateString('pt-BR'),
+      color: 'bg-indigo-500'
+    }));
+  }, [clients]);
 
   return (
     <div className="space-y-8 animate-in fade-in duration-700">
@@ -93,13 +97,13 @@ const Dashboard: React.FC<DashboardProps> = ({ clients, movements }) => {
               <i className="fa-solid fa-ellipsis-vertical"></i>
             </button>
           </div>
-          
+
           <div className="space-y-8">
             {movements.slice(0, 3).map((m, idx) => {
               const date = new Date(m.date);
               const month = date.toLocaleString('pt-BR', { month: 'short' }).toUpperCase().replace('.', '');
               const day = date.getDate() + 1;
-              
+
               return (
                 <div key={idx} className="flex items-center gap-6 group">
                   <div className="flex flex-col items-center justify-center min-w-[60px] h-16 bg-white border border-slate-100 rounded-2xl shadow-sm">
@@ -131,12 +135,12 @@ const Dashboard: React.FC<DashboardProps> = ({ clients, movements }) => {
           <div className="relative pl-8 space-y-10">
             {/* Timeline Line */}
             <div className="absolute left-[11px] top-2 bottom-2 w-[2px] bg-slate-100"></div>
-            
+
             {recentActivities.map((act, idx) => (
               <div key={idx} className="relative">
                 {/* Timeline Dot */}
                 <div className={`absolute -left-[25px] top-1.5 h-3 w-3 rounded-full border-2 border-white ring-4 ring-slate-50 ${act.color}`}></div>
-                
+
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                   <div>
                     <h4 className="text-sm font-bold text-slate-800">{act.title}</h4>

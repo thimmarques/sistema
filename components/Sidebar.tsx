@@ -6,11 +6,12 @@ interface SidebarProps {
   activeSection: AppSection;
   onSelectSection: (section: AppSection) => void;
   logo?: string;
+  name?: string;
   isOpen?: boolean;
   onClose?: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ activeSection, onSelectSection, logo, isOpen, onClose }) => {
+const Sidebar: React.FC<SidebarProps> = ({ activeSection, onSelectSection, logo, name, isOpen, onClose }) => {
   const menuItems = [
     { id: AppSection.DASHBOARD, label: 'Dashboard', icon: 'fa-chart-line' },
     { id: AppSection.CLIENTS, label: 'Clientes', icon: 'fa-users' },
@@ -24,6 +25,12 @@ const Sidebar: React.FC<SidebarProps> = ({ activeSection, onSelectSection, logo,
     onSelectSection(section);
     if (onClose) onClose();
   };
+
+  const getInitials = (n: string) => {
+    return n.split(' ').map(part => part[0]).join('').substring(0, 3).toUpperCase();
+  };
+
+  const displayName = name || 'LEXAI';
 
   return (
     <>
@@ -39,13 +46,13 @@ const Sidebar: React.FC<SidebarProps> = ({ activeSection, onSelectSection, logo,
         <div className="p-8 flex flex-col items-center">
           <div className="w-full h-32 flex items-center justify-center bg-black/40 rounded-2xl p-4 border border-slate-800 shadow-2xl mb-4 overflow-hidden group">
             {logo && logo.startsWith('data:image') ? (
-              <img src={logo} className="max-h-full max-w-full object-contain animate-in fade-in duration-700" alt="PMC Advogados" />
+              <img src={logo} className="max-h-full max-w-full object-contain animate-in fade-in duration-700" alt="Logo" />
             ) : (
               <div className="text-center">
                 <div className="flex flex-col items-center">
-                  <span className="text-4xl font-serif text-amber-500 font-bold tracking-tighter leading-none">PMC</span>
+                  <span className="text-2xl font-serif text-amber-500 font-bold tracking-tighter leading-none">{name ? getInitials(name) : 'LEXAI'}</span>
                   <div className="h-[1px] w-full bg-amber-500/50 my-1"></div>
-                  <span className="text-[9px] font-sans text-white font-light tracking-[0.4em] uppercase">Advogados</span>
+                  <span className="text-[9px] font-sans text-white font-light tracking-[0.4em] uppercase">{name ? (name.split(' ')[0]) : 'ADVOCACIA'}</span>
                 </div>
               </div>
             )}
@@ -67,8 +74,8 @@ const Sidebar: React.FC<SidebarProps> = ({ activeSection, onSelectSection, logo,
                 <button
                   onClick={() => handleSelect(item.id)}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${activeSection === item.id
-                      ? 'bg-amber-600 text-white shadow-lg shadow-amber-900/20 translate-x-1'
-                      : 'hover:bg-slate-800 hover:text-white'
+                    ? 'bg-amber-600 text-white shadow-lg shadow-amber-900/20 translate-x-1'
+                    : 'hover:bg-slate-800 hover:text-white'
                     }`}
                 >
                   <i className={`fa-solid ${item.icon} w-5 text-center ${activeSection === item.id ? 'text-white' : 'text-slate-500'}`}></i>

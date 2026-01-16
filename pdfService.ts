@@ -20,9 +20,9 @@ export const generateClientPDF = (type: 'contract' | 'procuration' | 'declaratio
 
   // --- CABEÇALHO LUXURY (Preto e Ouro) ---
   const headerHeight = 35;
-  doc.setFillColor(15, 23, 42); 
+  doc.setFillColor(15, 23, 42);
   doc.rect(0, 0, pageWidth, headerHeight, 'F');
-  doc.setFillColor(245, 158, 11); 
+  doc.setFillColor(245, 158, 11);
   doc.rect(0, headerHeight - 1, pageWidth, 1, 'F');
 
   if (settings.logo && settings.logo.startsWith('data:image')) {
@@ -30,8 +30,8 @@ export const generateClientPDF = (type: 'contract' | 'procuration' | 'declaratio
       const format = settings.logo.split(';')[0].split('/')[1].toUpperCase();
       const imgProps = doc.getImageProperties(settings.logo);
       const logoRatio = imgProps.width / imgProps.height;
-      const maxH = 22; 
-      const maxW = 70; 
+      const maxH = 22;
+      const maxW = 70;
       let logoW = maxW;
       let logoH = logoW / logoRatio;
       if (logoH > maxH) {
@@ -44,16 +44,16 @@ export const generateClientPDF = (type: 'contract' | 'procuration' | 'declaratio
       doc.setTextColor(255, 255, 255);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(22);
-      doc.text("PMC", margin, headerHeight - 15);
+      doc.text(settings.name || "ADVOGADO", margin, headerHeight - 15);
     }
   } else {
     doc.setTextColor(255, 255, 255);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(22);
-    doc.text("PMC", margin, headerHeight - 15);
+    doc.text(settings.name || "ADVOGADO", margin, headerHeight - 15);
     doc.setFontSize(8);
     doc.setFont("helvetica", "normal");
-    doc.text("ADVOCACIA", margin, headerHeight - 10);
+    doc.text(settings.role || "ADVOCACIA", margin, headerHeight - 10);
   }
 
   doc.setTextColor(255, 255, 255);
@@ -62,7 +62,7 @@ export const generateClientPDF = (type: 'contract' | 'procuration' | 'declaratio
   const addr = settings.address || '';
   doc.text(addr.toUpperCase(), pageWidth - margin, headerHeight - 18, { align: 'right' });
   doc.text(`OAB: ${settings.oab || '...'} | ${settings.email || '...'}`, pageWidth - margin, headerHeight - 13, { align: 'right' });
-  
+
   y = headerHeight + 25;
   doc.setTextColor(30, 41, 59);
 
@@ -71,7 +71,7 @@ export const generateClientPDF = (type: 'contract' | 'procuration' | 'declaratio
   doc.setFontSize(16);
   let title = "";
   let fileLabel = "";
-  
+
   if (type === 'procuration') {
     title = "PROCURAÇÃO";
     fileLabel = "PROCURACAO";
@@ -84,9 +84,9 @@ export const generateClientPDF = (type: 'contract' | 'procuration' | 'declaratio
   }
 
   doc.text(title, pageWidth / 2, y, { align: "center" });
-  
+
   y += 3;
-  doc.setDrawColor(245, 158, 11); 
+  doc.setDrawColor(245, 158, 11);
   doc.setLineWidth(0.8);
   doc.line(pageWidth / 2 - 20, y, pageWidth / 2 + 20, y);
   y += 20;
@@ -113,15 +113,15 @@ export const generateClientPDF = (type: 'contract' | 'procuration' | 'declaratio
       doc.setTextColor(51, 65, 85);
       startY += 10;
     }
-    
-    doc.text(content, margin, startY, { 
-      align: 'justify', 
-      lineHeightFactor: 1.5, 
-      maxWidth: contentWidth 
+
+    doc.text(content, margin, startY, {
+      align: 'justify',
+      lineHeightFactor: 1.5,
+      maxWidth: contentWidth
     });
-    
+
     const splitContent = doc.splitTextToSize(content, contentWidth);
-    return startY + (splitContent.length * (11 * 0.3527 * 1.5)) + 10; 
+    return startY + (splitContent.length * (11 * 0.3527 * 1.5)) + 10;
   };
 
   if (type === 'procuration') {
@@ -141,29 +141,29 @@ export const generateClientPDF = (type: 'contract' | 'procuration' | 'declaratio
   } else if (type === 'declaration') {
     const rendaStr = client.monthlyIncome ? client.monthlyIncome.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) : '0,00';
     const declarationText = `${getFullQualification(client)}, declara, sob as penas da lei, e nos termos do artigo 1º da Lei 7.115 de 29.08.1983 e artigos 2º e 4º da Lei 1.060 de 05.01.1950 que é pessoa pobre no sentido legal do termo, não tendo condições de prover as despesas do processo sem privar-se dos recursos indispensáveis ao próprio sustento e de sua família, estando percebendo a quantia de R$ ${rendaStr} mensais.\n\nResponsabiliza-se o(a) infra-assinado(a) pelo teor da presente declaração, ciente de que poderá se sujeitar as sanções civis e criminais no caso de não ser a presente declaração verdadeira.\n\nPara maior clareza e os devidos fins de Direito, firma-se a presente Declaração.`;
-    
+
     y = drawSection(null, declarationText, y);
   }
 
   // --- RODAPÉ ---
   y += 20;
   if (y > pageHeight - 60) { doc.addPage(); y = 40; }
-  
+
   const dataExtenso = `${client.city || 'Sertãozinho'}, ${new Date().getDate()} de ${new Intl.DateTimeFormat('pt-BR', { month: 'long' }).format(new Date())} de ${new Date().getFullYear()}.`;
   doc.setFont("helvetica", "normal");
   doc.setFontSize(11);
   doc.text(dataExtenso, pageWidth / 2, y, { align: "center" });
-  
+
   y += 35;
   doc.setDrawColor(200, 200, 200);
   doc.setLineWidth(0.2);
   doc.line(pageWidth / 2 - 45, y, pageWidth / 2 + 45, y);
-  
+
   y += 6;
   doc.setFont("helvetica", "bold");
   doc.setFontSize(10);
   doc.text("REQUERENTE", pageWidth / 2, y, { align: "center" });
-  
+
   y += 5;
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
@@ -180,9 +180,9 @@ export const generateFinancialReport = (clients: Client[], settings: UserSetting
   let y = 15;
 
   const headerHeight = 30;
-  doc.setFillColor(15, 23, 42); 
+  doc.setFillColor(15, 23, 42);
   doc.rect(0, 0, pageWidth, headerHeight, 'F');
-  doc.setFillColor(245, 158, 11); 
+  doc.setFillColor(245, 158, 11);
   doc.rect(0, headerHeight - 1, pageWidth, 1, 'F');
 
   if (settings.logo && settings.logo.startsWith('data:image')) {
@@ -190,8 +190,8 @@ export const generateFinancialReport = (clients: Client[], settings: UserSetting
       const format = settings.logo.split(';')[0].split('/')[1].toUpperCase();
       const imgProps = doc.getImageProperties(settings.logo);
       const logoRatio = imgProps.width / imgProps.height;
-      const maxH = 18; 
-      const maxW = 50; 
+      const maxH = 18;
+      const maxW = 50;
       let logoW = maxW;
       let logoH = logoW / logoRatio;
       if (logoH > maxH) {
@@ -204,13 +204,13 @@ export const generateFinancialReport = (clients: Client[], settings: UserSetting
       doc.setTextColor(255, 255, 255);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(16);
-      doc.text("PMC ADVOGADOS", margin, 18);
+      doc.text(settings.name?.toUpperCase() || "RELATÓRIO JURÍDICO", margin, 18);
     }
   } else {
     doc.setTextColor(255, 255, 255);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(16);
-    doc.text("PMC ADVOGADOS", margin, 18);
+    doc.text(settings.name?.toUpperCase() || "RELATÓRIO JURÍDICO", margin, 18);
   }
 
   doc.setTextColor(255, 255, 255);

@@ -39,6 +39,7 @@ const Layout: React.FC<LayoutProps> = ({
                 activeSection={activeSection}
                 onSelectSection={onSelectSection}
                 logo={settings.logo}
+                name={settings.name}
                 isOpen={isMobileMenuOpen}
                 onClose={() => setIsMobileMenuOpen(false)}
             />

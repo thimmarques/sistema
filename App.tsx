@@ -58,6 +58,32 @@ const App: React.FC = () => {
 
       setIsLoading(true);
       try {
+        // Fetch profile settings
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+
+        if (profileError && profileError.code !== 'PGRST116') {
+          throw profileError;
+        }
+
+        if (profileData) {
+          setSettings({
+            name: profileData.name || '',
+            email: profileData.email || '',
+            role: profileData.role || 'Advogado',
+            oab: profileData.oab || '',
+            cpf: profileData.cpf || '',
+            address: profileData.address || '',
+            profileImage: profileData.profile_image || '',
+            logo: profileData.logo || '',
+            notifyDeadlines: profileData.notify_deadlines ?? true,
+            deadlineThresholdDays: profileData.deadline_threshold_days || 3
+          });
+        }
+
         const { data: clientsData, error: clientsError } = await supabase
           .from('clients')
           .select('*')
@@ -96,14 +122,27 @@ const App: React.FC = () => {
 
         setClients(mappedClients);
 
-        // Fetch movements (TODO: Connect movements to Supabase as well)
-        const initialMovements: CourtMovement[] = [
-          { id: 'm1', clientId: 'c_1', caseNumber: '1002233-44.2024.8.26.0597', date: '2024-05-28', description: 'Prazo para réplica à contestação', type: 'Deadline', source: 'TJSP' },
-          { id: 'm2', clientId: 'c_2', caseNumber: '0005566-77.2024.8.26.0597', date: '2024-06-15', description: 'Audiência de Conciliação - CEJUSC', type: 'Hearing', modality: 'Online', source: 'Portal e-SAJ', time: '14:00' },
-          { id: 'm3', clientId: 'c_4', caseNumber: '1500600-11.2024.8.26.0597', date: '2024-05-30', description: 'Audiência de Instrução e Julgamento', type: 'Hearing', modality: 'Presencial', source: 'Fórum de Sertãozinho', time: '13:30' },
-          { id: 'm4', clientId: 'c_3', caseNumber: '0001234-55.2024.8.26.0597', date: '2024-06-05', description: 'Prazo para manifestação sobre Laudo Pericial', type: 'Deadline', source: 'TRT15' }
-        ];
-        setMovements(initialMovements);
+        // Fetch movements
+        const { data: movementsData, error: movementsError } = await supabase
+          .from('movements')
+          .select('*')
+          .order('date', { ascending: true });
+
+        if (movementsError) throw movementsError;
+
+        const mappedMovements: CourtMovement[] = (movementsData || []).map(m => ({
+          id: m.id,
+          clientId: m.client_id,
+          caseNumber: m.case_number,
+          date: m.date,
+          time: m.time || '',
+          description: m.description,
+          type: m.type as any,
+          modality: m.modality as any,
+          source: m.source || ''
+        }));
+
+        setMovements(mappedMovements);
 
         if (mappedClients.length === 0) {
           addNotification('info', 'Sistema LexAI Pronto', `Cadastre seu primeiro cliente para começar.`);
@@ -130,14 +169,59 @@ const App: React.FC = () => {
     setNotifications(prev => [newNotif, ...prev]);
   };
 
-  const addMovement = async (movement: CourtMovement) => {
-    setMovements(prev => [movement, ...prev]);
-    addNotification('success', 'Evento Agendado', `O evento "${movement.description}" foi salvo.`);
+  const addMovement = async (movementData: Omit<CourtMovement, 'id'>) => {
+    try {
+      const { data, error } = await supabase
+        .from('movements')
+        .insert([{
+          client_id: movementData.clientId,
+          case_number: movementData.caseNumber,
+          date: movementData.date,
+          time: movementData.time,
+          description: movementData.description,
+          type: movementData.type,
+          modality: movementData.modality,
+          source: movementData.source
+        }])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      const newMovement: CourtMovement = {
+        ...movementData,
+        id: data.id
+      };
+      setMovements(prev => [newMovement, ...prev]);
+      addNotification('success', 'Evento Agendado', `O evento "${movementData.description}" foi salvo.`);
+    } catch (error: any) {
+      addNotification('alert', 'Erro ao Agendar', error.message || 'Não foi possível salvar o evento.');
+    }
   };
 
   const updateMovement = async (updatedMovement: CourtMovement) => {
-    setMovements(prev => prev.map(m => m.id === updatedMovement.id ? updatedMovement : m));
-    addNotification('info', 'Evento Atualizado', 'As alterações na agenda foram salvas.');
+    try {
+      const { error } = await supabase
+        .from('movements')
+        .update({
+          client_id: updatedMovement.clientId,
+          case_number: updatedMovement.caseNumber,
+          date: updatedMovement.date,
+          time: updatedMovement.time,
+          description: updatedMovement.description,
+          type: updatedMovement.type,
+          modality: updatedMovement.modality,
+          source: updatedMovement.source
+        })
+        .eq('id', updatedMovement.id);
+
+      if (error) throw error;
+
+      setMovements(prev => prev.map(m => m.id === updatedMovement.id ? updatedMovement : m));
+      addNotification('info', 'Evento Atualizado', 'As alterações na agenda foram salvas.');
+    } catch (error: any) {
+      addNotification('alert', 'Erro ao Atualizar', error.message || 'Não foi possível salvar as alterações.');
+    }
   };
 
   const updateClient = async (updatedClient: Client) => {
@@ -251,6 +335,34 @@ const App: React.FC = () => {
 
   const unreadCount = useMemo(() => notifications.filter(n => !n.read).length, [notifications]);
 
+  const updateSettings = async (newSettings: UserSettings) => {
+    try {
+      if (!session) return;
+
+      const { error } = await supabase
+        .from('profiles')
+        .upsert({
+          id: session.user.id,
+          name: newSettings.name,
+          email: newSettings.email,
+          oab: newSettings.oab,
+          cpf: newSettings.cpf,
+          address: newSettings.address,
+          role: newSettings.role,
+          profile_image: newSettings.profileImage,
+          logo: newSettings.logo,
+          notify_deadlines: newSettings.notifyDeadlines,
+          deadline_threshold_days: newSettings.deadlineThresholdDays
+        });
+
+      if (error) throw error;
+      setSettings(newSettings);
+    } catch (error: any) {
+      addNotification('alert', 'Erro ao Salvar Perfil', error.message || 'Não foi possível salvar as configurações.');
+      throw error;
+    }
+  };
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
   };
@@ -285,7 +397,7 @@ const App: React.FC = () => {
           case AppSection.REPORTS:
             return <Reports clients={clients} movements={movements} settings={settings} />;
           case AppSection.SETTINGS:
-            return <Settings settings={settings} onUpdateSettings={setSettings} onAddNotification={addNotification} />;
+            return <Settings settings={settings} onUpdateSettings={updateSettings} onAddNotification={addNotification} />;
           default:
             return <Dashboard clients={clients} movements={movements} />;
         }

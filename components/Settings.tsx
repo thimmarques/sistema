@@ -45,13 +45,12 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdateSettings, onAddNo
 
   const handleSave = async () => {
     setIsSaving(true);
+    setError(null);
     try {
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 800));
-      onUpdateSettings(localSettings);
+      await onUpdateSettings(localSettings);
       onAddNotification('success', 'Perfil Atualizado', 'Suas informações foram salvas com sucesso!');
-    } catch (err) {
-      onAddNotification('alert', 'Erro ao Salvar', 'Não foi possível salvar as alterações.');
+    } catch (err: any) {
+      setError(err.message || 'Erro ao salvar as configurações.');
     } finally {
       setIsSaving(false);
     }
@@ -92,6 +91,13 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdateSettings, onAddNo
         </div>
 
         <div className="p-10 space-y-12">
+          {error && (
+            <div className="bg-rose-50 border border-rose-100 p-4 rounded-2xl flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-300">
+              <i className="fa-solid fa-circle-exclamation text-rose-500"></i>
+              <p className="text-xs font-bold text-rose-600">{error}</p>
+            </div>
+          )}
+
           {/* Seção 1: Dados Institucionais */}
           <section className="space-y-8">
             <h4 className="font-black text-slate-800 flex items-center gap-3 text-lg uppercase tracking-wider">
@@ -106,9 +112,13 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdateSettings, onAddNo
                 <label className={labelClass}>Nome Profissional Completo</label>
                 <input type="text" placeholder="Ex: Dr. João Silva" className={inputClass} value={localSettings.name} onChange={(e) => setLocalSettings({ ...localSettings, name: e.target.value })} />
               </div>
-              <div className="col-span-2">
+              <div className="col-span-2 md:col-span-1">
                 <label className={labelClass}>E-mail Profissional</label>
                 <input type="email" placeholder="Ex: contato@adv.oabsp.org.br" className={inputClass} value={localSettings.email} onChange={(e) => setLocalSettings({ ...localSettings, email: e.target.value })} />
+              </div>
+              <div className="col-span-2 md:col-span-1">
+                <label className={labelClass}>Cargo / Especialidade</label>
+                <input type="text" placeholder="Ex: Advogado Civilista" className={inputClass} value={localSettings.role} onChange={(e) => setLocalSettings({ ...localSettings, role: e.target.value })} />
               </div>
               <div>
                 <label className={labelClass}>Inscrição OAB</label>
@@ -179,6 +189,48 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdateSettings, onAddNo
                   Upload do Logotipo
                 </button>
                 <input type="file" ref={logoInputRef} className="hidden" accept="image/*" onChange={(e) => handleFileChange(e, 'logo')} />
+              </div>
+            </div>
+          </section>
+
+          {/* Seção 3: Preferências e Notificações */}
+          <section className="space-y-6 pt-6 border-t border-slate-100">
+            <h4 className="font-black text-slate-800 flex items-center gap-3 text-lg uppercase tracking-wider">
+              <div className="h-8 w-8 bg-indigo-500 rounded-xl flex items-center justify-center text-white text-sm">
+                <i className="fa-solid fa-bell"></i>
+              </div>
+              Preferências e Notificações
+            </h4>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="flex items-center justify-between p-6 bg-slate-50 rounded-2xl border border-slate-200 shadow-inner">
+                <div>
+                  <p className="text-sm font-bold text-slate-800">Alertas de Prazos</p>
+                  <p className="text-xs text-slate-500 mt-1">Exibir avisos de prazos no Dashboard.</p>
+                </div>
+                <button
+                  onClick={() => setLocalSettings({ ...localSettings, notifyDeadlines: !localSettings.notifyDeadlines })}
+                  className={`h-7 w-12 rounded-full transition-all relative ${localSettings.notifyDeadlines ? 'bg-indigo-600' : 'bg-slate-300'}`}
+                >
+                  <div className={`absolute top-1 h-5 w-5 bg-white rounded-full transition-all shadow-sm ${localSettings.notifyDeadlines ? 'left-6' : 'left-1'}`}></div>
+                </button>
+              </div>
+
+              <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200 shadow-inner">
+                <label className={labelClass}>Antecedência do Alerta (Dias)</label>
+                <div className="flex items-center gap-4">
+                  <input
+                    type="range"
+                    min="1"
+                    max="15"
+                    className="flex-1 accent-indigo-600 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer"
+                    value={localSettings.deadlineThresholdDays}
+                    onChange={(e) => setLocalSettings({ ...localSettings, deadlineThresholdDays: parseInt(e.target.value) })}
+                  />
+                  <span className="min-w-[45px] text-center font-black text-indigo-600 bg-white border border-slate-200 rounded-lg py-1.5 text-xs shadow-sm">
+                    {localSettings.deadlineThresholdDays}d
+                  </span>
+                </div>
               </div>
             </div>
           </section>
