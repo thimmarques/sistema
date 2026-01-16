@@ -17,7 +17,7 @@ const GmailAnalysis: React.FC<GmailAnalysisProps> = ({ onMovementDetected, monit
   const [isDrafting, setIsDrafting] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<any>(null);
   const [draftResponse, setDraftResponse] = useState<string | null>(null);
-  
+
   // Quick add source state
   const [showAddSource, setShowAddSource] = useState(false);
   const [newSenderEmail, setNewSenderEmail] = useState('');
@@ -152,7 +152,7 @@ const GmailAnalysis: React.FC<GmailAnalysisProps> = ({ onMovementDetected, monit
       caseNumber: analysisResult.caseNumber,
       date: analysisResult.date,
       description: analysisResult.description,
-      type: (analysisResult.movementType || '').includes('Audiência') ? 'Hearing' : 'Deadline',
+      type: (analysisResult.movementType || '').includes('Audiência') ? 'Audiência' : 'Deadline',
       source: `Gmail: ${selectedEmail.from}`
     };
 
@@ -165,7 +165,7 @@ const GmailAnalysis: React.FC<GmailAnalysisProps> = ({ onMovementDetected, monit
     }
 
     if (action === 'sync') {
-      setEmails(prev => prev.map(e => e.id === selectedEmail.id ? {...e, status: 'processed'} : e));
+      setEmails(prev => prev.map(e => e.id === selectedEmail.id ? { ...e, status: 'processed' } : e));
       setSelectedEmail(null);
       setAnalysisResult(null);
     }
@@ -185,7 +185,7 @@ const GmailAnalysis: React.FC<GmailAnalysisProps> = ({ onMovementDetected, monit
               <p className="text-[10px] text-slate-400 font-medium">
                 {monitoredSenders.length} fontes ativas
               </p>
-              <button 
+              <button
                 onClick={() => setShowAddSource(!showAddSource)}
                 className="text-[10px] text-indigo-600 font-bold hover:underline flex items-center gap-1"
               >
@@ -203,10 +203,10 @@ const GmailAnalysis: React.FC<GmailAnalysisProps> = ({ onMovementDetected, monit
         {showAddSource && (
           <div className="p-3 bg-indigo-600 border-b border-indigo-700 animate-in slide-in-from-top duration-200 shadow-inner">
             <form onSubmit={handleQuickAddSender} className="flex gap-2">
-              <input 
+              <input
                 autoFocus
-                type="email" 
-                placeholder="E-mail do tribunal..." 
+                type="email"
+                placeholder="E-mail do tribunal..."
                 className="flex-1 text-[11px] text-white placeholder-white/60 bg-indigo-500/50 px-2 py-1.5 rounded-lg border border-indigo-400 outline-none focus:ring-2 focus:ring-white/20 transition-all"
                 value={newSenderEmail}
                 onChange={(e) => setNewSenderEmail(e.target.value)}
@@ -225,12 +225,11 @@ const GmailAnalysis: React.FC<GmailAnalysisProps> = ({ onMovementDetected, monit
           {isFetching ? (
             <div className="p-10 text-center text-slate-400 text-xs">Buscando e-mails...</div>
           ) : filteredEmails.length > 0 ? filteredEmails.map((email) => (
-            <div 
-              key={email.id} 
+            <div
+              key={email.id}
               onClick={() => handleSelectEmail(email)}
-              className={`p-4 cursor-pointer transition-all hover:bg-slate-50 relative ${
-                selectedEmail?.id === email.id ? 'bg-indigo-50 border-l-4 border-indigo-600' : ''
-              }`}
+              className={`p-4 cursor-pointer transition-all hover:bg-slate-50 relative ${selectedEmail?.id === email.id ? 'bg-indigo-50 border-l-4 border-indigo-600' : ''
+                }`}
             >
               <div className="flex justify-between items-start mb-1">
                 <span className="text-[10px] font-bold text-indigo-600 truncate max-w-[150px]">{email.from}</span>
@@ -250,7 +249,7 @@ const GmailAnalysis: React.FC<GmailAnalysisProps> = ({ onMovementDetected, monit
             <div className="p-10 text-center">
               <i className="fa-solid fa-filter-circle-xmark text-slate-200 text-4xl mb-3"></i>
               <p className="text-xs text-slate-400 px-4">Nenhum e-mail das fontes monitoradas encontrado.</p>
-              <button 
+              <button
                 onClick={() => setShowAddSource(true)}
                 className="text-[10px] text-indigo-600 font-bold mt-4 hover:underline"
               >
@@ -270,9 +269,9 @@ const GmailAnalysis: React.FC<GmailAnalysisProps> = ({ onMovementDetected, monit
                 <h2 className="text-lg font-bold text-slate-800">{selectedEmail.subject}</h2>
                 <button onClick={() => handleAction('discard')} className="text-slate-400 hover:text-slate-600"><i className="fa-solid fa-xmark"></i></button>
               </div>
-              
+
               {selectedEmail.hasAttachments && !attachmentFile && (
-                <button 
+                <button
                   onClick={() => fileInputRef.current?.click()}
                   className="mt-4 flex items-center gap-2 bg-indigo-50 text-indigo-700 px-3 py-2 rounded-xl text-xs font-bold hover:bg-indigo-100 border border-indigo-100"
                 >
@@ -329,28 +328,28 @@ const GmailAnalysis: React.FC<GmailAnalysisProps> = ({ onMovementDetected, monit
                   </div>
 
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-4 border-t">
-                    <button 
+                    <button
                       onClick={() => handleAction('sync')}
                       className="flex flex-col items-center gap-2 p-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-all shadow-lg"
                     >
                       <i className="fa-solid fa-check-double text-lg"></i>
                       <span className="text-[10px] font-bold">Sincronizar</span>
                     </button>
-                    <button 
+                    <button
                       onClick={() => handleAction('calendar')}
                       className="flex flex-col items-center gap-2 p-3 bg-indigo-50 text-indigo-700 rounded-xl border border-indigo-100"
                     >
                       <i className="fa-solid fa-calendar-plus text-lg"></i>
                       <span className="text-[10px] font-bold">Agenda</span>
                     </button>
-                    <button 
+                    <button
                       onClick={() => handleAction('task')}
                       className="flex flex-col items-center gap-2 p-3 bg-amber-50 text-amber-700 rounded-xl border border-amber-100"
                     >
                       <i className="fa-solid fa-thumbtack text-lg"></i>
                       <span className="text-[10px] font-bold">Tarefa</span>
                     </button>
-                    <button 
+                    <button
                       onClick={() => handleAction('discard')}
                       className="flex flex-col items-center gap-2 p-3 bg-slate-50 text-slate-500 rounded-xl border border-slate-200"
                     >

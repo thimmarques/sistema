@@ -69,7 +69,7 @@ const Dashboard: React.FC<DashboardProps> = ({ clients, movements, activities = 
     },
     {
       label: 'Audiências',
-      value: movements.filter(m => m.type === 'Hearing').length.toString(),
+      value: movements.filter(m => m.type === 'Audiência').length.toString(),
       badge: 'Ver Tudo',
       badgeColor: 'text-pink-500 bg-pink-50',
       icon: 'fa-building-columns',
@@ -90,7 +90,7 @@ const Dashboard: React.FC<DashboardProps> = ({ clients, movements, activities = 
       }));
     }
 
-    return clients.slice(0, 3).map(c => ({
+    return clients.slice(0, 5).map(c => ({
       type: 'client',
       title: 'Cliente Cadastrado',
       detail: c.name,
@@ -136,7 +136,7 @@ const Dashboard: React.FC<DashboardProps> = ({ clients, movements, activities = 
           </div>
 
           <div className="space-y-8">
-            {movements.slice(0, 3).map((m, idx) => {
+            {movements.slice(0, 5).map((m, idx) => {
               const date = new Date(m.date);
               const month = date.toLocaleString('pt-BR', { month: 'short' }).toUpperCase().replace('.', '');
               const day = date.getDate() + 1;
@@ -148,7 +148,7 @@ const Dashboard: React.FC<DashboardProps> = ({ clients, movements, activities = 
                     <span className="text-xl font-black text-slate-800">{day < 10 ? `0${day}` : day}</span>
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-bold text-slate-800 text-base group-hover:text-indigo-600 transition-colors">{m.type === 'Hearing' ? 'Audiência de Conciliação' : m.description}</h4>
+                    <h4 className="font-bold text-slate-800 text-base group-hover:text-indigo-600 transition-colors">{m.type === 'Audiência' ? 'Audiência de Conciliação' : m.description}</h4>
                     <p className="text-xs text-slate-400 font-medium mt-1">{m.caseNumber} • {m.source}</p>
                   </div>
                   <div className="text-right">
@@ -173,7 +173,7 @@ const Dashboard: React.FC<DashboardProps> = ({ clients, movements, activities = 
             {/* Timeline Line */}
             <div className="absolute left-[11px] top-2 bottom-2 w-[2px] bg-slate-100"></div>
 
-            {recentActivities.map((act, idx) => (
+            {recentActivities.slice(0, 5).map((act, idx) => (
               <div key={idx} className="relative">
                 {/* Timeline Dot */}
                 <div className={`absolute -left-[25px] top-1.5 h-3 w-3 rounded-full border-2 border-white ring-4 ring-slate-50 ${act.color}`}></div>

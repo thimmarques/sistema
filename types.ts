@@ -77,7 +77,7 @@ export interface CourtMovement {
   date: string;
   time?: string;
   description: string;
-  type: 'Hearing' | 'Deadline' | 'Notification';
+  type: 'Audiência' | 'Deadline' | 'Notification';
   modality?: 'Online' | 'Presencial';
   source: string;
 }

@@ -14,6 +14,14 @@ const Finances: React.FC<FinancesProps> = ({ clients, onUpdateClient, onAddNotif
   const [activeTab, setActiveTab] = useState<'PARTICULAR' | 'DEFENSORIA' | 'GERAL'>(initialTab || 'GERAL');
   const [searchTerm, setSearchTerm] = useState('');
   const [editingClient, setEditingClient] = useState<Client | null>(null);
+  const [expandedClients, setExpandedClients] = useState<Set<string>>(new Set());
+
+  const toggleClient = (clientId: string) => {
+    const newExpanded = new Set(expandedClients);
+    if (newExpanded.has(clientId)) newExpanded.delete(clientId);
+    else newExpanded.add(clientId);
+    setExpandedClients(newExpanded);
+  };
 
   const stats = useMemo(() => {
     let recebidos = 0;
@@ -224,6 +232,19 @@ const Finances: React.FC<FinancesProps> = ({ clients, onUpdateClient, onAddNotif
     });
   }, [clients, activeTab, searchTerm]);
 
+  const groupedData = useMemo(() => {
+    const groups: { [key: string]: any[] } = {};
+    tableData.forEach(item => {
+      const cid = item.client.id;
+      if (!groups[cid]) groups[cid] = [];
+      groups[cid].push(item);
+    });
+    return Object.values(groups).sort((a, b) => {
+      // Sort groups by the most recent item date
+      return b[0].date.localeCompare(a[0].date);
+    });
+  }, [tableData]);
+
   return (
     <div className="space-y-8 animate-in fade-in">
       <div className="flex justify-between items-center">
@@ -281,72 +302,113 @@ const Finances: React.FC<FinancesProps> = ({ clients, onUpdateClient, onAddNotif
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-50">
-            {tableData.length > 0 ? tableData.map(item => (
-              <tr key={item.id} className="hover:bg-slate-50/50 transition-colors group/row">
-                <td className="px-10 py-6">
-                  <p className="font-bold text-slate-700 text-sm">{item.client.name}</p>
-                  <span className={`text-[9px] font-black uppercase tracking-widest ${item.client.origin === 'Particular' ? 'text-indigo-500' : 'text-slate-400'}`}>
-                    {item.client.origin}
-                  </span>
-                </td>
-                <td className="px-6 py-6">
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{item.type}</p>
-                  <div className="flex items-center gap-1.5 mt-1">
-                    <span className="text-[9px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded font-black uppercase">{item.client.financials?.method}</span>
-                    <p className="text-[9px] text-slate-400 font-bold uppercase tracking-tighter italic">Data: {item.date.includes('T') ? new Date(item.date).toLocaleDateString('pt-BR') : item.date.split('-').reverse().join('/')}</p>
-                  </div>
-                </td>
-                <td className="px-6 py-6 text-[10px] font-black text-slate-600 uppercase tracking-widest">{item.client.caseType}</td>
-                <td className="px-6 py-6 text-center">
-                  <div className="flex flex-col items-center gap-1">
-                    <span className={`px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest ${item.status === 'PAGO' || item.status === 'PAGO PELO ESTADO' ? 'bg-emerald-50 text-emerald-500' :
-                        item.status === 'CERTIDÃO EMITIDA' ? 'bg-indigo-50 text-indigo-500' : 'bg-amber-50 text-amber-500'
-                      }`}>
-                      {item.status}
-                    </span>
-                    {item.paymentMonth && (
-                      <span className="text-[10px] font-black text-indigo-600 flex items-center gap-1 mt-1">
-                        <i className="fa-solid fa-calendar-check text-[8px]"></i> {formatPaymentMonth(item.paymentMonth)}
+            {groupedData.length > 0 ? groupedData.map(group => {
+              const client = group[0].client;
+              const isExpanded = expandedClients.has(client.id);
+              const totalItems = group.length;
+
+              return (
+                <React.Fragment key={client.id}>
+                  {/* Parent Row */}
+                  <tr className="bg-slate-50/30 hover:bg-slate-100/50 transition-colors cursor-pointer group/parent" onClick={() => toggleClient(client.id)}>
+                    <td className="px-10 py-6">
+                      <div className="flex items-center gap-4">
+                        <div className={`h-8 w-8 rounded-lg flex items-center justify-center transition-all ${isExpanded ? 'bg-indigo-600 text-white rotate-180' : 'bg-white text-slate-400 border border-slate-200 group-hover/parent:border-indigo-300'}`}>
+                          <i className="fa-solid fa-chevron-down text-[10px]"></i>
+                        </div>
+                        <div>
+                          <p className="font-bold text-slate-700 text-sm">{client.name}</p>
+                          <span className={`text-[9px] font-black uppercase tracking-widest ${client.origin === 'Particular' ? 'text-indigo-500' : 'text-slate-400'}`}>
+                            {client.origin} • {totalItems} Lançamento(s)
+                          </span>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-6 font-bold text-[10px] text-slate-400 uppercase tracking-widest">
+                      Resumo Financeiro
+                    </td>
+                    <td className="px-6 py-6 text-[10px] font-black text-slate-600 uppercase tracking-widest">{client.caseType}</td>
+                    <td className="px-6 py-6 text-center">
+                      <span className="text-[9px] font-black text-slate-400 px-3 py-1 bg-white border border-slate-100 rounded-full uppercase">
+                        Clique para {isExpanded ? 'Recolher' : 'Expandir'}
                       </span>
-                    )}
-                  </div>
-                </td>
-                <td className="px-10 py-6 text-right">
-                  <p className="font-black text-slate-800">
-                    {item.isExpectancy && item.value === 0 ? 'A Definir' : `R$ ${item.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
-                  </p>
-                  {item.client.origin === 'Defensoria' && (
-                    <p className={`text-[9px] font-black uppercase tracking-tight ${item.isEstimated ? 'text-amber-500 italic' : 'text-emerald-500'}`}>
-                      {item.isEstimated ? 'Previsão inicial' : 'Valor Confirmado'}
-                    </p>
-                  )}
-                  {item.isExpectancy && (
-                    <p className="text-[9px] font-black uppercase tracking-tight text-indigo-500 italic">Expectativa de Êxito</p>
-                  )}
-                </td>
-                <td className="px-6 py-6 text-right">
-                  <div className="flex justify-end gap-2">
-                    {item.isParticular && !item.isExpectancy && (
+                    </td>
+                    <td className="px-10 py-6 text-right">
+                      <p className="font-black text-slate-500 text-xs">Total Agregado</p>
+                      <p className="font-black text-slate-800">
+                        {client.financials?.totalAgreed ? `R$ ${client.financials.totalAgreed.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : '-'}
+                      </p>
+                    </td>
+                    <td className="px-6 py-6 text-right">
                       <button
-                        onClick={() => togglePaymentStatus(item.client, item.id, item.status)}
-                        className={`h-10 w-10 rounded-xl transition-all flex items-center justify-center ${item.status === 'PAGO' ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100' : 'bg-slate-50 text-slate-300 hover:text-emerald-600 hover:bg-emerald-50'
-                          }`}
-                        title={item.status === 'PAGO' ? "Marcar como Pendente" : "Confirmar Recebimento"}
+                        onClick={(e) => { e.stopPropagation(); setEditingClient(client); }}
+                        className="h-10 w-10 bg-white border border-slate-100 rounded-xl text-slate-300 hover:text-indigo-600 hover:bg-indigo-50 transition-all flex items-center justify-center shadow-sm"
+                        title="Configurar Plano Completo"
                       >
-                        <i className={`fa-solid ${item.status === 'PAGO' ? 'fa-check-double' : 'fa-check'}`}></i>
+                        <i className="fa-solid fa-gear text-sm"></i>
                       </button>
-                    )}
-                    <button
-                      onClick={() => setEditingClient(item.client)}
-                      className="h-10 w-10 bg-slate-50 rounded-xl text-slate-300 hover:text-indigo-600 hover:bg-indigo-50 transition-all flex items-center justify-center"
-                      title="Editar Plano de Pagamento"
-                    >
-                      <i className="fa-solid fa-file-pen text-sm"></i>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            )) : (
+                    </td>
+                  </tr>
+
+                  {/* Child Rows (Indented with "TAB" effect) */}
+                  {isExpanded && group.map(item => (
+                    <tr key={item.id} className="hover:bg-indigo-50/30 transition-colors group/row">
+                      <td className="px-10 py-4 pl-24"> {/* Large padding-left for TAB effect */}
+                        <div className="flex items-center gap-3">
+                          <div className="h-1.5 w-1.5 rounded-full bg-slate-200"></div>
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">{item.type}</p>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[9px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded font-black uppercase">{item.client.financials?.method}</span>
+                          <p className="text-[9px] text-slate-400 font-bold uppercase tracking-tighter italic">Data: {item.date.includes('T') ? new Date(item.date).toLocaleDateString('pt-BR') : item.date.split('-').reverse().join('/')}</p>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-[9px] font-bold text-slate-400 uppercase tracking-widest italic">{item.client.caseType}</td>
+                      <td className="px-6 py-4 text-center">
+                        <div className="flex flex-col items-center gap-1">
+                          <span className={`px-4 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${item.status === 'PAGO' || item.status === 'PAGO PELO ESTADO' ? 'bg-emerald-50 text-emerald-500' :
+                            item.status === 'CERTIDÃO EMITIDA' ? 'bg-indigo-50 text-indigo-500' : 'bg-amber-50 text-amber-500'
+                            }`}>
+                            {item.status}
+                          </span>
+                          {item.paymentMonth && (
+                            <span className="text-[9px] font-black text-indigo-600 flex items-center gap-1">
+                              <i className="fa-solid fa-calendar-check text-[8px]"></i> {formatPaymentMonth(item.paymentMonth)}
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-10 py-4 text-right">
+                        <p className="font-black text-slate-700 text-sm">
+                          {item.isExpectancy && item.value === 0 ? 'A Definir' : `R$ ${item.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
+                        </p>
+                        {item.client.origin === 'Defensoria' && (
+                          <p className={`text-[8px] font-black uppercase tracking-tight ${item.isEstimated ? 'text-amber-500 italic' : 'text-emerald-500'}`}>
+                            {item.isEstimated ? 'Previsão' : 'Confirmado'}
+                          </p>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex justify-end gap-2">
+                          {item.isParticular && !item.isExpectancy && (
+                            <button
+                              onClick={() => togglePaymentStatus(item.client, item.id, item.status)}
+                              className={`h-8 w-8 rounded-lg transition-all flex items-center justify-center ${item.status === 'PAGO' ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100' : 'bg-slate-50 text-slate-300 hover:text-emerald-600 hover:bg-emerald-50'
+                                }`}
+                              title={item.status === 'PAGO' ? "Pendente" : "Confirmar"}
+                            >
+                              <i className={`fa-solid ${item.status === 'PAGO' ? 'fa-check-double' : 'fa-check'} text-xs`}></i>
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </React.Fragment>
+              );
+            }) : (
               <tr>
                 <td colSpan={6} className="px-10 py-20 text-center text-slate-300 text-xs font-black uppercase tracking-[0.2em] italic">Nenhum registro financeiro encontrado.</td>
               </tr>

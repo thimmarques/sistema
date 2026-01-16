@@ -14,7 +14,7 @@ const Agenda: React.FC<AgendaProps> = ({ movements, onAddMovement, onUpdateMovem
   const [view, setView] = useState<'MÊS' | 'SEMANA' | 'DIA'>('MÊS');
   const [currentDate, setCurrentDate] = useState(new Date());
   const [editingMovementId, setEditingMovementId] = useState<string | null>(null);
-  
+
   const [deadlinesPage, setDeadlinesPage] = useState(0);
   const deadlinesPerPage = 3;
 
@@ -96,7 +96,7 @@ const Agenda: React.FC<AgendaProps> = ({ movements, onAddMovement, onUpdateMovem
   }, [movements]);
 
   const totalDeadlinesPages = Math.ceil(allDeadlines.length / deadlinesPerPage);
-  
+
   const paginatedDeadlines = useMemo(() => {
     const start = deadlinesPage * deadlinesPerPage;
     return allDeadlines.slice(start, start + deadlinesPerPage);
@@ -146,7 +146,7 @@ const Agenda: React.FC<AgendaProps> = ({ movements, onAddMovement, onUpdateMovem
       };
       onAddMovement(newMovement);
     }
-    
+
     setShowForm(false);
     handleSelectDay(formData.date);
     setEditingMovementId(null);
@@ -170,7 +170,7 @@ const Agenda: React.FC<AgendaProps> = ({ movements, onAddMovement, onUpdateMovem
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const daysInPrevMonth = new Date(year, month, 0).getDate();
     const days = [];
-    
+
     for (let i = firstDayOfMonth - 1; i >= 0; i--) {
       const d = daysInPrevMonth - i;
       const dateStr = new Date(year, month - 1, d).toISOString().split('T')[0];
@@ -208,7 +208,7 @@ const Agenda: React.FC<AgendaProps> = ({ movements, onAddMovement, onUpdateMovem
 
   const formatMovementType = (type: string) => {
     switch (type) {
-      case 'Hearing': return { label: 'AUDIÊNCIA', color: 'bg-orange-100 text-orange-600 border-orange-200' };
+      case 'Audiência': return { label: 'AUDIÊNCIA', color: 'bg-orange-100 text-orange-600 border-orange-200' };
       case 'Deadline': return { label: 'PRAZO', color: 'bg-rose-50 text-rose-600 border-rose-100' };
       default: return { label: 'NOTIFICAÇÃO', color: 'bg-indigo-50 text-indigo-600 border-indigo-100' };
     }
@@ -269,7 +269,7 @@ const Agenda: React.FC<AgendaProps> = ({ movements, onAddMovement, onUpdateMovem
                     <div className="space-y-1">
                       {dayMovements.map((m) => (
                         <div key={m.id} className={`${formatMovementType(m.type).color} border px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-tight truncate cursor-pointer hover:brightness-95 transition-all`} title={m.description}>
-                          {m.type === 'Hearing' ? '⚖️ ' : '📅 '}{m.time && <span className="mr-1">{m.time}</span>}{m.description}
+                          {m.type === 'Audiência' ? '⚖️ ' : '📅 '}{m.time && <span className="mr-1">{m.time}</span>}{m.description}
                         </div>
                       ))}
                     </div>
@@ -392,41 +392,41 @@ const Agenda: React.FC<AgendaProps> = ({ movements, onAddMovement, onUpdateMovem
       {showForm && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
           <div className="bg-white w-full max-w-xl rounded-[2.5rem] p-10 space-y-8 shadow-2xl animate-in zoom-in-95 my-8">
-             <div className="flex justify-between items-center">
-                <h3 className="text-2xl font-black text-slate-800 uppercase tracking-tight">{editingMovementId ? 'Editar Lançamento' : 'Novo Lançamento na Agenda'}</h3>
-                <button onClick={handleCloseForm} className="h-10 w-10 bg-slate-100 rounded-full text-slate-500 hover:bg-red-50 hover:text-red-500 transition-colors flex items-center justify-center"><i className="fa-solid fa-xmark"></i></button>
-             </div>
-             <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="space-y-4">
-                  <div>
-                    <label className={labelClass}>Número do Processo</label>
-                    <input type="text" required className={inputClass} placeholder="0000000-00.0000.0.00.0000" value={formData.caseNumber} onChange={(e) => handleCaseNumberChange(e.target.value)} />
-                    {matchedClientName && <p className="mt-1.5 text-[11px] font-bold text-indigo-600 flex items-center gap-1.5 animate-in fade-in slide-in-from-left-2"><i className="fa-solid fa-user-check"></i>Cliente Identificado: <span className="uppercase">{matchedClientName}</span></p>}
-                  </div>
-                  <div>
-                    <label className={labelClass}>Vincular Cliente (Opcional)</label>
-                    <select className={inputClass} value={formData.clientId} onChange={(e) => handleClientChange(e.target.value)}>
-                      <option value="">-- Selecione um Cliente --</option>
-                      {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                    </select>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div><label className={labelClass}>Data do Evento</label><input type="date" required className={inputClass} value={formData.date} onChange={(e) => setFormData({...formData, date: e.target.value})} /></div>
-                    <div><label className={labelClass}>Tipo de Evento</label><select className={inputClass} value={formData.type} onChange={(e) => setFormData({...formData, type: e.target.value as any})}><option value="Deadline">Prazo Processual</option><option value="Hearing">Audiência</option><option value="Notification">Notificação / Outro</option></select></div>
-                  </div>
-                  {formData.type === 'Hearing' && (
-                    <div className="grid grid-cols-2 gap-4 animate-in slide-in-from-top-2 duration-300">
-                      <div><label className={labelClass}>Horário</label><input type="time" required className={inputClass} value={formData.time} onChange={(e) => setFormData({...formData, time: e.target.value})} /></div>
-                      <div><label className={labelClass}>Modalidade</label><select className={inputClass} value={formData.modality} onChange={(e) => setFormData({...formData, modality: e.target.value as any})}><option value="Presencial">Presencial</option><option value="Online">Online / Videoconferência</option></select></div>
-                    </div>
-                  )}
-                  <div><label className={labelClass}>Descrição do Lançamento</label><textarea required className={`${inputClass} h-24 resize-none`} placeholder="Ex: Prazo para réplica à contestação..." value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} /></div>
+            <div className="flex justify-between items-center">
+              <h3 className="text-2xl font-black text-slate-800 uppercase tracking-tight">{editingMovementId ? 'Editar Lançamento' : 'Novo Lançamento na Agenda'}</h3>
+              <button onClick={handleCloseForm} className="h-10 w-10 bg-slate-100 rounded-full text-slate-500 hover:bg-red-50 hover:text-red-500 transition-colors flex items-center justify-center"><i className="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-4">
+                <div>
+                  <label className={labelClass}>Número do Processo</label>
+                  <input type="text" required className={inputClass} placeholder="0000000-00.0000.0.00.0000" value={formData.caseNumber} onChange={(e) => handleCaseNumberChange(e.target.value)} />
+                  {matchedClientName && <p className="mt-1.5 text-[11px] font-bold text-indigo-600 flex items-center gap-1.5 animate-in fade-in slide-in-from-left-2"><i className="fa-solid fa-user-check"></i>Cliente Identificado: <span className="uppercase">{matchedClientName}</span></p>}
                 </div>
-                <div className="flex items-center gap-6 pt-4">
-                  <button type="button" onClick={handleCloseForm} className="text-xs font-black text-slate-400 uppercase tracking-widest hover:text-slate-600 transition-colors">Cancelar</button>
-                  <button type="submit" className="flex-1 bg-indigo-600 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition-all">{editingMovementId ? 'Salvar Alterações' : 'Salvar na Agenda'}</button>
+                <div>
+                  <label className={labelClass}>Vincular Cliente (Opcional)</label>
+                  <select className={inputClass} value={formData.clientId} onChange={(e) => handleClientChange(e.target.value)}>
+                    <option value="">-- Selecione um Cliente --</option>
+                    {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                  </select>
                 </div>
-             </form>
+                <div className="grid grid-cols-2 gap-4">
+                  <div><label className={labelClass}>Data do Evento</label><input type="date" required className={inputClass} value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} /></div>
+                  <div><label className={labelClass}>Tipo de Evento</label><select className={inputClass} value={formData.type} onChange={(e) => setFormData({ ...formData, type: e.target.value as any })}><option value="Deadline">Prazo Processual</option><option value="Audiência">Audiência</option><option value="Notification">Notificação / Outro</option></select></div>
+                </div>
+                {formData.type === 'Audiência' && (
+                  <div className="grid grid-cols-2 gap-4 animate-in slide-in-from-top-2 duration-300">
+                    <div><label className={labelClass}>Horário</label><input type="time" required className={inputClass} value={formData.time} onChange={(e) => setFormData({ ...formData, time: e.target.value })} /></div>
+                    <div><label className={labelClass}>Modalidade</label><select className={inputClass} value={formData.modality} onChange={(e) => setFormData({ ...formData, modality: e.target.value as any })}><option value="Presencial">Presencial</option><option value="Online">Online / Videoconferência</option></select></div>
+                  </div>
+                )}
+                <div><label className={labelClass}>Descrição do Lançamento</label><textarea required className={`${inputClass} h-24 resize-none`} placeholder="Ex: Prazo para réplica à contestação..." value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} /></div>
+              </div>
+              <div className="flex items-center gap-6 pt-4">
+                <button type="button" onClick={handleCloseForm} className="text-xs font-black text-slate-400 uppercase tracking-widest hover:text-slate-600 transition-colors">Cancelar</button>
+                <button type="submit" className="flex-1 bg-indigo-600 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition-all">{editingMovementId ? 'Salvar Alterações' : 'Salvar na Agenda'}</button>
+              </div>
+            </form>
           </div>
         </div>
       )}

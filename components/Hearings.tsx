@@ -9,7 +9,7 @@ interface HearingsProps {
 
 const Hearings: React.FC<HearingsProps> = ({ movements, clients }) => {
     const hearingsByOrigin = useMemo(() => {
-        const hearings = movements.filter(m => m.type === 'Hearing');
+        const hearings = movements.filter(m => m.type === 'Audiência');
 
         return {
             Particular: hearings.filter(h => {
