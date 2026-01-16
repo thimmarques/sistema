@@ -1,0 +1,8 @@
+{
+  "name": "Cadastro Inteligente",
+  "description": "A sophisticated law firm client management system with court movement tracking, financial management, and intelligent legal assistance.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
