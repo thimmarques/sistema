@@ -475,7 +475,7 @@ const App: React.FC = () => {
           case AppSection.AGENDA:
             return <Agenda movements={movements} onAddMovement={addMovement} onUpdateMovement={updateMovement} clients={clients} settings={settings} />;
           case AppSection.HEARINGS:
-            return <Hearings movements={movements} clients={clients} settings={settings} />;
+            return <Hearings movements={movements} clients={clients} settings={settings} onUpdateMovement={updateMovement} />;
           case AppSection.REPORTS:
             return <Reports clients={clients} movements={movements} settings={settings} />;
           case AppSection.SETTINGS:

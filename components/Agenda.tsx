@@ -2,6 +2,7 @@
 import React, { useState, useMemo } from 'react';
 import { CourtMovement, Client, UserSettings } from '../types';
 import MovementSummaryModal from './MovementSummaryModal';
+import MovementFormModal from './MovementFormModal';
 
 interface AgendaProps {
   movements: CourtMovement[];
@@ -15,22 +16,10 @@ const Agenda: React.FC<AgendaProps> = ({ movements, onAddMovement, onUpdateMovem
   const [showForm, setShowForm] = useState(false);
   const [view, setView] = useState<'MÊS' | 'SEMANA' | 'DIA'>('MÊS');
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [editingMovementId, setEditingMovementId] = useState<string | null>(null);
+  const [movementToEdit, setMovementToEdit] = useState<CourtMovement | null>(null);
   const [selectedMovement, setSelectedMovement] = useState<CourtMovement | null>(null);
-
   const [deadlinesPage, setDeadlinesPage] = useState(0);
   const deadlinesPerPage = 3;
-
-  const [formData, setFormData] = useState({
-    clientId: '',
-    caseNumber: '',
-    date: new Date().toISOString().split('T')[0],
-    time: '09:00',
-    description: '',
-    type: 'Deadline' as CourtMovement['type'],
-    modality: 'Presencial' as CourtMovement['modality'],
-    source: 'Lançamento Manual'
-  });
 
   const handlePrev = () => {
     const newDate = new Date(currentDate);
@@ -57,40 +46,15 @@ const Agenda: React.FC<AgendaProps> = ({ movements, onAddMovement, onUpdateMovem
   };
 
   const handleEditClick = (movement: CourtMovement) => {
-    setEditingMovementId(movement.id);
-    setFormData({
-      clientId: movement.clientId || '',
-      caseNumber: movement.caseNumber,
-      date: movement.date,
-      time: movement.time || '09:00',
-      description: movement.description,
-      type: movement.type,
-      modality: movement.modality || 'Presencial',
-      source: movement.source
-    });
+    setMovementToEdit(movement);
     setShowForm(true);
   };
 
   const handleCloseForm = () => {
     setShowForm(false);
-    setEditingMovementId(null);
-    setFormData({
-      clientId: '',
-      caseNumber: '',
-      date: new Date().toISOString().split('T')[0],
-      time: '09:00',
-      description: '',
-      type: 'Deadline',
-      modality: 'Presencial',
-      source: 'Lançamento Manual'
-    });
+    setMovementToEdit(null);
   };
 
-  const matchedClientName = useMemo(() => {
-    if (!formData.caseNumber) return null;
-    const client = clients.find(c => c.caseNumber.trim() === formData.caseNumber.trim());
-    return client ? client.name : null;
-  }, [formData.caseNumber, clients]);
 
   const allDeadlines = useMemo(() => {
     return movements
@@ -117,52 +81,18 @@ const Agenda: React.FC<AgendaProps> = ({ movements, onAddMovement, onUpdateMovem
     }
   };
 
-  const handleClientChange = (clientId: string) => {
-    const selectedClient = clients.find(c => c.id === clientId);
-    setFormData({
-      ...formData,
-      clientId,
-      caseNumber: selectedClient ? selectedClient.caseNumber : ''
-    });
-  };
 
-  const handleCaseNumberChange = (caseNumber: string) => {
-    const client = clients.find(c => c.caseNumber.trim() === caseNumber.trim());
-    setFormData({
-      ...formData,
-      caseNumber,
-      clientId: client ? client.id : formData.clientId
-    });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (editingMovementId && onUpdateMovement) {
-      onUpdateMovement({
-        ...formData,
-        id: editingMovementId
-      });
+  const handleSubmitForm = (data: Partial<CourtMovement> & { id?: string }) => {
+    if (data.id && onUpdateMovement) {
+      onUpdateMovement(data as CourtMovement);
     } else {
       const newMovement: CourtMovement = {
-        ...formData,
+        ...data,
         id: `mov_${Date.now()}`
-      };
+      } as CourtMovement;
       onAddMovement(newMovement);
     }
-
-    setShowForm(false);
-    setEditingMovementId(null);
-
-    setFormData({
-      clientId: '',
-      caseNumber: '',
-      date: new Date().toISOString().split('T')[0],
-      time: '09:00',
-      description: '',
-      type: 'Deadline',
-      modality: 'Presencial',
-      source: 'Lançamento Manual'
-    });
+    handleCloseForm();
   };
 
   const calendarDays = useMemo(() => {
@@ -407,47 +337,13 @@ const Agenda: React.FC<AgendaProps> = ({ movements, onAddMovement, onUpdateMovem
         </div>
       </div>
 
-      {showForm && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
-          <div className="bg-white w-full max-w-xl rounded-[2.5rem] p-10 space-y-8 shadow-2xl animate-in zoom-in-95 my-8">
-            <div className="flex justify-between items-center">
-              <h3 className="text-2xl font-black text-slate-800 uppercase tracking-tight">{editingMovementId ? 'Editar Lançamento' : 'Novo Lançamento na Agenda'}</h3>
-              <button onClick={handleCloseForm} className="h-10 w-10 bg-slate-100 rounded-full text-slate-500 hover:bg-red-50 hover:text-red-500 transition-colors flex items-center justify-center"><i className="fa-solid fa-xmark"></i></button>
-            </div>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="space-y-4">
-                <div>
-                  <label className={labelClass}>Número do Processo</label>
-                  <input type="text" required className={inputClass} placeholder="0000000-00.0000.0.00.0000" value={formData.caseNumber} onChange={(e) => handleCaseNumberChange(e.target.value)} />
-                  {matchedClientName && <p className="mt-1.5 text-[11px] font-bold text-indigo-600 flex items-center gap-1.5 animate-in fade-in slide-in-from-left-2"><i className="fa-solid fa-user-check"></i>Cliente Identificado: <span className="uppercase">{matchedClientName}</span></p>}
-                </div>
-                <div>
-                  <label className={labelClass}>Vincular Cliente (Opcional)</label>
-                  <select className={inputClass} value={formData.clientId} onChange={(e) => handleClientChange(e.target.value)}>
-                    <option value="">-- Selecione um Cliente --</option>
-                    {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                  </select>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div><label className={labelClass}>Data do Evento</label><input type="date" required className={inputClass} value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} /></div>
-                  <div><label className={labelClass}>Tipo de Evento</label><select className={inputClass} value={formData.type} onChange={(e) => setFormData({ ...formData, type: e.target.value as any })}><option value="Deadline">Prazo Processual</option><option value="Audiência">Audiência</option><option value="Notification">Notificação / Outro</option></select></div>
-                </div>
-                {formData.type === 'Audiência' && (
-                  <div className="grid grid-cols-2 gap-4 animate-in slide-in-from-top-2 duration-300">
-                    <div><label className={labelClass}>Horário</label><input type="time" required className={inputClass} value={formData.time} onChange={(e) => setFormData({ ...formData, time: e.target.value })} /></div>
-                    <div><label className={labelClass}>Modalidade</label><select className={inputClass} value={formData.modality} onChange={(e) => setFormData({ ...formData, modality: e.target.value as any })}><option value="Presencial">Presencial</option><option value="Online">Online / Videoconferência</option></select></div>
-                  </div>
-                )}
-                <div><label className={labelClass}>Descrição do Lançamento</label><textarea required className={`${inputClass} h-24 resize-none`} placeholder="Ex: Prazo para réplica à contestação..." value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} /></div>
-              </div>
-              <div className="flex items-center gap-6 pt-4">
-                <button type="button" onClick={handleCloseForm} className="text-xs font-black text-slate-400 uppercase tracking-widest hover:text-slate-600 transition-colors">Cancelar</button>
-                <button type="submit" className="flex-1 bg-indigo-600 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition-all">{editingMovementId ? 'Salvar Alterações' : 'Salvar na Agenda'}</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      <MovementFormModal
+        isOpen={showForm}
+        onClose={handleCloseForm}
+        onSubmit={handleSubmitForm}
+        clients={clients}
+        initialData={movementToEdit}
+      />
 
       {selectedMovement && (
         <MovementSummaryModal

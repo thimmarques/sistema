@@ -2,15 +2,19 @@
 import React, { useMemo, useState } from 'react';
 import { Client, CourtMovement, UserSettings } from '../types';
 import MovementSummaryModal from './MovementSummaryModal';
+import MovementFormModal from './MovementFormModal';
 
 interface HearingsProps {
     movements: CourtMovement[];
     clients: Client[];
     settings: UserSettings;
+    onUpdateMovement?: (movement: CourtMovement) => void;
 }
 
-const Hearings: React.FC<HearingsProps> = ({ movements, clients, settings }) => {
+const Hearings: React.FC<HearingsProps> = ({ movements, clients, settings, onUpdateMovement }) => {
     const [selectedHearing, setSelectedHearing] = useState<CourtMovement | null>(null);
+    const [movementToEdit, setMovementToEdit] = useState<CourtMovement | null>(null);
+    const [showForm, setShowForm] = useState(false);
     const hearingsByOrigin = useMemo(() => {
         const hearings = movements.filter(m => m.type === 'Audiência');
 
@@ -54,11 +58,29 @@ const Hearings: React.FC<HearingsProps> = ({ movements, clients, settings }) => 
                             </span>
                         </div>
                         <p className="text-sm text-slate-400 font-medium mt-1">{h.caseNumber}</p>
-                        <div className="mt-4 flex items-center gap-3">
-                            <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 text-xs">
-                                <i className="fa-solid fa-location-dot"></i>
+                        <div className="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div className="flex items-center gap-3">
+                                <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 text-xs">
+                                    <i className="fa-solid fa-location-dot"></i>
+                                </div>
+                                <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">{h.source || 'Fórum Central'}</span>
                             </div>
-                            <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">{h.source || 'Fórum Central'}</span>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={(e) => { e.stopPropagation(); setSelectedHearing(h); }}
+                                    className="h-9 px-4 bg-white border border-slate-100 rounded-xl text-slate-400 hover:text-indigo-600 transition-all shadow-sm flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest"
+                                >
+                                    <i className="fa-solid fa-eye text-xs"></i>
+                                    Ver
+                                </button>
+                                <button
+                                    onClick={(e) => { e.stopPropagation(); setMovementToEdit(h); setShowForm(true); }}
+                                    className="h-9 px-4 bg-white border border-slate-100 rounded-xl text-slate-400 hover:text-emerald-600 transition-all shadow-sm flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest"
+                                >
+                                    <i className="fa-solid fa-pen-to-square text-xs"></i>
+                                    Editar
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -120,8 +142,28 @@ const Hearings: React.FC<HearingsProps> = ({ movements, clients, settings }) => 
                     client={clients.find(c => c.id === selectedHearing.clientId || c.caseNumber === selectedHearing.caseNumber)}
                     settings={settings}
                     onClose={() => setSelectedHearing(null)}
+                    onEdit={() => {
+                        const h = selectedHearing;
+                        setSelectedHearing(null);
+                        setMovementToEdit(h);
+                        setShowForm(true);
+                    }}
                 />
             )}
+
+            <MovementFormModal
+                isOpen={showForm}
+                onClose={() => { setShowForm(false); setMovementToEdit(null); }}
+                onSubmit={(data) => {
+                    if (onUpdateMovement && data.id) {
+                        onUpdateMovement(data as CourtMovement);
+                    }
+                    setShowForm(false);
+                    setMovementToEdit(null);
+                }}
+                clients={clients}
+                initialData={movementToEdit}
+            />
         </div>
     );
 };
