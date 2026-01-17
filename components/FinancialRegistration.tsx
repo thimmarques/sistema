@@ -139,9 +139,9 @@ const FinancialRegistration: React.FC<FinancialRegistrationProps> = ({
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6">
                     <div className="space-y-2">
-                      <label className={labelClass}>Valor Final após Processo (R$)</label>
+                      <label className={labelClass}>Valor dos Honorários Recebidos (R$)</label>
                       <input type="number" step="0.01" className={inputClass} value={formData.laborFinalValue} onChange={e => setFormData({ ...formData, laborFinalValue: parseFloat(e.target.value) })} />
-                      <p className="text-[10px] text-slate-400 font-medium italic text-right">Valor bruto da condenação ou acordo.</p>
+                      <p className="text-[10px] text-slate-400 font-medium italic text-right">Insira o valor líquido dos honorários (ex: os 30% acordados).</p>
                     </div>
                     <div className="space-y-2">
                       <label className={labelClass}>Data do Pagamento</label>

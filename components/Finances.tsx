@@ -173,7 +173,7 @@ const Finances: React.FC<FinancesProps> = ({ clients, onUpdateClient, onAddNotif
               client,
               type: label,
               date: client.financials.laborPaymentDate || 'Fim do Processo',
-              value: client.financials.laborFinalValue > 0 ? (client.financials.laborFinalValue * client.financials.successFeePercentage / 100) : (client.financials.totalAgreed > 0 ? (client.financials.totalAgreed * client.financials.successFeePercentage / 100) : 0),
+              value: client.financials.laborFinalValue > 0 ? client.financials.laborFinalValue : (client.financials.totalAgreed > 0 ? (client.financials.totalAgreed * client.financials.successFeePercentage / 100) : 0),
               status: (client.financials.successFeeStatus === 'paid' || client.financials.laborPaymentDate) ? 'PAGO' : translateStatus(client.financials.successFeeStatus || 'pending'),
               isParticular: true,
               isExpectancy: true,
