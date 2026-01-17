@@ -79,8 +79,13 @@ const FinancialRegistration: React.FC<FinancialRegistrationProps> = ({
       installments = []; // Limpa parcelas se mudar de plano para "Ao Final"
     }
 
+    const successFeeStatus = (formData.laborPaymentDate && formData.laborFinalValue > 0)
+      ? 'paid'
+      : formData.successFeeStatus || (existingFinancials?.successFeeStatus || 'pending');
+
     onFinish({
       ...formData,
+      successFeeStatus,
       installments
     });
   };

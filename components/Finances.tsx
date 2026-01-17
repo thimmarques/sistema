@@ -49,8 +49,8 @@ const Finances: React.FC<FinancesProps> = ({ clients, onUpdateClient, onAddNotif
         });
 
         // Êxito / Trabalhista / Previdenciário (Simulação de expectativa)
-        if (c.financials.successFeeStatus === 'paid') {
-          const val = (c.financials.totalAgreed * (c.financials.successFeePercentage || 0)) / 100;
+        if (c.financials.successFeeStatus === 'paid' || c.financials.laborPaymentDate) {
+          const val = c.financials.laborFinalValue || (c.financials.totalAgreed * (c.financials.successFeePercentage || 0)) / 100;
           recebidos += val;
         }
       }
@@ -172,9 +172,9 @@ const Finances: React.FC<FinancesProps> = ({ clients, onUpdateClient, onAddNotif
               id: `success-${client.id}`,
               client,
               type: label,
-              date: 'Fim do Processo',
-              value: client.financials.totalAgreed > 0 ? (client.financials.totalAgreed * client.financials.successFeePercentage / 100) : 0,
-              status: translateStatus(client.financials.successFeeStatus || 'pending'),
+              date: client.financials.laborPaymentDate || 'Fim do Processo',
+              value: client.financials.laborFinalValue > 0 ? (client.financials.laborFinalValue * client.financials.successFeePercentage / 100) : (client.financials.totalAgreed > 0 ? (client.financials.totalAgreed * client.financials.successFeePercentage / 100) : 0),
+              status: (client.financials.successFeeStatus === 'paid' || client.financials.laborPaymentDate) ? 'PAGO' : translateStatus(client.financials.successFeeStatus || 'pending'),
               isParticular: true,
               isExpectancy: true,
               laborFinalValue: client.financials.laborFinalValue,
@@ -407,7 +407,7 @@ const Finances: React.FC<FinancesProps> = ({ clients, onUpdateClient, onAddNotif
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex justify-end gap-2">
-                          {item.isParticular && !item.isExpectancy && (
+                          {item.isParticular && (
                             <button
                               onClick={() => togglePaymentStatus(item.client, item.id, item.status)}
                               className={`h-8 w-8 rounded-lg transition-all flex items-center justify-center ${item.status === 'PAGO' ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100' : 'bg-slate-50 text-slate-300 hover:text-emerald-600 hover:bg-emerald-50'
