@@ -79,7 +79,8 @@ const FinancialRegistration: React.FC<FinancialRegistrationProps> = ({
       installments = []; // Limpa parcelas se mudar de plano para "Ao Final"
     }
 
-    const successFeeStatus = (formData.laborPaymentDate && formData.laborFinalValue > 0)
+    const isPastOrPresent = formData.laborPaymentDate && new Date(formData.laborPaymentDate + 'T23:59:59') <= new Date();
+    const successFeeStatus = (isPastOrPresent && formData.laborFinalValue > 0)
       ? 'paid'
       : formData.successFeeStatus || (existingFinancials?.successFeeStatus || 'pending');
 
