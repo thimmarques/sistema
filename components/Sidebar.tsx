@@ -38,12 +38,12 @@ const Sidebar: React.FC<SidebarProps> = ({ activeSection, onSelectSection, logo,
       {/* Mobile Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 md:hidden"
+          className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 lg:hidden"
           onClick={onClose}
         ></div>
       )}
 
-      <aside className={`fixed inset-y-0 left-0 w-64 bg-slate-900 text-slate-300 flex flex-col z-50 transition-transform duration-300 border-r border-slate-800 md:relative md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <aside className={`fixed inset-y-0 left-0 w-64 bg-slate-900 text-slate-300 flex flex-col z-50 transition-transform duration-300 border-r border-slate-800 lg:relative lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-8 flex flex-col items-center">
           <div className="w-full h-32 flex items-center justify-center bg-black/40 rounded-2xl p-4 border border-slate-800 shadow-2xl mb-4 overflow-hidden group">
             {logo && logo.startsWith('data:image') ? (
@@ -61,7 +61,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeSection, onSelectSection, logo,
 
           <button
             onClick={onClose}
-            className="md:hidden absolute top-4 right-4 text-slate-500 hover:text-white"
+            className="lg:hidden absolute top-4 right-4 text-slate-500 hover:text-white"
           >
             <i className="fa-solid fa-xmark text-xl"></i>
           </button>

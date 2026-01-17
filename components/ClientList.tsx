@@ -156,108 +156,110 @@ const ClientList: React.FC<ClientListProps> = ({ clients, onAddClient, onUpdateC
       </div>
 
       <div className="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
-        <table className="w-full text-left">
-          <thead className="bg-white border-b border-slate-50 text-[10px] uppercase font-black text-slate-400 tracking-widest">
-            <tr>
-              <th className="px-10 py-6">Cliente</th>
-              <th className="px-6 py-6 text-center">Tipo de Ação</th>
-              <th className="px-6 py-6 text-right">Valor em Carteira</th>
-              <th className="px-10 py-6 text-right">Ações</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-50">
-            {paginatedClients.map(client => (
-              <tr key={client.id} className="hover:bg-slate-50/50 transition-colors group/row">
-                <td className="px-10 py-6">
-                  <p className="font-bold text-slate-700 text-base">{client.name}</p>
-                  <p className="text-[11px] text-slate-400 uppercase font-black">{client.caseNumber}</p>
-                </td>
-                <td className="px-6 py-6 text-center">
-                  <span className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest ${getCaseTypeStyle(client.caseType)}`}>
-                    {client.caseType}
-                  </span>
-                </td>
-                <td className="px-6 py-6 text-right">
-                  <span className="text-lg font-black text-slate-800 tracking-tight">
-                    R$ {(client.financials?.totalAgreed || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                  </span>
-                </td>
-                <td className="px-10 py-6 text-right">
-                  <div className="flex justify-end gap-5">
-                    {client.origin === 'Particular' && (
-                      <>
-                        <button
-                          onClick={() => generateClientPDF('procuration', client, settings!)}
-                          title="Baixar Procuração"
-                          className="text-slate-300 hover:text-indigo-600 transition-colors"
-                        >
-                          <i className="fa-solid fa-file-signature"></i>
-                        </button>
-                        <button
-                          onClick={() => generateClientPDF('declaration', client, settings!)}
-                          title="Baixar Declaração de Hipossuficiência"
-                          className="text-slate-300 hover:text-amber-600 transition-colors"
-                        >
-                          <i className="fa-solid fa-hand-holding-dollar"></i>
-                        </button>
-                      </>
-                    )}
-                    <button
-                      onClick={() => handleOpenEdit(client)}
-                      className="text-slate-300 hover:text-indigo-600 transition-colors"
-                    >
-                      <i className="fa-solid fa-pen"></i>
-                    </button>
-                    <button
-                      onClick={() => { setClientToDelete(client); setShowDeleteModal(true); }}
-                      className="text-slate-300 hover:text-rose-600 transition-colors"
-                    >
-                      <i className="fa-solid fa-trash-can"></i>
-                    </button>
-                  </div>
-                </td>
+        <div className="overflow-x-auto no-scrollbar">
+          <table className="w-full text-left min-w-[800px]">
+            <thead className="bg-white border-b border-slate-50 text-[10px] uppercase font-black text-slate-400 tracking-widest">
+              <tr>
+                <th className="px-10 py-6">Cliente</th>
+                <th className="px-6 py-6 text-center">Tipo de Ação</th>
+                <th className="px-6 py-6 text-right">Valor em Carteira</th>
+                <th className="px-10 py-6 text-right">Ações</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-slate-50">
+              {paginatedClients.map(client => (
+                <tr key={client.id} className="hover:bg-slate-50/50 transition-colors group/row">
+                  <td className="px-10 py-6">
+                    <p className="font-bold text-slate-700 text-base">{client.name}</p>
+                    <p className="text-[11px] text-slate-400 uppercase font-black">{client.caseNumber}</p>
+                  </td>
+                  <td className="px-6 py-6 text-center">
+                    <span className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest ${getCaseTypeStyle(client.caseType)}`}>
+                      {client.caseType}
+                    </span>
+                  </td>
+                  <td className="px-6 py-6 text-right">
+                    <span className="text-lg font-black text-slate-800 tracking-tight">
+                      R$ {(client.financials?.totalAgreed || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                    </span>
+                  </td>
+                  <td className="px-10 py-6 text-right">
+                    <div className="flex justify-end gap-5">
+                      {client.origin === 'Particular' && (
+                        <>
+                          <button
+                            onClick={() => generateClientPDF('procuration', client, settings!)}
+                            title="Baixar Procuração"
+                            className="text-slate-300 hover:text-indigo-600 transition-colors"
+                          >
+                            <i className="fa-solid fa-file-signature"></i>
+                          </button>
+                          <button
+                            onClick={() => generateClientPDF('declaration', client, settings!)}
+                            title="Baixar Declaração de Hipossuficiência"
+                            className="text-slate-300 hover:text-amber-600 transition-colors"
+                          >
+                            <i className="fa-solid fa-hand-holding-dollar"></i>
+                          </button>
+                        </>
+                      )}
+                      <button
+                        onClick={() => handleOpenEdit(client)}
+                        className="text-slate-300 hover:text-indigo-600 transition-colors"
+                      >
+                        <i className="fa-solid fa-pen"></i>
+                      </button>
+                      <button
+                        onClick={() => { setClientToDelete(client); setShowDeleteModal(true); }}
+                        className="text-slate-300 hover:text-rose-600 transition-colors"
+                      >
+                        <i className="fa-solid fa-trash-can"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
 
-        {totalPages > 1 && (
-          <div className="p-6 bg-slate-50/50 border-t border-slate-100 flex items-center justify-between">
-            <p className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em]">
-              Página <span className="text-slate-600">{currentPage}</span> de <span className="text-slate-600">{totalPages}</span>
-            </p>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-                className="h-10 px-4 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-indigo-600 hover:border-indigo-100 disabled:opacity-30 disabled:pointer-events-none transition-all shadow-sm"
-              >
-                Anterior
-              </button>
-              <button
-                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                disabled={currentPage === totalPages}
-                className="h-10 px-4 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-indigo-600 hover:border-indigo-100 disabled:opacity-30 disabled:pointer-events-none transition-all shadow-sm"
-              >
-                Próxima
-              </button>
+          {totalPages > 1 && (
+            <div className="p-6 bg-slate-50/50 border-t border-slate-100 flex items-center justify-between">
+              <p className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em]">
+                Página <span className="text-slate-600">{currentPage}</span> de <span className="text-slate-600">{totalPages}</span>
+              </p>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="h-10 px-4 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-indigo-600 hover:border-indigo-100 disabled:opacity-30 disabled:pointer-events-none transition-all shadow-sm"
+                >
+                  Anterior
+                </button>
+                <button
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="h-10 px-4 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-indigo-600 hover:border-indigo-100 disabled:opacity-30 disabled:pointer-events-none transition-all shadow-sm"
+                >
+                  Próxima
+                </button>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {paginatedClients.length === 0 && (
-          <div className="py-20 text-center space-y-4">
-            <div className="h-20 w-20 bg-slate-50 text-slate-200 rounded-full flex items-center justify-center text-3xl mx-auto mb-4">
-              <i className="fa-solid fa-users-slash"></i>
+          {paginatedClients.length === 0 && (
+            <div className="py-20 text-center space-y-4">
+              <div className="h-20 w-20 bg-slate-50 text-slate-200 rounded-full flex items-center justify-center text-3xl mx-auto mb-4">
+                <i className="fa-solid fa-users-slash"></i>
+              </div>
+              <p className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">Nenhum cliente encontrado</p>
             </div>
-            <p className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">Nenhum cliente encontrado</p>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {showFormModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
-          <div className="bg-white w-full max-w-4xl rounded-[2.5rem] p-10 space-y-8 shadow-2xl animate-in zoom-in-95 my-8">
+          <div className="bg-white w-full max-w-4xl rounded-[2.5rem] p-6 md:p-10 space-y-8 shadow-2xl animate-in zoom-in-95 my-auto">
             <div className="flex justify-between items-center">
               <h3 className="text-2xl font-black text-slate-800">Cadastro de Cliente LexAI</h3>
               <button onClick={() => setShowFormModal(false)} className="h-10 w-10 bg-slate-100 rounded-full text-slate-500 hover:text-red-500 flex items-center justify-center"><i className="fa-solid fa-xmark"></i></button>

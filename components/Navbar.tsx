@@ -43,7 +43,7 @@ const Navbar: React.FC<NavbarProps> = ({
       <div className="flex items-center gap-4">
         <button
           onClick={onMenuClick}
-          className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors md:hidden"
+          className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors lg:hidden"
         >
           <i className="fa-solid fa-bars-staggered"></i>
         </button>

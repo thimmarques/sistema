@@ -44,7 +44,7 @@ const Layout: React.FC<LayoutProps> = ({
                 onClose={() => setIsMobileMenuOpen(false)}
             />
 
-            <main className="flex-1 overflow-y-auto relative h-screen">
+            <main className="flex-1 overflow-x-hidden relative h-screen">
                 {isLoading && (
                     <div className="absolute top-0 left-0 w-full h-1 bg-slate-100 overflow-hidden z-50">
                         <div className="h-full bg-amber-500 animate-progress origin-left"></div>
@@ -63,8 +63,10 @@ const Layout: React.FC<LayoutProps> = ({
                     onLogout={onLogout}
                 />
 
-                <div className={`p-4 md:p-8 transition-opacity duration-300 ${isLoading ? 'opacity-50' : 'opacity-100'}`}>
-                    {children}
+                <div className="w-full">
+                    <div className={`max-w-[1920px] mx-auto p-4 md:p-8 transition-opacity duration-300 ${isLoading ? 'opacity-50' : 'opacity-100'}`}>
+                        {children}
+                    </div>
                 </div>
             </main>
         </div>

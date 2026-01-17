@@ -105,7 +105,7 @@ const Dashboard: React.FC<DashboardProps> = ({ clients, movements, activities = 
   return (
     <div className="space-y-8 animate-in fade-in duration-700">
       {/* Top Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
         {stats.map((item, idx) => (
           <button
             key={idx}
