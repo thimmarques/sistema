@@ -140,9 +140,10 @@ const Dashboard: React.FC<DashboardProps> = ({ clients, movements, activities = 
 
           <div className="space-y-8">
             {movements.slice(0, 5).map((m, idx) => {
-              const date = new Date(m.date);
+              const [year, monthNum, dayStr] = m.date.split('-');
+              const date = new Date(parseInt(year), parseInt(monthNum) - 1, parseInt(dayStr));
               const month = date.toLocaleString('pt-BR', { month: 'short' }).toUpperCase().replace('.', '');
-              const day = date.getDate() + 1;
+              const day = date.getDate();
 
               return (
                 <div

@@ -25,26 +25,39 @@ export const generateClientPDF = (type: 'contract' | 'procuration' | 'declaratio
   doc.setFillColor(245, 158, 11);
   doc.rect(0, headerHeight - 1, pageWidth, 1, 'F');
 
-  if (settings.logo && settings.logo.startsWith('data:image')) {
-    try {
-      const format = settings.logo.split(';')[0].split('/')[1].toUpperCase();
-      const imgProps = doc.getImageProperties(settings.logo);
-      const logoRatio = imgProps.width / imgProps.height;
-      const maxH = 22;
-      const maxW = 70;
-      let logoW = maxW;
-      let logoH = logoW / logoRatio;
-      if (logoH > maxH) {
-        logoH = maxH;
-        logoW = logoH * logoRatio;
+  if (settings.logo) {
+    if (settings.logo.startsWith('data:image')) {
+      try {
+        const format = settings.logo.split(';')[0].split('/')[1].toUpperCase();
+        const imgProps = doc.getImageProperties(settings.logo);
+        const logoRatio = imgProps.width / imgProps.height;
+        const maxH = 22;
+        const maxW = 70;
+        let logoW = maxW;
+        let logoH = logoW / logoRatio;
+        if (logoH > maxH) {
+          logoH = maxH;
+          logoW = logoH * logoRatio;
+        }
+        const centerY = 5 + (maxH - logoH) / 2;
+        doc.addImage(settings.logo, format, margin, centerY, logoW, logoH, undefined, 'FAST');
+      } catch (e) {
+        doc.setTextColor(255, 255, 255);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(22);
+        doc.text(settings.name || "ADVOGADO", margin, headerHeight - 15);
       }
-      const centerY = 5 + (maxH - logoH) / 2;
-      doc.addImage(settings.logo, format, margin, centerY, logoW, logoH, undefined, 'FAST');
-    } catch (e) {
+    } else {
+      // Fallback for URLs (Supabase storage etc) - in a real scenario we'd need to fetch and convert to base64
+      // For now, we'll show the name as fallback to avoid errors, but note that jsPDF addImage 
+      // typically needs base64 or a loaded HTML image element.
       doc.setTextColor(255, 255, 255);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(22);
       doc.text(settings.name || "ADVOGADO", margin, headerHeight - 15);
+      doc.setFontSize(8);
+      doc.setFont("helvetica", "normal");
+      doc.text(settings.role || "ADVOCACIA", margin, headerHeight - 10);
     }
   } else {
     doc.setTextColor(255, 255, 255);
@@ -186,22 +199,29 @@ export const generateFinancialReport = (clients: Client[], settings: UserSetting
   doc.setFillColor(245, 158, 11);
   doc.rect(0, headerHeight - 1, pageWidth, 1, 'F');
 
-  if (settings.logo && settings.logo.startsWith('data:image')) {
-    try {
-      const format = settings.logo.split(';')[0].split('/')[1].toUpperCase();
-      const imgProps = doc.getImageProperties(settings.logo);
-      const logoRatio = imgProps.width / imgProps.height;
-      const maxH = 18;
-      const maxW = 50;
-      let logoW = maxW;
-      let logoH = logoW / logoRatio;
-      if (logoH > maxH) {
-        logoH = maxH;
-        logoW = logoH * logoRatio;
+  if (settings.logo) {
+    if (settings.logo.startsWith('data:image')) {
+      try {
+        const format = settings.logo.split(';')[0].split('/')[1].toUpperCase();
+        const imgProps = doc.getImageProperties(settings.logo);
+        const logoRatio = imgProps.width / imgProps.height;
+        const maxH = 18;
+        const maxW = 50;
+        let logoW = maxW;
+        let logoH = logoW / logoRatio;
+        if (logoH > maxH) {
+          logoH = maxH;
+          logoW = logoH * logoRatio;
+        }
+        const centerY = 5 + (maxH - logoH) / 2;
+        doc.addImage(settings.logo, format, margin, centerY, logoW, logoH, undefined, 'FAST');
+      } catch (e) {
+        doc.setTextColor(255, 255, 255);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(16);
+        doc.text(settings.name?.toUpperCase() || "RELATÓRIO JURÍDICO", margin, 18);
       }
-      const centerY = 5 + (maxH - logoH) / 2;
-      doc.addImage(settings.logo, format, margin, centerY, logoW, logoH, undefined, 'FAST');
-    } catch (e) {
+    } else {
       doc.setTextColor(255, 255, 255);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(16);

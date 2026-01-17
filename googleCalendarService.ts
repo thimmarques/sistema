@@ -12,8 +12,8 @@ export class GoogleCalendarService {
    * Cria um evento no Google Calendar para uma movimentação processual.
    */
   static async createEvent(movement: CourtMovement, accessToken: string): Promise<boolean> {
-    const isHearing = movement.type === 'Hearing';
-    
+    const isHearing = movement.type === 'Audiência';
+
     // Configura o evento
     const event = {
       summary: `${isHearing ? '🏛️ AUDIÊNCIA' : '📅 PRAZO'}: Proc. ${movement.caseNumber}`,
@@ -21,7 +21,7 @@ export class GoogleCalendarService {
       description: `
         Movimentação detectada via LexAI.
         Processo: ${movement.caseNumber}
-        Tipo: ${movement.type === 'Hearing' ? 'Audiência' : 'Prazo/Notificação'}
+        Tipo: ${movement.type === 'Audiência' ? 'Audiência' : 'Prazo/Notificação'}
         Descrição: ${movement.description}
         Fonte: ${movement.source}
       `.trim(),
@@ -54,7 +54,7 @@ export class GoogleCalendarService {
       });
       return response.ok;
       */
-      
+
       // Simulando latência de rede e sucesso da API do Google
       console.log('Enviando evento para Google Calendar:', event);
       await new Promise(resolve => setTimeout(resolve, 1500));
