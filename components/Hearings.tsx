@@ -1,13 +1,16 @@
 
-import React, { useMemo } from 'react';
-import { Client, CourtMovement } from '../types';
+import React, { useMemo, useState } from 'react';
+import { Client, CourtMovement, UserSettings } from '../types';
+import MovementSummaryModal from './MovementSummaryModal';
 
 interface HearingsProps {
     movements: CourtMovement[];
     clients: Client[];
+    settings: UserSettings;
 }
 
-const Hearings: React.FC<HearingsProps> = ({ movements, clients }) => {
+const Hearings: React.FC<HearingsProps> = ({ movements, clients, settings }) => {
+    const [selectedHearing, setSelectedHearing] = useState<CourtMovement | null>(null);
     const hearingsByOrigin = useMemo(() => {
         const hearings = movements.filter(m => m.type === 'Audiência');
 
@@ -30,7 +33,11 @@ const Hearings: React.FC<HearingsProps> = ({ movements, clients }) => {
         const month = date.toLocaleString('pt-BR', { month: 'short' }).toUpperCase().replace('.', '');
 
         return (
-            <div key={h.id} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-all group">
+            <div
+                key={h.id}
+                className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-all group cursor-pointer"
+                onClick={() => setSelectedHearing(h)}
+            >
                 <div className="flex items-start gap-6">
                     <div className="flex flex-col items-center justify-center min-w-[70px] h-20 bg-slate-50 rounded-2xl border border-slate-100">
                         <span className="text-[10px] font-black text-rose-500 tracking-widest leading-none mb-1">{month}</span>
@@ -107,6 +114,14 @@ const Hearings: React.FC<HearingsProps> = ({ movements, clients }) => {
                     </div>
                 </div>
             </div>
+            {selectedHearing && (
+                <MovementSummaryModal
+                    movement={selectedHearing}
+                    client={clients.find(c => c.id === selectedHearing.clientId || c.caseNumber === selectedHearing.caseNumber)}
+                    settings={settings}
+                    onClose={() => setSelectedHearing(null)}
+                />
+            )}
         </div>
     );
 };

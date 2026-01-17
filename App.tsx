@@ -467,15 +467,15 @@ const App: React.FC = () => {
       {(() => {
         switch (activeSection) {
           case AppSection.DASHBOARD:
-            return <Dashboard clients={clients} movements={movements} activities={activityLogs} onSelectSection={handleNavigation} />;
+            return <Dashboard clients={clients} movements={movements} activities={activityLogs} onSelectSection={handleNavigation} settings={settings} />;
           case AppSection.CLIENTS:
             return <ClientList clients={clients} onAddClient={addClient} onUpdateClient={updateClient} onDeleteClient={deleteClient} settings={settings} />;
           case AppSection.FINANCES:
             return <Finances clients={clients} onUpdateClient={updateClient} onAddNotification={addNotification} initialTab={activeSubTab as any} />;
           case AppSection.AGENDA:
-            return <Agenda movements={movements} onAddMovement={addMovement} onUpdateMovement={updateMovement} clients={clients} />;
+            return <Agenda movements={movements} onAddMovement={addMovement} onUpdateMovement={updateMovement} clients={clients} settings={settings} />;
           case AppSection.HEARINGS:
-            return <Hearings movements={movements} clients={clients} />;
+            return <Hearings movements={movements} clients={clients} settings={settings} />;
           case AppSection.REPORTS:
             return <Reports clients={clients} movements={movements} settings={settings} />;
           case AppSection.SETTINGS:

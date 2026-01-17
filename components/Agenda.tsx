@@ -1,19 +1,22 @@
 
 import React, { useState, useMemo } from 'react';
-import { CourtMovement, Client } from '../types';
+import { CourtMovement, Client, UserSettings } from '../types';
+import MovementSummaryModal from './MovementSummaryModal';
 
 interface AgendaProps {
   movements: CourtMovement[];
   onAddMovement: (movement: CourtMovement) => void;
   onUpdateMovement?: (movement: CourtMovement) => void;
   clients: Client[];
+  settings: UserSettings;
 }
 
-const Agenda: React.FC<AgendaProps> = ({ movements, onAddMovement, onUpdateMovement, clients }) => {
+const Agenda: React.FC<AgendaProps> = ({ movements, onAddMovement, onUpdateMovement, clients, settings }) => {
   const [showForm, setShowForm] = useState(false);
   const [view, setView] = useState<'MÊS' | 'SEMANA' | 'DIA'>('MÊS');
   const [currentDate, setCurrentDate] = useState(new Date());
   const [editingMovementId, setEditingMovementId] = useState<string | null>(null);
+  const [selectedMovement, setSelectedMovement] = useState<CourtMovement | null>(null);
 
   const [deadlinesPage, setDeadlinesPage] = useState(0);
   const deadlinesPerPage = 3;
@@ -267,7 +270,15 @@ const Agenda: React.FC<AgendaProps> = ({ movements, onAddMovement, onUpdateMovem
                     </div>
                     <div className="space-y-1">
                       {dayMovements.map((m) => (
-                        <div key={m.id} className={`${formatMovementType(m.type).color} border px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-tight truncate cursor-pointer hover:brightness-95 transition-all`} title={m.description}>
+                        <div
+                          key={m.id}
+                          className={`${formatMovementType(m.type).color} border px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-tight truncate cursor-pointer hover:brightness-95 transition-all`}
+                          title={m.description}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedMovement(m);
+                          }}
+                        >
                           {m.type === 'Audiência' ? '⚖️ ' : '📅 '}{m.time && <span className="mr-1">{m.time}</span>}{m.description}
                         </div>
                       ))}
@@ -291,7 +302,14 @@ const Agenda: React.FC<AgendaProps> = ({ movements, onAddMovement, onUpdateMovem
                     </div>
                     <div className="flex-1 space-y-2">
                       {dayMovements.length > 0 ? dayMovements.map(m => (
-                        <div key={m.id} className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex justify-between items-center transition-all group-hover:border-indigo-200">
+                        <div
+                          key={m.id}
+                          className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex justify-between items-center transition-all group-hover:border-indigo-200 cursor-pointer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedMovement(m);
+                          }}
+                        >
                           <div>
                             <div className="flex items-center gap-2 mb-1">
                               {m.time && <span className="text-[10px] font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full">{m.time}</span>}
@@ -339,7 +357,8 @@ const Agenda: React.FC<AgendaProps> = ({ movements, onAddMovement, onUpdateMovem
                         </div>
                       </div>
                       <div className="flex gap-2">
-                        <button onClick={() => handleEditClick(m)} className="h-12 w-12 rounded-2xl bg-white border border-slate-200 text-slate-400 hover:text-indigo-600 transition-all shadow-sm flex items-center justify-center"><i className="fa-solid fa-pen-to-square"></i></button>
+                        <button onClick={() => setSelectedMovement(m)} className="h-12 w-12 rounded-2xl bg-white border border-slate-200 text-slate-400 hover:text-indigo-600 transition-all shadow-sm flex items-center justify-center"><i className="fa-solid fa-eye"></i></button>
+                        <button onClick={() => handleEditClick(m)} className="h-12 w-12 rounded-2xl bg-white border border-slate-200 text-slate-400 hover:text-emerald-600 transition-all shadow-sm flex items-center justify-center"><i className="fa-solid fa-pen-to-square"></i></button>
                       </div>
                     </div>
                   ))
@@ -428,6 +447,15 @@ const Agenda: React.FC<AgendaProps> = ({ movements, onAddMovement, onUpdateMovem
             </form>
           </div>
         </div>
+      )}
+
+      {selectedMovement && (
+        <MovementSummaryModal
+          movement={selectedMovement}
+          client={clients.find(c => c.id === selectedMovement.clientId || c.caseNumber === selectedMovement.caseNumber)}
+          settings={settings}
+          onClose={() => setSelectedMovement(null)}
+        />
       )}
     </div>
   );

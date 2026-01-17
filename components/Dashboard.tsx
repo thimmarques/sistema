@@ -1,15 +1,18 @@
 
-import React, { useMemo } from 'react';
-import { Client, CourtMovement, ActivityLog, AppSection } from '../types';
+import React, { useMemo, useState } from 'react';
+import { Client, CourtMovement, ActivityLog, AppSection, UserSettings } from '../types';
+import MovementSummaryModal from './MovementSummaryModal';
 
 interface DashboardProps {
   clients: Client[];
   movements: CourtMovement[];
   activities?: ActivityLog[];
   onSelectSection: (section: AppSection, tab?: string) => void;
+  settings: UserSettings;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ clients, movements, activities = [], onSelectSection }) => {
+const Dashboard: React.FC<DashboardProps> = ({ clients, movements, activities = [], onSelectSection, settings }) => {
+  const [selectedMovement, setSelectedMovement] = useState<CourtMovement | null>(null);
   const financialStats = useMemo(() => {
     let totalAgreed = 0;
     let totalDefensoria = 0;
@@ -142,7 +145,11 @@ const Dashboard: React.FC<DashboardProps> = ({ clients, movements, activities = 
               const day = date.getDate() + 1;
 
               return (
-                <div key={idx} className="flex items-center gap-6 group">
+                <div
+                  key={idx}
+                  className="flex items-center gap-6 group cursor-pointer"
+                  onClick={() => setSelectedMovement(m)}
+                >
                   <div className="flex flex-col items-center justify-center min-w-[60px] h-16 bg-white border border-slate-100 rounded-2xl shadow-sm">
                     <span className="text-[10px] font-black text-rose-500 tracking-widest">{month}</span>
                     <span className="text-xl font-black text-slate-800">{day < 10 ? `0${day}` : day}</span>
@@ -152,7 +159,7 @@ const Dashboard: React.FC<DashboardProps> = ({ clients, movements, activities = 
                     <p className="text-xs text-slate-400 font-medium mt-1">{m.caseNumber} • {m.source}</p>
                   </div>
                   <div className="text-right">
-                    <span className="text-sm font-bold text-slate-400">09:00</span>
+                    <span className="text-sm font-bold text-slate-400">{m.time || '09:00'}</span>
                   </div>
                 </div>
               );
@@ -190,6 +197,15 @@ const Dashboard: React.FC<DashboardProps> = ({ clients, movements, activities = 
           </div>
         </div>
       </div>
+
+      {selectedMovement && (
+        <MovementSummaryModal
+          movement={selectedMovement}
+          client={clients.find(c => c.id === selectedMovement.clientId || c.caseNumber === selectedMovement.caseNumber)}
+          settings={settings}
+          onClose={() => setSelectedMovement(null)}
+        />
+      )}
     </div>
   );
 };
