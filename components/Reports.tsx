@@ -1,8 +1,8 @@
 
 import React, { useMemo, useState } from 'react';
 import { Client, CourtMovement, ClientOrigin, UserSettings } from '../types';
-import { 
-  BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, 
+import {
+  BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer
 } from 'recharts';
 import { generateFinancialReport } from '../pdfService';
@@ -42,8 +42,8 @@ const Reports: React.FC<ReportsProps> = ({ clients, movements, settings }) => {
       const area = c.caseType || 'Outros';
       counts[area] = (counts[area] || 0) + 1;
     });
-    return Object.entries(counts).map(([name, value]) => ({ 
-      name, 
+    return Object.entries(counts).map(([name, value]) => ({
+      name,
       value,
       fill: AREA_COLORS[name] || AREA_COLORS['Outros']
     })).sort((a, b) => b.value - a.value);
@@ -67,7 +67,7 @@ const Reports: React.FC<ReportsProps> = ({ clients, movements, settings }) => {
     filteredClients.forEach(c => {
       totalAgreed += c.financials?.totalAgreed || 0;
       totalInitial += c.financials?.initialPayment || 0;
-      
+
       const installments = c.financials?.installments || [];
       totalPending += installments
         .filter(i => i.status !== 'paid')
@@ -77,7 +77,7 @@ const Reports: React.FC<ReportsProps> = ({ clients, movements, settings }) => {
     return { totalAgreed, totalInitial, totalPending };
   }, [filteredClients]);
 
-  const formatCurrency = (val: number) => 
+  const formatCurrency = (val: number) =>
     new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(val);
 
   return (
@@ -123,8 +123,8 @@ const Reports: React.FC<ReportsProps> = ({ clients, movements, settings }) => {
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={areaData} layout="vertical" margin={{ left: 20, right: 40, top: 0, bottom: 0 }}>
                 <XAxis type="number" hide />
-                <YAxis dataKey="name" type="category" width={110} tick={{fontSize: 10, fontWeight: '900', fill: '#1e293b', letterSpacing: '0.1em'}} axisLine={false} tickLine={false} />
-                <Tooltip cursor={{fill: 'rgba(241, 245, 249, 0.5)'}} contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)', padding: '12px' }} />
+                <YAxis dataKey="name" type="category" width={110} tick={{ fontSize: 10, fontWeight: '900', fill: '#1e293b', letterSpacing: '0.1em' }} axisLine={false} tickLine={false} />
+                <Tooltip cursor={{ fill: 'rgba(241, 245, 249, 0.5)' }} contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)', padding: '12px' }} />
                 <Bar dataKey="value" radius={[0, 10, 10, 0]} barSize={24}>
                   {areaData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.fill} />)}
                 </Bar>
@@ -173,7 +173,7 @@ const Reports: React.FC<ReportsProps> = ({ clients, movements, settings }) => {
               {Object.entries(countsByArea(filteredClients)).map(([area, clientsInArea]) => {
                 const totalInArea = clientsInArea.reduce((acc, c) => acc + (c.financials?.totalAgreed || 0), 0);
                 const avgTicket = totalInArea / clientsInArea.length;
-                const percentage = financialSummary.totalAgreed > 0 ? (totalInArea / financialSummary.totalAgreed) * 100 : 0;
+                const percentage = filteredClients.length > 0 ? (clientsInArea.length / filteredClients.length) * 100 : 0;
                 return (
                   <tr key={area} className="hover:bg-slate-50/80 transition-all duration-300">
                     <td className="px-10 py-6"><div className="flex items-center gap-4"><div className="h-3 w-3 rounded-full shadow-sm" style={{ backgroundColor: AREA_COLORS[area] || AREA_COLORS['Outros'] }}></div><span className="text-sm font-black text-slate-800 tracking-tight">{area}</span></div></td>
