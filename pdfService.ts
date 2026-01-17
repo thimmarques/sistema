@@ -176,6 +176,7 @@ export const generateClientPDF = (type: 'contract' | 'procuration' | 'declaratio
 export const generateFinancialReport = (clients: Client[], settings: UserSettings) => {
   const doc = new jsPDF({ unit: 'mm', format: 'a4' });
   const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
   const margin = 15;
   let y = 15;
 
@@ -215,7 +216,133 @@ export const generateFinancialReport = (clients: Client[], settings: UserSetting
 
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(8);
-  doc.text(`RELATÓRIO FINANCEIRO GERADO EM ${new Date().toLocaleDateString('pt-BR')}`, pageWidth - margin, 20, { align: 'right' });
+  doc.text(`RELATÓRIO FINANCEIRO GERADO EM ${new Date().toLocaleDateString('pt-BR')}`, pageWidth - margin, 18, { align: 'right' });
+
+  y = headerHeight + 20;
+
+  // --- CÁLCULOS ---
+  let totalAgreed = 0;
+  let totalPaid = 0;
+  let totalPending = 0;
+  const areaGroups: Record<string, { count: number; value: number }> = {};
+
+  clients.forEach(c => {
+    const agreed = c.financials?.totalAgreed || 0;
+    const initial = (c.financials?.initialPaymentStatus === 'paid') ? (c.financials?.initialPayment || 0) : 0;
+
+    // Installments paid
+    const instPaid = (c.financials?.installments || [])
+      .filter(i => i.status === 'paid')
+      .reduce((acc, curr) => acc + curr.value, 0);
+
+    // Labor/Success fees paid
+    const isLaborPaid = c.financials?.successFeeStatus === 'paid' ||
+      (c.financials?.laborPaymentDate && new Date(c.financials?.laborPaymentDate + 'T23:59:59') <= new Date());
+    const laborPaid = isLaborPaid ? (c.financials?.laborFinalValue || 0) : 0;
+
+    const totalClientPaid = initial + instPaid + laborPaid;
+
+    totalAgreed += agreed;
+    totalPaid += totalClientPaid;
+
+    // Area Grouping
+    const area = c.caseType || 'Outros';
+    if (!areaGroups[area]) areaGroups[area] = { count: 0, value: 0 };
+    areaGroups[area].count++;
+    areaGroups[area].value += agreed;
+  });
+
+  totalPending = totalAgreed - totalPaid;
+
+  // --- RESUMO EXECUTIVO ---
+  doc.setTextColor(15, 23, 42);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(14);
+  doc.text("RESUMO EXECUTIVO", margin, y);
+  y += 10;
+
+  // Cards de Resumo (Simulados com Retângulos)
+  const cardWidth = (pageWidth - (margin * 2) - 10) / 3;
+  const cardHeight = 25;
+
+  const drawCard = (label: string, value: number, x: number, color: [number, number, number]) => {
+    doc.setFillColor(248, 250, 252);
+    doc.roundedRect(x, y, cardWidth, cardHeight, 3, 3, 'F');
+    doc.setDrawColor(226, 232, 240);
+    doc.roundedRect(x, y, cardWidth, cardHeight, 3, 3, 'D');
+
+    doc.setTextColor(100, 116, 139);
+    doc.setFontSize(7);
+    doc.setFont("helvetica", "bold");
+    doc.text(label.toUpperCase(), x + 5, y + 8);
+
+    doc.setTextColor(color[0], color[1], color[2]);
+    doc.setFontSize(11);
+    doc.text(`R$ ${value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`, x + 5, y + 18);
+  };
+
+  drawCard("Volume Contratado", totalAgreed, margin, [15, 23, 42]);
+  drawCard("Receita Realizada", totalPaid, margin + cardWidth + 5, [16, 185, 129]);
+  drawCard("Projeção a Receber", totalPending, margin + (cardWidth * 2) + 10, [79, 70, 229]);
+
+  y += cardHeight + 25;
+
+  // --- TABELA DE ÁREAS ---
+  doc.setTextColor(15, 23, 42);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(14);
+  doc.text("DISTRIBUIÇÃO POR ÁREA JURÍDICA", margin, y);
+  y += 10;
+
+  // Header da Tabela
+  const colWidths = [50, 30, 40, 40, 0]; // O último é Market Share (calculado)
+  const availableWidth = pageWidth - (margin * 2);
+  const tableHeaderColor = [15, 23, 42];
+
+  doc.setFillColor(tableHeaderColor[0], tableHeaderColor[1], tableHeaderColor[2]);
+  doc.rect(margin, y, availableWidth, 10, 'F');
+
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(8);
+  doc.setFont("helvetica", "bold");
+  const headers = ["ÁREA JURÍDICA", "Nº CASOS", "VOLUME (R$)", "MARKET SHARE (%)"];
+  const xPositions = [margin + 5, margin + 60, margin + 90, margin + 140];
+
+  headers.forEach((h, i) => doc.text(h, xPositions[i], y + 6.5));
+
+  y += 10;
+
+  // Linhas da Tabela
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(51, 65, 85);
+
+  Object.entries(areaGroups)
+    .sort((a, b) => b[1].value - a[1].value)
+    .forEach(([area, data]) => {
+      if (y > pageHeight - 20) {
+        doc.addPage();
+        y = 20;
+      }
+
+      const share = totalAgreed > 0 ? (data.value / totalAgreed) * 100 : 0;
+
+      doc.setFont("helvetica", "bold");
+      doc.text(area.toUpperCase(), xPositions[0], y + 7);
+      doc.setFont("helvetica", "normal");
+      doc.text(data.count.toString(), xPositions[1], y + 7);
+      doc.text(data.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 }), xPositions[2], y + 7);
+      doc.text(`${Math.round(share)}%`, xPositions[3], y + 7);
+
+      doc.setDrawColor(241, 245, 249);
+      doc.line(margin, y + 10, margin + availableWidth, y + 10);
+      y += 10;
+    });
+
+  // --- RODAPÉ ---
+  const footerY = pageHeight - 15;
+  doc.setFontSize(7);
+  doc.setTextColor(148, 163, 184);
+  doc.text(`Relatório gerado via Sistema de Gestão Inteligente - Todos os direitos reservados.`, pageWidth / 2, footerY, { align: 'center' });
 
   doc.save(`Relatorio_Financeiro_${new Date().getTime()}.pdf`);
 };
