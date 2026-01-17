@@ -455,6 +455,11 @@ const Agenda: React.FC<AgendaProps> = ({ movements, onAddMovement, onUpdateMovem
           client={clients.find(c => c.id === selectedMovement.clientId || c.caseNumber === selectedMovement.caseNumber)}
           settings={settings}
           onClose={() => setSelectedMovement(null)}
+          onEdit={() => {
+            const m = selectedMovement;
+            setSelectedMovement(null);
+            handleEditClick(m);
+          }}
         />
       )}
     </div>

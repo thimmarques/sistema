@@ -6,9 +6,10 @@ interface MovementSummaryModalProps {
     client?: Client;
     settings: UserSettings;
     onClose: () => void;
+    onEdit?: () => void;
 }
 
-const MovementSummaryModal: React.FC<MovementSummaryModalProps> = ({ movement, client, settings, onClose }) => {
+const MovementSummaryModal: React.FC<MovementSummaryModalProps> = ({ movement, client, settings, onClose, onEdit }) => {
     const date = new Date(movement.date + 'T12:00:00');
     const day = date.getDate();
     const month = date.toLocaleString('pt-BR', { month: 'long' });
@@ -20,12 +21,26 @@ const MovementSummaryModal: React.FC<MovementSummaryModalProps> = ({ movement, c
             <div className="bg-white w-full max-w-lg rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
                 {/* Header with Background Gradient */}
                 <div className="bg-gradient-to-br from-indigo-600 to-violet-700 p-8 text-white relative">
-                    <button
-                        onClick={onClose}
-                        className="absolute top-6 right-6 h-10 w-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors group"
-                    >
-                        <i className="fa-solid fa-xmark text-white"></i>
-                    </button>
+                    <div className="absolute top-6 right-6 flex gap-2">
+                        {onEdit && (
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onEdit();
+                                }}
+                                className="h-10 w-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors group"
+                                title="Editar Informações"
+                            >
+                                <i className="fa-solid fa-pen-to-square text-white"></i>
+                            </button>
+                        )}
+                        <button
+                            onClick={onClose}
+                            className="h-10 w-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors group"
+                        >
+                            <i className="fa-solid fa-xmark text-white"></i>
+                        </button>
+                    </div>
 
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-[10px] font-black uppercase tracking-widest mb-4">
                         <i className={`fa-solid ${movement.type === 'Audiência' ? 'fa-building-columns' : 'fa-calendar-check'}`}></i>
