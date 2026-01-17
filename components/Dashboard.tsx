@@ -56,7 +56,7 @@ const Dashboard: React.FC<DashboardProps> = ({ clients, movements, activities = 
       badgeColor: 'text-indigo-500 bg-indigo-50',
       icon: 'fa-wallet',
       iconColor: 'text-orange-500 bg-orange-50',
-      action: () => onSelectSection(AppSection.FINANCES, 'Particular')
+      action: () => onSelectSection(AppSection.FINANCES, 'PARTICULAR')
     },
     {
       label: 'Faturamento Convênio',
@@ -65,7 +65,7 @@ const Dashboard: React.FC<DashboardProps> = ({ clients, movements, activities = 
       badgeColor: 'text-emerald-500 bg-emerald-50',
       icon: 'fa-landmark',
       iconColor: 'text-emerald-500 bg-emerald-50',
-      action: () => onSelectSection(AppSection.FINANCES, 'Defensoria')
+      action: () => onSelectSection(AppSection.FINANCES, 'DEFENSORIA')
     },
     {
       label: 'Audiências',

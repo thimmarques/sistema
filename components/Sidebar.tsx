@@ -4,7 +4,7 @@ import { AppSection } from '../types';
 
 interface SidebarProps {
   activeSection: AppSection;
-  onSelectSection: (section: AppSection) => void;
+  onSelectSection: (section: AppSection, tab?: string) => void;
   logo?: string;
   name?: string;
   isOpen?: boolean;

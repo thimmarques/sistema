@@ -7,7 +7,7 @@ import { AppSection, UserSettings, AppNotification } from '../types';
 interface LayoutProps {
     children: React.ReactNode;
     activeSection: AppSection;
-    onSelectSection: (section: AppSection) => void;
+    onSelectSection: (section: AppSection, tab?: string) => void;
     settings: UserSettings;
     notifications: AppNotification[];
     unreadCount: number;

@@ -1,5 +1,5 @@
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { Client, ClientFinancials, Installment } from '../types';
 import FinancialRegistration from './FinancialRegistration';
 
@@ -15,6 +15,12 @@ const Finances: React.FC<FinancesProps> = ({ clients, onUpdateClient, onAddNotif
   const [searchTerm, setSearchTerm] = useState('');
   const [editingClient, setEditingClient] = useState<Client | null>(null);
   const [expandedClients, setExpandedClients] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    if (initialTab) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab]);
 
   const toggleClient = (clientId: string) => {
     const newExpanded = new Set(expandedClients);

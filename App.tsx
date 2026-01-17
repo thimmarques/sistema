@@ -454,7 +454,7 @@ const App: React.FC = () => {
   return (
     <Layout
       activeSection={activeSection}
-      onSelectSection={setActiveSection}
+      onSelectSection={handleNavigation}
       settings={settings}
       notifications={notifications}
       unreadCount={unreadCount}
