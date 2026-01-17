@@ -57,10 +57,16 @@ const Agenda: React.FC<AgendaProps> = ({ movements, onAddMovement, onUpdateMovem
 
 
   const allDeadlines = useMemo(() => {
+    const today = new Date().toISOString().split('T')[0];
     return movements
-      .filter(m => m.type === 'Deadline')
+      .filter(m => (m.type === 'Deadline' || m.type === 'Notification') && m.date >= today)
       .sort((a, b) => a.date.localeCompare(b.date));
   }, [movements]);
+
+  // Reset page when data changes to avoid being on a blank page
+  React.useEffect(() => {
+    setDeadlinesPage(0);
+  }, [allDeadlines.length]);
 
   const totalDeadlinesPages = Math.ceil(allDeadlines.length / deadlinesPerPage);
 
@@ -319,10 +325,22 @@ const Agenda: React.FC<AgendaProps> = ({ movements, onAddMovement, onUpdateMovem
               )) : <div className="py-8 text-center text-slate-300 text-[10px] font-black uppercase tracking-widest">Sem prazos ativos.</div>}
             </div>
             {totalDeadlinesPages > 1 && (
-              <div className="flex items-center justify-between mt-8 pt-6 border-t border-slate-50">
-                <button onClick={handlePrevDeadlines} disabled={deadlinesPage === 0} className={`text-[9px] font-black uppercase tracking-widest transition-all ${deadlinesPage === 0 ? 'text-slate-200 cursor-not-allowed' : 'text-indigo-600 hover:text-indigo-800'}`}><i className="fa-solid fa-chevron-left mr-1"></i> Anterior</button>
+              <div className="flex items-center justify-between mt-auto pt-6 border-t border-slate-50">
+                <button
+                  onClick={handlePrevDeadlines}
+                  disabled={deadlinesPage === 0}
+                  className={`flex items-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all ${deadlinesPage === 0 ? 'text-slate-200 cursor-not-allowed' : 'text-indigo-600 hover:text-indigo-800'}`}
+                >
+                  <i className="fa-solid fa-chevron-left text-[8px]"></i> Anterior
+                </button>
                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{deadlinesPage + 1} / {totalDeadlinesPages}</span>
-                <button onClick={handleNextDeadlines} disabled={deadlinesPage === totalDeadlinesPages - 1} className={`text-[9px] font-black uppercase tracking-widest transition-all ${deadlinesPage === totalDeadlinesPages - 1 ? 'text-slate-200 cursor-not-allowed' : 'text-indigo-600 hover:text-indigo-800'}`}>Próximo <i className="fa-solid fa-chevron-right ml-1"></i></button>
+                <button
+                  onClick={handleNextDeadlines}
+                  disabled={deadlinesPage === totalDeadlinesPages - 1}
+                  className={`flex items-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all ${deadlinesPage === totalDeadlinesPages - 1 ? 'text-slate-200 cursor-not-allowed' : 'text-indigo-600 hover:text-indigo-800'}`}
+                >
+                  Próximo <i className="fa-solid fa-chevron-right text-[8px]"></i>
+                </button>
               </div>
             )}
           </div>
