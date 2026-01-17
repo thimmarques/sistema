@@ -105,6 +105,7 @@ export interface UserSettings {
   email: string;
   role: string;
   oab: string;
+  oabState: string;
   cpf: string;
   address: string;
   profileImage?: string;

@@ -74,7 +74,7 @@ export const generateClientPDF = (type: 'contract' | 'procuration' | 'declaratio
   doc.setFont("helvetica", "normal");
   const addr = settings.address || '';
   doc.text(addr.toUpperCase(), pageWidth - margin, headerHeight - 18, { align: 'right' });
-  doc.text(`OAB: ${settings.oab || '...'} | ${settings.email || '...'}`, pageWidth - margin, headerHeight - 13, { align: 'right' });
+  doc.text(`OAB/${settings.oabState || 'SP'} ${settings.oab || '...'} | ${settings.email || '...'}`, pageWidth - margin, headerHeight - 13, { align: 'right' });
 
   y = headerHeight + 25;
   doc.setTextColor(30, 41, 59);
@@ -140,14 +140,14 @@ export const generateClientPDF = (type: 'contract' | 'procuration' | 'declaratio
   if (type === 'procuration') {
     const outorganteInfo = `${getFullQualification(client)}.`;
     y = drawSection("Outorgante", outorganteInfo, y);
-    const outorgadoInfo = `${settings.name.toUpperCase()}, brasileiro, advogado devidamente inscrito nos quadros da Ordem dos Advogados do Brasil, sob o nº ${settings.oab}, e inscrito no CPF sob o nº ${settings.cpf}, com escritório profissional localizado à ${settings.address}.`;
+    const outorgadoInfo = `${settings.name.toUpperCase()}, brasileiro, advogado devidamente inscrito nos quadros da Ordem dos Advogados do Brasil, sob o nº ${settings.oab}/${settings.oabState || 'SP'}, e inscrito no CPF sob o nº ${settings.cpf}, com escritório profissional localizado à ${settings.address}.`;
     y = drawSection("Outorgado", outorgadoInfo, y);
     const poderesText = "Pelo presente instrumento, o outorgante nomeia e constitui o outorgado seu procurador, a quem confere os amplos poderes contidos na cláusula 'ad judicia et extra', para o foro em geral, em qualquer Instância, Tribunal ou Juízo, bem como os poderes especiais para transigir, desistir, firmar compromissos, receber e dar quitação, reconhecer procedência de pedido, renunciar a direito sobre o qual se funda a ação, e praticar todos os demais atos necessários ao bom e fiel desempenho deste mandato, inclusive substabelecer, com ou sem reserva de poderes.";
     y = drawSection("Poderes", poderesText, y);
   } else if (type === 'contract') {
     const contratanteInfo = `${getFullQualification(client)}, doravante denominado CONTRATANTE.`;
     y = drawSection("Contratante", contratanteInfo, y);
-    const contratadoInfo = `${settings.name.toUpperCase()}, OAB ${settings.oab}, com endereço profissional à ${settings.address}, doravante denominado CONTRATADO.`;
+    const contratadoInfo = `${settings.name.toUpperCase()}, OAB/${settings.oabState || 'SP'} ${settings.oab}, com endereço profissional à ${settings.address}, doravante denominado CONTRATADO.`;
     y = drawSection("Contratado", contratadoInfo, y);
     const honorariosText = `Pelos serviços ora pactuados, o CONTRATANTE pagará ao CONTRATADO o valor total de R$ ${client.financials?.totalAgreed.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}, sendo R$ ${client.financials?.initialPayment?.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) || '0,00'} pago a título de entrada/sinal no ato da assinatura.`;
     y = drawSection("Dos Honorários", honorariosText, y);

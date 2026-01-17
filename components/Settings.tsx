@@ -85,7 +85,7 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdateSettings, onAddNo
             <h3 className="text-3xl font-black text-white tracking-tight">{localSettings.name || 'Seu Nome Profissional'}</h3>
             <div className="flex flex-wrap justify-center sm:justify-start gap-3 mt-2">
               <span className="px-3 py-1 bg-amber-500/20 text-amber-500 rounded-full text-[10px] font-black uppercase tracking-widest border border-amber-500/30">{localSettings.role || 'Advogado'}</span>
-              <span className="px-3 py-1 bg-white/10 text-slate-300 rounded-full text-[10px] font-black uppercase tracking-widest">OAB {localSettings.oab || '...'}</span>
+              <span className="px-3 py-1 bg-white/10 text-slate-300 rounded-full text-[10px] font-black uppercase tracking-widest">OAB/{localSettings.oabState || 'SP'} {localSettings.oab || '...'}</span>
             </div>
           </div>
         </div>
@@ -107,8 +107,8 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdateSettings, onAddNo
               Dados Institucionais
             </h4>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="col-span-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-10">
+              <div className="col-span-1 sm:col-span-2">
                 <label className={labelClass}>Nome Profissional Completo</label>
                 <input type="text" placeholder="Ex: Dr. João Silva" className={inputClass} value={localSettings.name} onChange={(e) => setLocalSettings({ ...localSettings, name: e.target.value })} />
               </div>
@@ -120,11 +120,28 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdateSettings, onAddNo
                 <label className={labelClass}>Cargo / Especialidade</label>
                 <input type="text" placeholder="Ex: Advogado Civilista" className={inputClass} value={localSettings.role} onChange={(e) => setLocalSettings({ ...localSettings, role: e.target.value })} />
               </div>
-              <div>
-                <label className={labelClass}>Inscrição OAB</label>
-                <input type="text" placeholder="Ex: SP 000.000" className={inputClass} value={localSettings.oab} onChange={(e) => setLocalSettings({ ...localSettings, oab: e.target.value })} />
+              <div className="col-span-1">
+                <label className={labelClass}>Inscrição na OAB</label>
+                <div className="flex gap-2">
+                  <select
+                    className="w-24 bg-slate-50 border border-slate-200 rounded-2xl px-3 py-4 outline-none focus:ring-2 focus:ring-amber-500/20 transition-all font-black text-slate-700 text-xs"
+                    value={localSettings.oabState}
+                    onChange={(e) => setLocalSettings({ ...localSettings, oabState: e.target.value })}
+                  >
+                    {['AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MG', 'MS', 'MT', 'PA', 'PB', 'PE', 'PI', 'PR', 'RJ', 'RN', 'RO', 'RR', 'RS', 'SC', 'SE', 'SP', 'TO'].map(uf => (
+                      <option key={uf} value={uf}>{uf}</option>
+                    ))}
+                  </select>
+                  <input
+                    type="text"
+                    placeholder="Ex: 000.000"
+                    className={`${inputClass} flex-1`}
+                    value={localSettings.oab}
+                    onChange={(e) => setLocalSettings({ ...localSettings, oab: e.target.value })}
+                  />
+                </div>
               </div>
-              <div>
+              <div className="col-span-1">
                 <label className={labelClass}>CPF do Advogado</label>
                 <input type="text" placeholder="Ex: 000.000.000-00" className={inputClass} value={localSettings.cpf} onChange={(e) => setLocalSettings({ ...localSettings, cpf: e.target.value })} />
               </div>
