@@ -71,6 +71,14 @@ export interface Client {
   status: 'Active' | 'Pending' | 'Closed';
   createdAt: string;
   financials?: ClientFinancials;
+  lawyers?: UserSettings[]; // Associated lawyers
+}
+
+export interface ClientLawyer {
+  id: string;
+  clientId: string;
+  lawyerId: string;
+  createdAt: string;
 }
 
 export interface CourtMovement {
@@ -96,6 +104,7 @@ export interface Message {
 
 export interface AppNotification {
   id: string;
+  userId: string; // Now mandatory for persistence
   title: string;
   message: string;
   type: 'alert' | 'info' | 'success';

@@ -11,9 +11,22 @@ interface ClientListProps {
   onDeleteClient: (id: string) => void;
   settings?: UserSettings;
   currentUserId?: string;
+  allLawyers?: UserSettings[];
+  onAddLawyer?: (clientId: string, lawyerId: string) => void;
+  onRemoveLawyer?: (clientId: string, lawyerId: string) => void;
 }
 
-const ClientList: React.FC<ClientListProps> = ({ clients, onAddClient, onUpdateClient, onDeleteClient, settings, currentUserId }) => {
+const ClientList: React.FC<ClientListProps> = ({
+  clients,
+  onAddClient,
+  onUpdateClient,
+  onDeleteClient,
+  settings,
+  currentUserId,
+  allLawyers = [],
+  onAddLawyer,
+  onRemoveLawyer
+}) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState<'Geral' | 'Particular' | 'Defensoria'>('Geral');
   const [currentPage, setCurrentPage] = useState(1);
@@ -26,7 +39,7 @@ const ClientList: React.FC<ClientListProps> = ({ clients, onAddClient, onUpdateC
   const [isEditing, setIsEditing] = useState(false);
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
 
-  const [formActiveTab, setFormActiveTab] = useState<'pessoal' | 'endereco' | 'processo'>('pessoal');
+  const [formActiveTab, setFormActiveTab] = useState<'pessoal' | 'endereco' | 'processo' | 'advogados'>('pessoal');
 
   const initialFormData = {
     name: '', email: '', phone: '', cpf_cnpj: '', rg: '', rgIssuingBody: '',
@@ -277,9 +290,15 @@ const ClientList: React.FC<ClientListProps> = ({ clients, onAddClient, onUpdateC
             </div>
 
             <div className="flex gap-2 p-1.5 bg-slate-100 rounded-[1.2rem] overflow-x-auto no-scrollbar">
-              {['pessoal', 'endereco', 'processo'].map(step => (
-                <button key={step} type="button" onClick={() => setFormActiveTab(step as any)} className={`flex-1 py-3 px-6 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all whitespace-nowrap ${formActiveTab === step ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400'}`}>
-                  {step}
+              {['pessoal', 'endereco', 'processo', 'advogados'].map(step => (
+                <button
+                  key={step}
+                  type="button"
+                  onClick={() => setFormActiveTab(step as any)}
+                  className={`flex-1 py-3 px-6 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all whitespace-nowrap ${formActiveTab === step ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400'}`}
+                  disabled={step === 'advogados' && !isEditing}
+                >
+                  {step === 'advogados' ? 'Outros Advogados' : step}
                 </button>
               ))}
             </div>
@@ -365,12 +384,79 @@ const ClientList: React.FC<ClientListProps> = ({ clients, onAddClient, onUpdateC
                     <div className="col-span-2"><label className={labelClass}>Objeto / Descrição</label><textarea className={`${inputClass} h-32 resize-none`} value={formData.caseDescription} onChange={e => setFormData({ ...formData, caseDescription: e.target.value })} /></div>
                   </div>
                 )}
+
+                {formActiveTab === 'advogados' && isEditing && (
+                  <div className="space-y-6 animate-in fade-in">
+                    <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100">
+                      <h4 className="text-xs font-black uppercase text-slate-400 tracking-widest mb-4">Advogados Associados</h4>
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3 p-3 bg-white rounded-2xl border border-slate-100">
+                          <div className="h-10 w-10 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-600 font-bold text-xs uppercase">
+                            {settings?.name?.substring(0, 2) || settings?.email?.substring(0, 2) || 'AD'}
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-sm font-bold text-slate-800">{settings?.name} (Você)</p>
+                            <p className="text-[10px] text-slate-400 uppercase font-black">Proprietário / Criador</p>
+                          </div>
+                        </div>
+
+                        {clients.find(c => c.id === selectedClientId)?.lawyers?.map((lawyer: any) => (
+                          <div key={lawyer.id} className="flex items-center gap-3 p-3 bg-white rounded-2xl border border-slate-100 group">
+                            <div className="h-10 w-10 bg-slate-50 rounded-full flex items-center justify-center text-slate-400 font-bold text-xs uppercase">
+                              {lawyer.name?.substring(0, 2) || lawyer.email?.substring(0, 2) || 'AD'}
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-sm font-bold text-slate-800">{lawyer.name || lawyer.email}</p>
+                              <p className="text-[10px] text-slate-400 uppercase font-black">Acompanhando o caso</p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => onRemoveLawyer?.(selectedClientId!, lawyer.id)}
+                              className="h-8 w-8 text-slate-300 hover:text-rose-500 transition-colors"
+                            >
+                              <i className="fa-solid fa-user-minus"></i>
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <label className={labelClass}>Adicionar Advogado ao Caso</label>
+                      <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto pr-2 no-scrollbar">
+                        {allLawyers
+                          .filter(l => (l as any).id !== currentUserId && !clients.find(c => c.id === selectedClientId)?.lawyers?.some((al: any) => al.id === (l as any).id))
+                          .map(lawyer => (
+                            <button
+                              key={(lawyer as any).id}
+                              type="button"
+                              onClick={() => onAddLawyer?.(selectedClientId!, (lawyer as any).id)}
+                              className="flex items-center gap-3 p-3 hover:bg-slate-50 rounded-2xl border border-transparent hover:border-slate-100 transition-all text-left"
+                            >
+                              <div className="h-8 w-8 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 text-[10px] font-black uppercase">
+                                {lawyer.name?.substring(0, 2) || lawyer.email?.substring(0, 2)}
+                              </div>
+                              <div className="flex-1">
+                                <p className="text-xs font-bold text-slate-700">{lawyer.name || lawyer.email}</p>
+                                <p className="text-[9px] text-slate-400 uppercase font-black">{lawyer.oab ? `OAB ${lawyer.oab}` : 'Advogado'}</p>
+                              </div>
+                              <i className="fa-solid fa-user-plus text-slate-300 text-xs"></i>
+                            </button>
+                          ))
+                        }
+                        {allLawyers.filter(l => (l as any).id !== currentUserId).length === 0 && (
+                          <p className="text-center py-4 text-[10px] font-black uppercase text-slate-300">Nenhum outro advogado cadastrado</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="flex items-center gap-8 pt-6 border-t">
                 <button type="button" onClick={() => setShowFormModal(false)} className="text-sm font-black text-slate-400 uppercase tracking-widest">Cancelar</button>
                 <button type="submit" className="flex-1 bg-indigo-600 text-white py-5 rounded-3xl font-black text-xs uppercase tracking-widest shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition-all">
-                  {formActiveTab === 'processo' ? 'Continuar para Financeiro' : 'Próxima Etapa'}
+                  {formActiveTab === 'advogados' ? 'Finalizar' : formActiveTab === 'processo' ? 'Continuar para Financeiro' : 'Próxima Etapa'}
                 </button>
               </div>
             </form>

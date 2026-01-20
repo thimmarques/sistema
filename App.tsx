@@ -24,6 +24,7 @@ const App: React.FC = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [activeSubTab, setActiveSubTab] = useState<string | undefined>(undefined);
+  const [allLawyers, setAllLawyers] = useState<UserSettings[]>([]);
 
   const handleNavigation = (section: AppSection, tab?: string) => {
     setActiveSection(section);
@@ -240,6 +241,75 @@ const App: React.FC = () => {
           }));
           setActivityLogs(mappedLogs);
         }
+
+        // Fetch all lawyers (profiles)
+        const { data: lawyersData } = await supabase
+          .from('profiles')
+          .select('*');
+
+        if (lawyersData) {
+          setAllLawyers(lawyersData.map(l => ({
+            id: l.id,
+            name: l.name || '',
+            email: l.email || '',
+            role: l.role || 'Advogado',
+            oab: l.oab || '',
+            oabState: l.oab_state || 'SP',
+            cpf: l.cpf || '',
+            address: l.address || '',
+            profileImage: l.profile_image || '',
+            logo: l.logo || '',
+            notifyDeadlines: l.notify_deadlines ?? true,
+            deadlineThresholdDays: l.deadline_threshold_days || 3,
+            googleConnected: l.google_connected || false,
+            googleEmail: l.google_email || '',
+            googleToken: l.google_token || ''
+          } as any)));
+        }
+
+        // Fetch client-lawyer associations and attach to clients
+        const { data: associationsData } = await supabase
+          .from('client_lawyers')
+          .select('client_id, lawyer_id');
+
+        if (associationsData) {
+          setClients(prev => prev.map(client => {
+            const associatedLawyerIds = associationsData
+              .filter(a => a.client_id === client.id)
+              .map(a => a.lawyer_id);
+
+            const associatedLawyers = lawyersData
+              ? lawyersData
+                .filter(l => associatedLawyerIds.includes(l.id))
+                .map(l => ({
+                  id: l.id,
+                  name: l.name || '',
+                  email: l.email || ''
+                } as any))
+              : [];
+
+            return { ...client, lawyers: associatedLawyers };
+          }));
+        }
+
+        // Fetch persistent notifications
+        const { data: notifsData } = await supabase
+          .from('notifications')
+          .select('*')
+          .eq('user_id', session.user.id)
+          .order('created_at', { ascending: false });
+
+        if (notifsData) {
+          setNotifications(notifsData.map(n => ({
+            id: n.id,
+            userId: n.user_id,
+            title: n.title,
+            message: n.message,
+            type: n.type as any,
+            date: n.created_at,
+            read: n.read
+          })));
+        }
       } catch (error: any) {
         addNotification('alert', 'Erro de Conexão', error.message || 'Não foi possível carregar os dados.');
       } finally {
@@ -250,16 +320,39 @@ const App: React.FC = () => {
     fetchData();
   }, [session]);
 
-  const addNotification = (type: 'success' | 'info' | 'alert', title: string, message: string) => {
-    const newNotif: AppNotification = {
-      id: Date.now().toString(),
-      type,
-      title,
-      message,
-      date: new Date().toISOString(),
-      read: false
-    };
-    setNotifications(prev => [newNotif, ...prev]);
+  const addNotification = async (type: 'success' | 'info' | 'alert', title: string, message: string, targetUserId?: string) => {
+    try {
+      const userId = targetUserId || session?.user?.id;
+      if (!userId) return;
+
+      const { data, error } = await supabase
+        .from('notifications')
+        .insert([{
+          user_id: userId,
+          title,
+          message,
+          type,
+          read: false
+        }])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      if (userId === session?.user?.id) {
+        setNotifications(prev => [{
+          id: data.id,
+          userId: data.user_id,
+          title: data.title,
+          message: data.message,
+          type: data.type as any,
+          date: data.created_at,
+          read: data.read
+        }, ...prev]);
+      }
+    } catch (err) {
+      console.error('Error adding notification:', err);
+    }
   };
 
   const logActivity = async (
@@ -330,7 +423,20 @@ const App: React.FC = () => {
         id: data.id
       };
       setMovements(prev => [newMovement, ...prev]);
-      addNotification('success', 'Evento Agendado', `O evento "${movementData.description}" foi salvo.`);
+
+      // Notify all involved lawyers
+      const client = clients.find(c => c.id === movementData.clientId);
+      const lawyerIds = new Set<string>();
+      if (session?.user?.id) lawyerIds.add(session.user.id);
+      if (client?.userId) lawyerIds.add(client.userId);
+      if (client?.lawyers) {
+        client.lawyers.forEach((l: any) => l.id && lawyerIds.add(l.id));
+      }
+
+      lawyerIds.forEach(id => {
+        addNotification('success', 'Evento Agendado', `O evento "${movementData.description}" foi salvo.`, id);
+      });
+
       logActivity('CREATE', 'MOVEMENT', data.id, `Agendou ${movementData.type}: ${movementData.description}`);
     } catch (error: any) {
       addNotification('alert', 'Erro ao Agendar', error.message || 'Não foi possível salvar o evento.');
@@ -356,7 +462,20 @@ const App: React.FC = () => {
       if (error) throw error;
 
       setMovements(prev => prev.map(m => m.id === updatedMovement.id ? updatedMovement : m));
-      addNotification('info', 'Evento Atualizado', 'As alterações na agenda foram salvas.');
+
+      // Notify all involved lawyers
+      const client = clients.find(c => c.id === updatedMovement.clientId);
+      const lawyerIds = new Set<string>();
+      if (session?.user?.id) lawyerIds.add(session.user.id);
+      if (client?.userId) lawyerIds.add(client.userId);
+      if (client?.lawyers) {
+        client.lawyers.forEach((l: any) => l.id && lawyerIds.add(l.id));
+      }
+
+      lawyerIds.forEach(id => {
+        addNotification('info', 'Evento Atualizado', `As alterações no evento "${updatedMovement.description}" foram salvas.`, id);
+      });
+
       logActivity('UPDATE', 'MOVEMENT', updatedMovement.id, `Atualizou evento: ${updatedMovement.description}`);
     } catch (error: any) {
       addNotification('alert', 'Erro ao Atualizar', error.message || 'Não foi possível salvar as alterações.');
@@ -530,8 +649,64 @@ const App: React.FC = () => {
     }
   };
 
-  const markNotificationRead = (id: string) => {
-    setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+  const addLawyerToClient = async (clientId: string, lawyerId: string) => {
+    try {
+      const { error } = await supabase
+        .from('client_lawyers')
+        .insert([{ client_id: clientId, lawyer_id: lawyerId }]);
+
+      if (error) throw error;
+
+      // Update local state
+      const lawyer = allLawyers.find(l => (l as any).id === lawyerId);
+      if (lawyer) {
+        setClients(prev => prev.map(c =>
+          c.id === clientId
+            ? { ...c, lawyers: [...(c.lawyers || []), lawyer] }
+            : c
+        ));
+      }
+
+      addNotification('success', 'Advogado Adicionado', 'O advogado agora tem acesso ao caso.');
+    } catch (error: any) {
+      console.error('Error adding lawyer to client:', error);
+    }
+  };
+
+  const removeLawyerFromClient = async (clientId: string, lawyerId: string) => {
+    try {
+      const { error } = await supabase
+        .from('client_lawyers')
+        .delete()
+        .eq('client_id', clientId)
+        .eq('lawyer_id', lawyerId);
+
+      if (error) throw error;
+
+      setClients(prev => prev.map(c =>
+        c.id === clientId
+          ? { ...c, lawyers: (c.lawyers || []).filter((l: any) => l.id !== lawyerId) }
+          : c
+      ));
+
+      addNotification('info', 'Advogado Removido', 'O acesso do advogado ao caso foi revogado.');
+    } catch (error: any) {
+      console.error('Error removing lawyer from client:', error);
+    }
+  };
+
+  const markNotificationRead = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .update({ read: true })
+        .eq('id', id);
+
+      if (error) throw error;
+      setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+    } catch (err) {
+      console.error('Error marking notification as read:', err);
+    }
   };
 
   const unreadCount = useMemo(() => notifications.filter(n => !n.read).length, [notifications]);
@@ -688,6 +863,9 @@ const App: React.FC = () => {
                 onAddClient={addClient}
                 onUpdateClient={updateClient}
                 onDeleteClient={deleteClient}
+                allLawyers={allLawyers}
+                onAddLawyer={addLawyerToClient}
+                onRemoveLawyer={removeLawyerFromClient}
               />
             );
           case AppSection.FINANCES:
