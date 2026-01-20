@@ -10,9 +10,10 @@ interface ClientListProps {
   onUpdateClient: (client: Client) => void;
   onDeleteClient: (id: string) => void;
   settings?: UserSettings;
+  currentUserId?: string;
 }
 
-const ClientList: React.FC<ClientListProps> = ({ clients, onAddClient, onUpdateClient, onDeleteClient, settings }) => {
+const ClientList: React.FC<ClientListProps> = ({ clients, onAddClient, onUpdateClient, onDeleteClient, settings, currentUserId }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState<'Geral' | 'Particular' | 'Defensoria'>('Geral');
   const [currentPage, setCurrentPage] = useState(1);
@@ -180,12 +181,14 @@ const ClientList: React.FC<ClientListProps> = ({ clients, onAddClient, onUpdateC
                   </td>
                   <td className="px-6 py-6 text-right">
                     <span className="text-lg font-black text-slate-800 tracking-tight">
-                      R$ {(client.financials?.totalAgreed || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                      {client.userId === currentUserId
+                        ? `R$ ${(client.financials?.totalAgreed || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
+                        : "-"}
                     </span>
                   </td>
                   <td className="px-10 py-6 text-right">
                     <div className="flex justify-end gap-5">
-                      {client.origin === 'Particular' && (
+                      {client.origin === 'Particular' && client.userId === currentUserId && (
                         <>
                           <button
                             onClick={() => generateClientPDF('procuration', client, settings!)}
@@ -203,18 +206,26 @@ const ClientList: React.FC<ClientListProps> = ({ clients, onAddClient, onUpdateC
                           </button>
                         </>
                       )}
-                      <button
-                        onClick={() => handleOpenEdit(client)}
-                        className="text-slate-300 hover:text-indigo-600 transition-colors"
-                      >
-                        <i className="fa-solid fa-pen"></i>
-                      </button>
-                      <button
-                        onClick={() => { setClientToDelete(client); setShowDeleteModal(true); }}
-                        className="text-slate-300 hover:text-rose-600 transition-colors"
-                      >
-                        <i className="fa-solid fa-trash-can"></i>
-                      </button>
+                      {client.userId === currentUserId ? (
+                        <>
+                          <button
+                            onClick={() => handleOpenEdit(client)}
+                            className="text-slate-300 hover:text-indigo-600 transition-colors"
+                          >
+                            <i className="fa-solid fa-pen"></i>
+                          </button>
+                          <button
+                            onClick={() => { setClientToDelete(client); setShowDeleteModal(true); }}
+                            className="text-slate-300 hover:text-rose-600 transition-colors"
+                          >
+                            <i className="fa-solid fa-trash-can"></i>
+                          </button>
+                        </>
+                      ) : (
+                        <div className="text-[10px] font-black uppercase text-slate-300 tracking-widest flex items-center gap-2">
+                          <i className="fa-solid fa-lock text-[8px]"></i> Privado
+                        </div>
+                      )}
                     </div>
                   </td>
                 </tr>

@@ -8,9 +8,10 @@ interface FinancesProps {
   onUpdateClient: (client: Client) => void;
   onAddNotification: (type: 'success' | 'info' | 'alert', title: string, message: string) => void;
   initialTab?: 'PARTICULAR' | 'DEFENSORIA' | 'GERAL';
+  currentUserId?: string;
 }
 
-const Finances: React.FC<FinancesProps> = ({ clients, onUpdateClient, onAddNotification, initialTab }) => {
+const Finances: React.FC<FinancesProps> = ({ clients, currentUserId, onUpdateClient, onAddNotification, initialTab }) => {
   const [activeTab, setActiveTab] = useState<'PARTICULAR' | 'DEFENSORIA' | 'GERAL'>(initialTab || 'GERAL');
   const [searchTerm, setSearchTerm] = useState('');
   const [editingClient, setEditingClient] = useState<Client | null>(null);
@@ -35,42 +36,45 @@ const Finances: React.FC<FinancesProps> = ({ clients, onUpdateClient, onAddNotif
     let defensoriaPendente = 0;
 
     clients.forEach(c => {
-      if (c.origin === 'Particular' && c.financials) {
-        // Entrada
-        if (c.financials.initialPayment) {
-          if (c.financials.initialPaymentStatus === 'paid') recebidos += c.financials.initialPayment;
-          else aReceber += c.financials.initialPayment;
-        }
-
-        // Parcelas
-        c.financials.installments.forEach(inst => {
-          if (inst.status === 'paid') recebidos += inst.value;
-          else aReceber += inst.value;
-        });
-
-        // Êxito / Trabalhista / Previdenciário (Simulação de expectativa)
-        if (c.financials.successFeeStatus === 'paid' || c.financials.laborPaymentDate) {
-          const val = c.financials.laborFinalValue || (c.financials.totalAgreed * (c.financials.successFeePercentage || 0)) / 100;
-          recebidos += val;
-        }
-      }
-
-      if (c.origin === 'Defensoria' && c.financials) {
-        if (c.caseType === 'Criminal') {
-          const val70 = c.financials.defensoriaValue70 || (c.financials.totalAgreed * 0.7);
-          const val30 = c.financials.defensoriaValue30 || (c.financials.totalAgreed * 0.3);
-
-          if (c.financials.defensoriaStatus70 === 'Pago pelo Estado') recebidos += val70;
-          else defensoriaPendente += val70;
-
-          if (c.financials.hasRecourse) {
-            if (c.financials.defensoriaStatus30 === 'Pago pelo Estado') recebidos += val30;
-            else defensoriaPendente += val30;
+      // Only include financial stats for clients owned by the current user
+      if (c.userId === currentUserId && c.financials) {
+        if (c.origin === 'Particular') {
+          // Entrada
+          if (c.financials.initialPayment) {
+            if (c.financials.initialPaymentStatus === 'paid') recebidos += c.financials.initialPayment;
+            else aReceber += c.financials.initialPayment;
           }
-        } else {
-          const val100 = c.financials.defensoriaValue100 || c.financials.totalAgreed;
-          if (c.financials.defensoriaStatus100 === 'Pago pelo Estado') recebidos += val100;
-          else defensoriaPendente += val100;
+
+          // Parcelas
+          c.financials.installments.forEach(inst => {
+            if (inst.status === 'paid') recebidos += inst.value;
+            else aReceber += inst.value;
+          });
+
+          // Êxito / Trabalhista / Previdenciário (Simulação de expectativa)
+          if (c.financials.successFeeStatus === 'paid' || c.financials.laborPaymentDate) {
+            const val = c.financials.laborFinalValue || (c.financials.totalAgreed * (c.financials.successFeePercentage || 0)) / 100;
+            recebidos += val;
+          }
+        }
+
+        if (c.origin === 'Defensoria') {
+          if (c.caseType === 'Criminal') {
+            const val70 = c.financials.defensoriaValue70 || (c.financials.totalAgreed * 0.7);
+            const val30 = c.financials.defensoriaValue30 || (c.financials.totalAgreed * 0.3);
+
+            if (c.financials.defensoriaStatus70 === 'Pago pelo Estado') recebidos += val70;
+            else defensoriaPendente += val70;
+
+            if (c.financials.hasRecourse) {
+              if (c.financials.defensoriaStatus30 === 'Pago pelo Estado') recebidos += val30;
+              else defensoriaPendente += val30;
+            }
+          } else {
+            const val100 = c.financials.defensoriaValue100 || c.financials.totalAgreed;
+            if (c.financials.defensoriaStatus100 === 'Pago pelo Estado') recebidos += val100;
+            else defensoriaPendente += val100;
+          }
         }
       }
     });
@@ -139,7 +143,8 @@ const Finances: React.FC<FinancesProps> = ({ clients, onUpdateClient, onAddNotif
   const tableData = useMemo(() => {
     const data: any[] = [];
     clients.forEach(client => {
-      if (client.financials) {
+      // Only show financial records for clients owned by the current user
+      if (client.userId === currentUserId && client.financials) {
         if (client.origin === 'Particular') {
           // Entrada
           if (client.financials.initialPayment) {

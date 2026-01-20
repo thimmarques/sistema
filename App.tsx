@@ -92,6 +92,32 @@ const App: React.FC = () => {
             notifyDeadlines: profileData.notify_deadlines ?? true,
             deadlineThresholdDays: profileData.deadline_threshold_days || 3
           });
+
+          // Fallback logo: if current user has no logo, try to find any logo from another profile
+          if (!profileData.logo) {
+            const { data: anyLogoData } = await supabase
+              .from('profiles')
+              .select('logo')
+              .not('logo', 'is', null)
+              .neq('logo', '')
+              .limit(1);
+
+            if (anyLogoData && anyLogoData.length > 0) {
+              setSettings(prev => ({ ...prev, logo: anyLogoData[0].logo }));
+            }
+          }
+        } else {
+          // If profile doesn't exist, also try to fetch a default shared logo
+          const { data: anyLogoData } = await supabase
+            .from('profiles')
+            .select('logo')
+            .not('logo', 'is', null)
+            .neq('logo', '')
+            .limit(1);
+
+          if (anyLogoData && anyLogoData.length > 0) {
+            setSettings(prev => ({ ...prev, logo: anyLogoData[0].logo }));
+          }
         }
 
         const { data: clientsData, error: clientsError } = await supabase
@@ -103,6 +129,7 @@ const App: React.FC = () => {
 
         const mappedClients: Client[] = (clientsData || []).map(c => ({
           id: c.id,
+          userId: c.user_id,
           name: c.name,
           email: c.email || '',
           phone: c.phone || '',
@@ -366,6 +393,7 @@ const App: React.FC = () => {
       const { data, error } = await supabase
         .from('clients')
         .insert([{
+          user_id: session?.user?.id,
           name: clientData.name,
           email: clientData.email || null,
           phone: clientData.phone || null,
@@ -450,6 +478,27 @@ const App: React.FC = () => {
     await supabase.auth.signOut();
   };
 
+  const deleteAccount = async () => {
+    try {
+      if (!session) return;
+
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .delete()
+        .eq('id', session.user.id);
+
+      if (profileError) throw profileError;
+
+      // Log the action before signing out
+      logActivity('DELETE', 'PROFILE', session.user.id, `Excluiu sua conta permanentemente`);
+
+      await handleLogout();
+    } catch (error: any) {
+      addNotification('alert', 'Erro ao Excluir Conta', error.message || 'Não foi possível excluir sua conta.');
+      throw error;
+    }
+  };
+
   if (!session) {
     return <Auth onSuccess={() => { }} />;
   }
@@ -470,21 +519,77 @@ const App: React.FC = () => {
       {(() => {
         switch (activeSection) {
           case AppSection.DASHBOARD:
-            return <Dashboard clients={clients} movements={movements} activities={activityLogs} onSelectSection={handleNavigation} settings={settings} />;
+            return (
+              <Dashboard
+                clients={clients}
+                movements={movements}
+                activities={activityLogs}
+                settings={settings}
+                currentUserId={session?.user?.id}
+                onSelectSection={handleNavigation}
+              />
+            );
           case AppSection.CLIENTS:
-            return <ClientList clients={clients} onAddClient={addClient} onUpdateClient={updateClient} onDeleteClient={deleteClient} settings={settings} />;
+            return (
+              <ClientList
+                clients={clients}
+                settings={settings}
+                currentUserId={session?.user?.id}
+                onAddClient={addClient}
+                onUpdateClient={updateClient}
+                onDeleteClient={deleteClient}
+              />
+            );
           case AppSection.FINANCES:
-            return <Finances clients={clients} onUpdateClient={updateClient} onAddNotification={addNotification} initialTab={activeSubTab as any} />;
+            return (
+              <Finances
+                clients={clients}
+                currentUserId={session?.user?.id}
+                onUpdateClient={updateClient}
+                onAddNotification={addNotification}
+                initialTab={activeSubTab as any}
+              />
+            );
           case AppSection.AGENDA:
-            return <Agenda movements={movements} onAddMovement={addMovement} onUpdateMovement={updateMovement} clients={clients} settings={settings} />;
+            return (
+              <Agenda
+                clients={clients}
+                movements={movements}
+                onAddMovement={addMovement}
+                onUpdateMovement={updateMovement}
+                settings={settings}
+              />
+            );
           case AppSection.HEARINGS:
-            return <Hearings movements={movements} clients={clients} settings={settings} onUpdateMovement={updateMovement} />;
+            return (
+              <Hearings
+                clients={clients}
+                movements={movements}
+                onUpdateMovement={updateMovement}
+                settings={settings}
+              />
+            );
           case AppSection.REPORTS:
-            return <Reports clients={clients} movements={movements} settings={settings} />;
+            return (
+              <Reports
+                clients={clients}
+                movements={movements}
+                settings={settings}
+                currentUserId={session?.user?.id}
+              />
+            );
           case AppSection.SETTINGS:
-            return <Settings settings={settings} onUpdateSettings={updateSettings} onAddNotification={addNotification} />;
+            return (
+              <Settings
+                settings={settings}
+                onUpdateSettings={updateSettings}
+                onAddNotification={addNotification}
+                onLogout={handleLogout}
+                onDeleteAccount={deleteAccount}
+              />
+            );
           default:
-            return <Dashboard clients={clients} movements={movements} activities={activityLogs} onSelectSection={handleNavigation} />;
+            return <Dashboard clients={clients} movements={movements} activities={activityLogs} onSelectSection={handleNavigation} settings={settings} />;
         }
       })()}
     </Layout>

@@ -11,9 +11,10 @@ interface ReportsProps {
   clients: Client[];
   movements: CourtMovement[];
   settings: UserSettings;
+  currentUserId?: string;
 }
 
-const Reports: React.FC<ReportsProps> = ({ clients, movements, settings }) => {
+const Reports: React.FC<ReportsProps> = ({ clients, movements, settings, currentUserId }) => {
   const [originFilter, setOriginFilter] = useState<'Both' | ClientOrigin>('Both');
 
   const AREA_COLORS: Record<string, string> = {
@@ -65,13 +66,16 @@ const Reports: React.FC<ReportsProps> = ({ clients, movements, settings }) => {
     let totalPending = 0;
 
     filteredClients.forEach(c => {
-      totalAgreed += c.financials?.totalAgreed || 0;
-      totalInitial += c.financials?.initialPayment || 0;
+      // Only include financial details for clients owned by the current user
+      if (c.userId === currentUserId && c.financials) {
+        totalAgreed += c.financials.totalAgreed || 0;
+        totalInitial += c.financials.initialPayment || 0;
 
-      const installments = c.financials?.installments || [];
-      totalPending += installments
-        .filter(i => i.status !== 'paid')
-        .reduce((acc, curr) => acc + curr.value, 0);
+        const installments = c.financials.installments || [];
+        totalPending += installments
+          .filter(i => i.status !== 'paid')
+          .reduce((acc, curr) => acc + curr.value, 0);
+      }
     });
 
     return { totalAgreed, totalInitial, totalPending };
@@ -171,8 +175,10 @@ const Reports: React.FC<ReportsProps> = ({ clients, movements, settings }) => {
             </thead>
             <tbody className="divide-y divide-slate-100">
               {Object.entries(countsByArea(filteredClients)).map(([area, clientsInArea]) => {
-                const totalInArea = clientsInArea.reduce((acc, c) => acc + (c.financials?.totalAgreed || 0), 0);
-                const avgTicket = totalInArea / clientsInArea.length;
+                // Only aggregate financial value for owned clients
+                const ownedClientsInArea = clientsInArea.filter(c => c.userId === currentUserId);
+                const totalInArea = ownedClientsInArea.reduce((acc, c) => acc + (c.financials?.totalAgreed || 0), 0);
+                const avgTicket = ownedClientsInArea.length > 0 ? totalInArea / ownedClientsInArea.length : 0;
                 const percentage = filteredClients.length > 0 ? (clientsInArea.length / filteredClients.length) * 100 : 0;
                 return (
                   <tr key={area} className="hover:bg-slate-50/80 transition-all duration-300">

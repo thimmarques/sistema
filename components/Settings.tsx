@@ -7,14 +7,18 @@ interface SettingsProps {
   settings: UserSettings;
   onUpdateSettings: (settings: UserSettings) => void;
   onAddNotification: (type: 'success' | 'info' | 'alert', title: string, message: string) => void;
+  onLogout: () => void;
+  onDeleteAccount: () => void;
 }
 
-const Settings: React.FC<SettingsProps> = ({ settings, onUpdateSettings, onAddNotification }) => {
+const Settings: React.FC<SettingsProps> = ({ settings, onUpdateSettings, onAddNotification, onLogout, onDeleteAccount }) => {
   const profileInputRef = useRef<HTMLInputElement>(null);
   const logoInputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [localSettings, setLocalSettings] = useState<UserSettings>(settings);
   const [isSaving, setIsSaving] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Sync local state if global settings change (e.g., initial load)
   React.useEffect(() => {
@@ -53,6 +57,18 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdateSettings, onAddNo
       setError(err.message || 'Erro ao salvar as configurações.');
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    setIsDeleting(true);
+    try {
+      await onDeleteAccount();
+    } catch (err) {
+      // Error handled in App.tsx via addNotification
+      setShowDeleteModal(false);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -253,12 +269,29 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdateSettings, onAddNo
           </section>
 
           {/* Botão Salvar Fixo/Destaque */}
-          <div className="flex justify-end pt-8 border-t border-slate-100">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-6 pt-8 border-t border-slate-100">
+            <div className="flex gap-4 w-full sm:w-auto">
+              <button
+                onClick={onLogout}
+                className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-4 bg-slate-100 text-slate-600 rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-slate-200 transition-all"
+              >
+                <i className="fa-solid fa-right-from-bracket"></i>
+                Sair do Sistema
+              </button>
+              <button
+                onClick={() => setShowDeleteModal(true)}
+                className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-4 bg-rose-50 text-rose-500 rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-rose-100 transition-all"
+              >
+                <i className="fa-solid fa-user-slash"></i>
+                Excluir Conta
+              </button>
+            </div>
+
             <button
               onClick={handleSave}
               disabled={isSaving}
               className={`
-                flex items-center gap-3 px-8 py-4 bg-slate-900 text-white rounded-[1.5rem] font-bold text-sm uppercase tracking-widest
+                w-full sm:w-auto flex items-center justify-center gap-3 px-10 py-4 bg-slate-900 text-white rounded-[1.5rem] font-bold text-sm uppercase tracking-widest
                 transition-all duration-300 shadow-xl shadow-slate-900/20 active:scale-95
                 ${isSaving ? 'opacity-70 cursor-not-allowed' : 'hover:bg-amber-600 hover:shadow-amber-500/20'}
               `}
@@ -278,6 +311,49 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdateSettings, onAddNo
           </div>
         </div>
       </div>
+
+      {/* Modal de Confirmação de Exclusão */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
+          <div className="bg-white w-full max-w-md rounded-[2.5rem] p-10 space-y-8 shadow-2xl animate-in zoom-in-95 duration-300">
+            <div className="text-center space-y-4">
+              <div className="h-20 w-20 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center text-3xl mx-auto ring-8 ring-rose-50/50">
+                <i className="fa-solid fa-triangle-exclamation"></i>
+              </div>
+              <h3 className="text-2xl font-black text-slate-800 tracking-tight">Cuidado Especial!</h3>
+              <p className="text-sm text-slate-500 leading-relaxed font-medium">
+                Você está prestes a excluir sua conta LexAI permanentemente. Suas configurações pessoais e vínculo com o escritório serão removidos. Esta ação <b>não pode ser desfeita</b>.
+              </p>
+            </div>
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={handleDeleteAccount}
+                disabled={isDeleting}
+                className="w-full bg-rose-600 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-rose-700 hover:shadow-lg hover:shadow-rose-200 transition-all flex items-center justify-center gap-2 disabled:opacity-70"
+              >
+                {isDeleting ? (
+                  <>
+                    <i className="fa-solid fa-circle-notch animate-spin"></i>
+                    Excluindo...
+                  </>
+                ) : (
+                  <>
+                    <i className="fa-solid fa-user-xmark"></i>
+                    Sim, Excluir Minha Conta
+                  </>
+                )}
+              </button>
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                disabled={isDeleting}
+                className="w-full py-4 text-xs font-black uppercase text-slate-400 hover:text-slate-600 transition-all tracking-widest disabled:opacity-50"
+              >
+                Cancelar Operação
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <p className="text-center text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em]">
         LexAI Legal Management &bull; Sistema de Gestão Inteligente

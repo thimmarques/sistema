@@ -9,20 +9,22 @@ interface DashboardProps {
   activities?: ActivityLog[];
   onSelectSection: (section: AppSection, tab?: string) => void;
   settings: UserSettings;
+  currentUserId?: string;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ clients, movements, activities = [], onSelectSection, settings }) => {
+const Dashboard: React.FC<DashboardProps> = ({ clients, movements, activities = [], onSelectSection, settings, currentUserId }) => {
   const [selectedMovement, setSelectedMovement] = useState<CourtMovement | null>(null);
   const financialStats = useMemo(() => {
     let totalAgreed = 0;
     let totalDefensoria = 0;
 
     clients.forEach(c => {
-      if (c.origin === 'Particular') {
-        totalAgreed += c.financials?.totalAgreed || 0;
-      } else if (c.origin === 'Defensoria') {
-        const f = c.financials;
-        if (f) {
+      // Only include financial stats for clients owned by the current user
+      if (c.userId === currentUserId && c.financials) {
+        if (c.origin === 'Particular') {
+          totalAgreed += c.financials.totalAgreed || 0;
+        } else if (c.origin === 'Defensoria') {
+          const f = c.financials;
           totalDefensoria += (f.defensoriaValue70 || 0) + (f.defensoriaValue30 || 0) + (f.defensoriaValue100 || 0);
         }
       }
