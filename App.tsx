@@ -101,7 +101,10 @@ const App: React.FC = () => {
           };
 
           // Check if we have a fresh provider token from a recent OAuth redirect
-          if ((session as any).provider_token) {
+          const hasProviderToken = (session as any).provider_token;
+          const isPendingConnection = localStorage.getItem('lexai_pending_google_connection') === 'true';
+
+          if (hasProviderToken && (updatedSettings.googleConnected || isPendingConnection)) {
             updatedSettings.googleConnected = true;
             updatedSettings.googleToken = (session as any).provider_token;
             updatedSettings.googleEmail = session.user.email || '';
@@ -115,6 +118,9 @@ const App: React.FC = () => {
                 google_email: session.user.email
               })
               .eq('id', session.user.id);
+
+            // Clear the pending flag as it's now established
+            localStorage.removeItem('lexai_pending_google_connection');
           }
 
           setSettings(updatedSettings);
@@ -590,9 +596,12 @@ const App: React.FC = () => {
 
   const handleConnectGoogle = async () => {
     try {
+      // Mark that we are intentionally starting a connection flow
+      localStorage.setItem('lexai_pending_google_connection', 'true');
       await GoogleCalendarService.authorize();
       // O Supabase redirecionará o usuário para o Google
     } catch (error) {
+      localStorage.removeItem('lexai_pending_google_connection');
       addNotification('alert', 'Erro na Conexão', 'Não foi possível iniciar a conexão com o Google Agenda.');
     }
   };
