@@ -373,15 +373,23 @@ const App: React.FC = () => {
       const isSynced = latestData?.synced_to_google || movement.syncedToGoogle;
       const gEventId = latestData?.google_event_id || movement.googleEventId;
 
+      console.log('Status de sincronização para exclusão:', { isSynced, gEventId });
+
       let googleDeleted = false;
 
       // 2. Se estiver sincronizado com o Google e tiver o ID, exclui de lá
       if (isSynced && gEventId) {
+        console.log('Tentando excluir do Google Calendar com ID:', gEventId);
         const token = (session as any)?.provider_token || settings.googleToken;
         if (token) {
           const success = await GoogleCalendarService.deleteEvent(gEventId, token);
           googleDeleted = success;
+          console.log('Resultado da exclusão no Google:', success);
+        } else {
+          console.warn('Token do Google não encontrado para exclusão.');
         }
+      } else if (isSynced) {
+        console.warn('O evento está marcado como sincronizado, mas não possui Google Event ID. A exclusão será apenas local.');
       }
 
       // 3. Exclui do Supabase
