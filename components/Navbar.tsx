@@ -78,7 +78,7 @@ const Navbar: React.FC<NavbarProps> = ({
         <div className="flex items-center gap-3 border-l pl-4">
           <div className="text-right hidden sm:block">
             <p className="text-sm font-semibold text-slate-700">{settings.name || 'Seu Nome'}</p>
-            <p className="text-[10px] text-amber-600 font-bold uppercase tracking-wider">OAB {settings.oab || '...'} </p>
+            <p className="text-[10px] text-amber-600 font-bold uppercase tracking-wider">OAB/{settings.oabState || 'SP'} {settings.oab || '...'} </p>
           </div>
           <img
             src={settings.profileImage || `https://ui-avatars.com/api/?name=${settings.name || 'User'}&background=1e293b&color=fff&size=200`}
