@@ -83,7 +83,7 @@ const App: React.FC = () => {
         }
 
         if (profileData) {
-          setSettings({
+          const updatedSettings: UserSettings = {
             name: profileData.name || '',
             email: profileData.email || '',
             role: profileData.role || 'Advogado',
@@ -98,7 +98,26 @@ const App: React.FC = () => {
             googleConnected: profileData.google_connected || false,
             googleEmail: profileData.google_email || '',
             googleToken: profileData.google_token || ''
-          });
+          };
+
+          // Check if we have a fresh provider token from a recent OAuth redirect
+          if ((session as any).provider_token) {
+            updatedSettings.googleConnected = true;
+            updatedSettings.googleToken = (session as any).provider_token;
+            updatedSettings.googleEmail = session.user.email || '';
+
+            // Persist the fresh token to the profile
+            await supabase
+              .from('profiles')
+              .update({
+                google_connected: true,
+                google_token: (session as any).provider_token,
+                google_email: session.user.email
+              })
+              .eq('id', session.user.id);
+          }
+
+          setSettings(updatedSettings);
 
           // Fallback logo: if current user has no logo, try to find any logo from another profile
           if (!profileData.logo) {
@@ -512,17 +531,10 @@ const App: React.FC = () => {
 
   const handleConnectGoogle = async () => {
     try {
-      const { token, email } = await GoogleCalendarService.authorize();
-      const updatedSettings = {
-        ...settings,
-        googleConnected: true,
-        googleEmail: email,
-        googleToken: token
-      };
-      await updateSettings(updatedSettings);
-      addNotification('success', 'Google Agenda Conectado', `Sincronizado com ${email}`);
+      await GoogleCalendarService.authorize();
+      // O Supabase redirecionará o usuário para o Google
     } catch (error) {
-      addNotification('alert', 'Erro na Conexão', 'Não foi possível conectar ao Google Agenda.');
+      addNotification('alert', 'Erro na Conexão', 'Não foi possível iniciar a conexão com o Google Agenda.');
     }
   };
 
@@ -538,13 +550,16 @@ const App: React.FC = () => {
   };
 
   const handleSyncMovement = async (movement: CourtMovement) => {
-    if (!settings.googleConnected || !settings.googleToken) {
-      addNotification('alert', 'Google não conectado', 'Conecte seu Google Agenda nas configurações primeiro.');
-      return;
-    }
-
     try {
-      const success = await GoogleCalendarService.createEvent(movement, settings.googleToken);
+      // Usa o token salvo nas configurações ou o token da sessão atual se disponível
+      const token = (session as any)?.provider_token || settings.googleToken;
+
+      if (!token) {
+        addNotification('alert', 'Google não conectado', 'Conecte seu Google Agenda nas configurações primeiro.');
+        return;
+      }
+
+      const success = await GoogleCalendarService.createEvent(movement, token);
       if (success) {
         // Atualiza o banco de dados
         const { error } = await supabase

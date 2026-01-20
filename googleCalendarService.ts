@@ -1,9 +1,9 @@
 
 import { CourtMovement } from './types';
+import { supabase } from './lib/supabase';
 
 /**
- * Serviço para gerenciar eventos no Google Calendar.
- * Em um cenário de produção, o accessToken seria obtido via fluxo OAuth2 (GSI).
+ * Serviço para gerenciar eventos no Google Calendar usando Supabase Auth.
  */
 export class GoogleCalendarService {
   private static readonly CALENDAR_API_BASE = 'https://www.googleapis.com/calendar/v3';
@@ -43,14 +43,6 @@ Sincronizado via LexAI Management.
     };
 
     try {
-      // Simulação de chamada real para fins de demonstração técnica
-      console.log(`[Google Calendar] Sincronizando: ${event.summary}`);
-
-      // Delay para simular latência de rede
-      await new Promise(resolve => setTimeout(resolve, 1200));
-
-      // Em produção, aqui seria o fetch:
-      /*
       const response = await fetch(`${this.CALENDAR_API_BASE}/calendars/primary/events`, {
         method: 'POST',
         headers: {
@@ -59,8 +51,12 @@ Sincronizado via LexAI Management.
         },
         body: JSON.stringify(event),
       });
-      return response.ok;
-      */
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Erro da API do Google Calendar:', errorData);
+        return false;
+      }
 
       return true;
     } catch (error) {
@@ -70,17 +66,25 @@ Sincronizado via LexAI Management.
   }
 
   /**
-   * Mock para simular abertura de popup do Google OAuth e retorno de e-mail/token.
+   * Inicia o fluxo de autorização do Google via Supabase OAuth.
+   * Solicita escopo específico para gerenciar eventos do calendário.
    */
-  static async authorize(): Promise<{ token: string; email: string }> {
-    return new Promise((resolve) => {
-      // Simula o tempo que o usuário levaria para autorizar no popup do Google
-      setTimeout(() => {
-        resolve({
-          token: 'ya29.a0AfH6SMC...' + Math.random().toString(36).substring(7),
-          email: 'usuario.lexai@gmail.com'
-        });
-      }, 1500);
+  static async authorize(): Promise<void> {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        },
+        scopes: 'https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/userinfo.email',
+        redirectTo: window.location.origin,
+      },
     });
+
+    if (error) {
+      console.error('Erro ao autorizar Google via Supabase:', error.message);
+      throw error;
+    }
   }
 }
