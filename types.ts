@@ -84,6 +84,7 @@ export interface CourtMovement {
   modality?: 'Online' | 'Presencial';
   source: string;
   syncedToGoogle?: boolean;
+  googleEventId?: string;
 }
 
 export interface Message {

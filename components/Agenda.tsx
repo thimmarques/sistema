@@ -12,12 +12,14 @@ interface AgendaProps {
   settings: UserSettings;
   onSyncToGoogle: (movement: CourtMovement) => void;
   googleConnected?: boolean;
+  onDeleteMovement?: (movement: CourtMovement) => void;
 }
 
 const Agenda: React.FC<AgendaProps> = ({
   movements,
   onAddMovement,
   onUpdateMovement,
+  onDeleteMovement,
   clients,
   settings,
   onSyncToGoogle,
@@ -402,6 +404,12 @@ const Agenda: React.FC<AgendaProps> = ({
           }}
           onSyncToGoogle={() => onSyncToGoogle(selectedMovement)}
           googleConnected={googleConnected}
+          onDelete={() => {
+            if (window.confirm('Tem certeza que deseja excluir este evento da agenda e do Google Calendar?')) {
+              onDeleteMovement?.(selectedMovement);
+              setSelectedMovement(null);
+            }
+          }}
         />
       )}
     </div>

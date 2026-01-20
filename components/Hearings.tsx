@@ -8,10 +8,19 @@ interface HearingsProps {
     movements: CourtMovement[];
     clients: Client[];
     settings: UserSettings;
+    onAddMovement?: (movement: CourtMovement) => void;
     onUpdateMovement?: (movement: CourtMovement) => void;
+    onDeleteMovement?: (movement: CourtMovement) => void;
 }
 
-const Hearings: React.FC<HearingsProps> = ({ movements, clients, settings, onUpdateMovement }) => {
+const Hearings: React.FC<HearingsProps> = ({
+    movements,
+    clients,
+    settings,
+    onAddMovement,
+    onUpdateMovement,
+    onDeleteMovement
+}) => {
     const [selectedHearing, setSelectedHearing] = useState<CourtMovement | null>(null);
     const [movementToEdit, setMovementToEdit] = useState<CourtMovement | null>(null);
     const [showForm, setShowForm] = useState(false);
@@ -148,6 +157,12 @@ const Hearings: React.FC<HearingsProps> = ({ movements, clients, settings, onUpd
                         setMovementToEdit(h);
                         setShowForm(true);
                     }}
+                    onDelete={() => {
+                        if (window.confirm('Tem certeza que deseja excluir esta audiência da agenda e do Google Calendar?')) {
+                            onDeleteMovement?.(selectedHearing);
+                            setSelectedHearing(null);
+                        }
+                    }}
                 />
             )}
 
@@ -155,8 +170,10 @@ const Hearings: React.FC<HearingsProps> = ({ movements, clients, settings, onUpd
                 isOpen={showForm}
                 onClose={() => { setShowForm(false); setMovementToEdit(null); }}
                 onSubmit={(data) => {
-                    if (onUpdateMovement && data.id) {
-                        onUpdateMovement(data as CourtMovement);
+                    if (data.id) {
+                        onUpdateMovement?.(data as CourtMovement);
+                    } else {
+                        onAddMovement?.(data as CourtMovement);
                     }
                     setShowForm(false);
                     setMovementToEdit(null);

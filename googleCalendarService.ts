@@ -10,8 +10,9 @@ export class GoogleCalendarService {
 
   /**
    * Cria um evento no Google Calendar para uma movimentação processual.
+   * Retorna o ID do evento criado ou false em caso de erro.
    */
-  static async createEvent(movement: CourtMovement, accessToken: string): Promise<boolean> {
+  static async createEvent(movement: CourtMovement, accessToken: string): Promise<string | boolean> {
     const isHearing = movement.type === 'Audiência';
 
     // Configura o evento no formato da API do Google Calendar
@@ -58,9 +59,35 @@ Sincronizado via LexAI Management.
         return false;
       }
 
-      return true;
+      const data = await response.json();
+      return data.id; // Retorna o ID do evento criado
     } catch (error) {
       console.error('Erro ao sincronizar com Google Calendar:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Exclui um evento no Google Calendar.
+   */
+  static async deleteEvent(eventId: string, accessToken: string): Promise<boolean> {
+    try {
+      const response = await fetch(`${this.CALENDAR_API_BASE}/calendars/primary/events/${eventId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+        },
+      });
+
+      if (!response.ok && response.status !== 404) {
+        const errorData = await response.json();
+        console.error('Erro ao excluir evento do Google Calendar:', errorData);
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Erro ao excluir do Google Calendar:', error);
       return false;
     }
   }

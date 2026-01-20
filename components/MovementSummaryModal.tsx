@@ -9,6 +9,7 @@ interface MovementSummaryModalProps {
     onEdit?: () => void;
     onSyncToGoogle?: () => void;
     googleConnected?: boolean;
+    onDelete?: () => void;
 }
 
 const MovementSummaryModal: React.FC<MovementSummaryModalProps> = ({
@@ -18,7 +19,8 @@ const MovementSummaryModal: React.FC<MovementSummaryModalProps> = ({
     onClose,
     onEdit,
     onSyncToGoogle,
-    googleConnected
+    googleConnected,
+    onDelete
 }) => {
     const date = new Date(movement.date + 'T12:00:00');
     const day = date.getDate();
@@ -144,6 +146,15 @@ const MovementSummaryModal: React.FC<MovementSummaryModalProps> = ({
                                 <i className="fa-solid fa-circle-check"></i>
                                 Sincronizado com Google
                             </div>
+                        )}
+                        {onDelete && (
+                            <button
+                                onClick={onDelete}
+                                className="w-full bg-white text-rose-500 border-2 border-rose-100 py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-rose-50 hover:border-rose-200 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                            >
+                                <i className="fa-solid fa-trash-can"></i>
+                                Excluir Evento
+                            </button>
                         )}
                         <button
                             onClick={onClose}

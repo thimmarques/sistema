@@ -356,6 +356,33 @@ const App: React.FC = () => {
     }
   };
 
+  const deleteMovement = async (movement: CourtMovement) => {
+    try {
+      // 1. Se estiver sincronizado com o Google, tenta excluir de lá também
+      if (movement.syncedToGoogle && movement.googleEventId) {
+        const token = (session as any)?.provider_token || settings.googleToken;
+        if (token) {
+          await GoogleCalendarService.deleteEvent(movement.googleEventId, token);
+        }
+      }
+
+      // 2. Exclui do Supabase
+      const { error } = await supabase
+        .from('movements')
+        .delete()
+        .eq('id', movement.id);
+
+      if (error) throw error;
+
+      // 3. Atualiza estado local
+      setMovements(prev => prev.filter(m => m.id !== movement.id));
+      addNotification('success', 'Evento Removido', 'O evento foi excluído do sistema e da sua agenda.');
+      logActivity('DELETE', 'MOVEMENT', movement.id, `Excluiu evento: ${movement.description}`);
+    } catch (error: any) {
+      addNotification('alert', 'Erro ao Remover', error.message || 'Não foi possível excluir o evento.');
+    }
+  };
+
   const updateClient = async (updatedClient: Client) => {
     try {
       const { error } = await supabase
@@ -559,17 +586,21 @@ const App: React.FC = () => {
         return;
       }
 
-      const success = await GoogleCalendarService.createEvent(movement, token);
-      if (success) {
+      const result = await GoogleCalendarService.createEvent(movement, token);
+      if (result && typeof result === 'string') {
+        const googleEventId = result;
         // Atualiza o banco de dados
         const { error } = await supabase
           .from('movements')
-          .update({ synced_to_google: true })
+          .update({
+            synced_to_google: true,
+            google_event_id: googleEventId
+          })
           .eq('id', movement.id);
 
         if (error) throw error;
 
-        setMovements(prev => prev.map(m => m.id === movement.id ? { ...m, syncedToGoogle: true } : m));
+        setMovements(prev => prev.map(m => m.id === movement.id ? { ...m, syncedToGoogle: true, googleEventId } : m));
         addNotification('success', 'Sincronizado', 'O evento foi adicionado ao seu Google Agenda.');
       }
     } catch (error) {
@@ -633,7 +664,9 @@ const App: React.FC = () => {
               <Agenda
                 clients={clients}
                 movements={movements}
+                onAddMovement={addMovement}
                 onUpdateMovement={updateMovement}
+                onDeleteMovement={deleteMovement}
                 settings={settings}
                 onSyncToGoogle={handleSyncMovement}
                 googleConnected={settings.googleConnected}
@@ -644,7 +677,9 @@ const App: React.FC = () => {
               <Hearings
                 clients={clients}
                 movements={movements}
+                onAddMovement={addMovement}
                 onUpdateMovement={updateMovement}
+                onDeleteMovement={deleteMovement}
                 settings={settings}
               />
             );
