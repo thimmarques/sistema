@@ -7,9 +7,19 @@ interface MovementSummaryModalProps {
     settings: UserSettings;
     onClose: () => void;
     onEdit?: () => void;
+    onSyncToGoogle?: () => void;
+    googleConnected?: boolean;
 }
 
-const MovementSummaryModal: React.FC<MovementSummaryModalProps> = ({ movement, client, settings, onClose, onEdit }) => {
+const MovementSummaryModal: React.FC<MovementSummaryModalProps> = ({
+    movement,
+    client,
+    settings,
+    onClose,
+    onEdit,
+    onSyncToGoogle,
+    googleConnected
+}) => {
     const date = new Date(movement.date + 'T12:00:00');
     const day = date.getDate();
     const month = date.toLocaleString('pt-BR', { month: 'long' });
@@ -118,13 +128,30 @@ const MovementSummaryModal: React.FC<MovementSummaryModalProps> = ({ movement, c
                         </div>
                     </div>
 
-                    {/* Footer Button */}
-                    <button
-                        onClick={onClose}
-                        className="w-full bg-slate-800 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-lg shadow-slate-200 hover:bg-slate-900 transition-all active:scale-[0.98]"
-                    >
-                        Fechar Resumo
-                    </button>
+                    {/* Footer Buttons */}
+                    <div className="flex flex-col gap-3">
+                        {googleConnected && !movement.syncedToGoogle && onSyncToGoogle && (
+                            <button
+                                onClick={onSyncToGoogle}
+                                className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                            >
+                                <i className="fa-brands fa-google"></i>
+                                Sincronizar com Google
+                            </button>
+                        )}
+                        {movement.syncedToGoogle && (
+                            <div className="w-full bg-emerald-50 text-emerald-600 py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] border border-emerald-100 flex items-center justify-center gap-2">
+                                <i className="fa-solid fa-circle-check"></i>
+                                Sincronizado com Google
+                            </div>
+                        )}
+                        <button
+                            onClick={onClose}
+                            className="w-full bg-slate-800 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-lg shadow-slate-200 hover:bg-slate-900 transition-all active:scale-[0.98]"
+                        >
+                            Fechar Resumo
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

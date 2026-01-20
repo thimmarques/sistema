@@ -14,16 +14,17 @@ export class GoogleCalendarService {
   static async createEvent(movement: CourtMovement, accessToken: string): Promise<boolean> {
     const isHearing = movement.type === 'Audiência';
 
-    // Configura o evento
+    // Configura o evento no formato da API do Google Calendar
     const event = {
       summary: `${isHearing ? '🏛️ AUDIÊNCIA' : '📅 PRAZO'}: Proc. ${movement.caseNumber}`,
       location: movement.source || 'Tribunal',
       description: `
-        Movimentação detectada via LexAI.
-        Processo: ${movement.caseNumber}
-        Tipo: ${movement.type === 'Audiência' ? 'Audiência' : 'Prazo/Notificação'}
-        Descrição: ${movement.description}
-        Fonte: ${movement.source}
+Processo: ${movement.caseNumber}
+Tipo: ${movement.type === 'Audiência' ? 'Audiência' : 'Prazo/Notificação'}
+Descrição: ${movement.description}
+Fonte: ${movement.source}
+
+Sincronizado via LexAI Management.
       `.trim(),
       start: {
         date: movement.date, // Formato YYYY-MM-DD para eventos de dia inteiro
@@ -34,15 +35,21 @@ export class GoogleCalendarService {
       reminders: {
         useDefault: false,
         overrides: [
-          { method: 'email', minutes: 24 * 60 },
-          { method: 'popup', minutes: 60 },
+          { method: 'email', minutes: 24 * 60 }, // 1 dia antes
+          { method: 'popup', minutes: 60 },      // 1 hora antes
         ],
       },
-      colorId: isHearing ? '9' : '5', // Azul para audiências, Amarelo para prazos
+      colorId: isHearing ? '9' : '5', // 9 = Mirtilo (Azul), 5 = Banana (Amarelo)
     };
 
     try {
-      // Nota: Em um ambiente real, faríamos o fetch abaixo:
+      // Simulação de chamada real para fins de demonstração técnica
+      console.log(`[Google Calendar] Sincronizando: ${event.summary}`);
+
+      // Delay para simular latência de rede
+      await new Promise(resolve => setTimeout(resolve, 1200));
+
+      // Em produção, aqui seria o fetch:
       /*
       const response = await fetch(`${this.CALENDAR_API_BASE}/calendars/primary/events`, {
         method: 'POST',
@@ -55,9 +62,6 @@ export class GoogleCalendarService {
       return response.ok;
       */
 
-      // Simulando latência de rede e sucesso da API do Google
-      console.log('Enviando evento para Google Calendar:', event);
-      await new Promise(resolve => setTimeout(resolve, 1500));
       return true;
     } catch (error) {
       console.error('Erro ao sincronizar com Google Calendar:', error);
@@ -66,14 +70,17 @@ export class GoogleCalendarService {
   }
 
   /**
-   * Mock para simular abertura de popup do Google OAuth
+   * Mock para simular abertura de popup do Google OAuth e retorno de e-mail/token.
    */
-  static async authorize(): Promise<string> {
+  static async authorize(): Promise<{ token: string; email: string }> {
     return new Promise((resolve) => {
       // Simula o tempo que o usuário levaria para autorizar no popup do Google
       setTimeout(() => {
-        resolve('mock_access_token_' + Math.random().toString(36).substr(2));
-      }, 2000);
+        resolve({
+          token: 'ya29.a0AfH6SMC...' + Math.random().toString(36).substring(7),
+          email: 'usuario.lexai@gmail.com'
+        });
+      }, 1500);
     });
   }
 }

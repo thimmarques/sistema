@@ -10,9 +10,19 @@ interface AgendaProps {
   onUpdateMovement?: (movement: CourtMovement) => void;
   clients: Client[];
   settings: UserSettings;
+  onSyncToGoogle: (movement: CourtMovement) => void;
+  googleConnected?: boolean;
 }
 
-const Agenda: React.FC<AgendaProps> = ({ movements, onAddMovement, onUpdateMovement, clients, settings }) => {
+const Agenda: React.FC<AgendaProps> = ({
+  movements,
+  onAddMovement,
+  onUpdateMovement,
+  clients,
+  settings,
+  onSyncToGoogle,
+  googleConnected
+}) => {
   const [showForm, setShowForm] = useState(false);
   const [view, setView] = useState<'MÊS' | 'SEMANA' | 'DIA'>('MÊS');
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -293,6 +303,22 @@ const Agenda: React.FC<AgendaProps> = ({ movements, onAddMovement, onUpdateMovem
                         </div>
                       </div>
                       <div className="flex gap-2">
+                        {googleConnected && !m.syncedToGoogle && (
+                          <button
+                            onClick={() => onSyncToGoogle(m)}
+                            className="h-12 px-4 rounded-2xl bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-all border border-indigo-100 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest"
+                            title="Sincronizar com Google Agenda"
+                          >
+                            <i className="fa-brands fa-google"></i>
+                            Sincronizar
+                          </button>
+                        )}
+                        {m.syncedToGoogle && (
+                          <div className="h-12 px-4 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest select-none">
+                            <i className="fa-solid fa-circle-check"></i>
+                            Sincronizado
+                          </div>
+                        )}
                         <button onClick={() => setSelectedMovement(m)} className="h-12 w-12 rounded-2xl bg-white border border-slate-200 text-slate-400 hover:text-indigo-600 transition-all shadow-sm flex items-center justify-center"><i className="fa-solid fa-eye"></i></button>
                         <button onClick={() => handleEditClick(m)} className="h-12 w-12 rounded-2xl bg-white border border-slate-200 text-slate-400 hover:text-emerald-600 transition-all shadow-sm flex items-center justify-center"><i className="fa-solid fa-pen-to-square"></i></button>
                       </div>
@@ -374,6 +400,8 @@ const Agenda: React.FC<AgendaProps> = ({ movements, onAddMovement, onUpdateMovem
             setSelectedMovement(null);
             handleEditClick(m);
           }}
+          onSyncToGoogle={() => onSyncToGoogle(selectedMovement)}
+          googleConnected={googleConnected}
         />
       )}
     </div>

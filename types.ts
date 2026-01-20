@@ -83,6 +83,7 @@ export interface CourtMovement {
   type: 'Audiência' | 'Deadline' | 'Notification';
   modality?: 'Online' | 'Presencial';
   source: string;
+  syncedToGoogle?: boolean;
 }
 
 export interface Message {
@@ -113,6 +114,9 @@ export interface UserSettings {
   logo?: string;
   notifyDeadlines: boolean;
   deadlineThresholdDays: number;
+  googleConnected?: boolean;
+  googleEmail?: string;
+  googleToken?: string;
 }
 
 export enum AppSection {

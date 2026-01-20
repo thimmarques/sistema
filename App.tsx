@@ -12,6 +12,7 @@ import Auth from './components/Auth';
 import Hearings from './components/Hearings';
 import { supabase } from './lib/supabase';
 import { Session } from '@supabase/supabase-js';
+import { GoogleCalendarService } from './googleCalendarService';
 
 const App: React.FC = () => {
   const [session, setSession] = useState<Session | null>(null);
@@ -54,7 +55,10 @@ const App: React.FC = () => {
     profileImage: '',
     logo: '',
     notifyDeadlines: true,
-    deadlineThresholdDays: 3
+    deadlineThresholdDays: 3,
+    googleConnected: false,
+    googleEmail: '',
+    googleToken: ''
   });
 
   useEffect(() => {
@@ -90,7 +94,10 @@ const App: React.FC = () => {
             profileImage: profileData.profile_image || '',
             logo: profileData.logo || '',
             notifyDeadlines: profileData.notify_deadlines ?? true,
-            deadlineThresholdDays: profileData.deadline_threshold_days || 3
+            deadlineThresholdDays: profileData.deadline_threshold_days || 3,
+            googleConnected: profileData.google_connected || false,
+            googleEmail: profileData.google_email || '',
+            googleToken: profileData.google_token || ''
           });
 
           // Fallback logo: if current user has no logo, try to find any logo from another profile
@@ -176,7 +183,8 @@ const App: React.FC = () => {
           description: m.description,
           type: m.type === 'Hearing' ? 'Audiência' : (m.type as any),
           modality: m.modality as any,
-          source: m.source || ''
+          source: m.source || '',
+          syncedToGoogle: m.synced_to_google || false
         }));
 
         setMovements(mappedMovements);
@@ -462,7 +470,10 @@ const App: React.FC = () => {
           profile_image: newSettings.profileImage,
           logo: newSettings.logo,
           notify_deadlines: newSettings.notifyDeadlines,
-          deadline_threshold_days: newSettings.deadlineThresholdDays
+          deadline_threshold_days: newSettings.deadlineThresholdDays,
+          google_connected: newSettings.googleConnected,
+          google_email: newSettings.googleEmail,
+          google_token: newSettings.googleToken
         });
 
       if (error) throw error;
@@ -496,6 +507,58 @@ const App: React.FC = () => {
     } catch (error: any) {
       addNotification('alert', 'Erro ao Excluir Conta', error.message || 'Não foi possível excluir sua conta.');
       throw error;
+    }
+  };
+
+  const handleConnectGoogle = async () => {
+    try {
+      const { token, email } = await GoogleCalendarService.authorize();
+      const updatedSettings = {
+        ...settings,
+        googleConnected: true,
+        googleEmail: email,
+        googleToken: token
+      };
+      await updateSettings(updatedSettings);
+      addNotification('success', 'Google Agenda Conectado', `Sincronizado com ${email}`);
+    } catch (error) {
+      addNotification('alert', 'Erro na Conexão', 'Não foi possível conectar ao Google Agenda.');
+    }
+  };
+
+  const handleDisconnectGoogle = async () => {
+    const updatedSettings = {
+      ...settings,
+      googleConnected: false,
+      googleEmail: '',
+      googleToken: ''
+    };
+    await updateSettings(updatedSettings);
+    addNotification('info', 'Google Agenda Desconectado', 'Sua conta foi desvinculada.');
+  };
+
+  const handleSyncMovement = async (movement: CourtMovement) => {
+    if (!settings.googleConnected || !settings.googleToken) {
+      addNotification('alert', 'Google não conectado', 'Conecte seu Google Agenda nas configurações primeiro.');
+      return;
+    }
+
+    try {
+      const success = await GoogleCalendarService.createEvent(movement, settings.googleToken);
+      if (success) {
+        // Atualiza o banco de dados
+        const { error } = await supabase
+          .from('movements')
+          .update({ synced_to_google: true })
+          .eq('id', movement.id);
+
+        if (error) throw error;
+
+        setMovements(prev => prev.map(m => m.id === movement.id ? { ...m, syncedToGoogle: true } : m));
+        addNotification('success', 'Sincronizado', 'O evento foi adicionado ao seu Google Agenda.');
+      }
+    } catch (error) {
+      addNotification('alert', 'Erro na Sincronização', 'Ocorreu um erro ao enviar para o Google.');
     }
   };
 
@@ -555,9 +618,10 @@ const App: React.FC = () => {
               <Agenda
                 clients={clients}
                 movements={movements}
-                onAddMovement={addMovement}
                 onUpdateMovement={updateMovement}
                 settings={settings}
+                onSyncToGoogle={handleSyncMovement}
+                googleConnected={settings.googleConnected}
               />
             );
           case AppSection.HEARINGS:
@@ -586,6 +650,8 @@ const App: React.FC = () => {
                 onAddNotification={addNotification}
                 onLogout={handleLogout}
                 onDeleteAccount={deleteAccount}
+                onConnectGoogle={handleConnectGoogle}
+                onDisconnectGoogle={handleDisconnectGoogle}
               />
             );
           default:

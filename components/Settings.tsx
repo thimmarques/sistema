@@ -9,9 +9,19 @@ interface SettingsProps {
   onAddNotification: (type: 'success' | 'info' | 'alert', title: string, message: string) => void;
   onLogout: () => void;
   onDeleteAccount: () => void;
+  onConnectGoogle: () => void;
+  onDisconnectGoogle: () => void;
 }
 
-const Settings: React.FC<SettingsProps> = ({ settings, onUpdateSettings, onAddNotification, onLogout, onDeleteAccount }) => {
+const Settings: React.FC<SettingsProps> = ({
+  settings,
+  onUpdateSettings,
+  onAddNotification,
+  onLogout,
+  onDeleteAccount,
+  onConnectGoogle,
+  onDisconnectGoogle
+}) => {
   const profileInputRef = useRef<HTMLInputElement>(null);
   const logoInputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
@@ -263,6 +273,60 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdateSettings, onAddNo
                   <span className="min-w-[45px] text-center font-black text-indigo-600 bg-white border border-slate-200 rounded-lg py-1.5 text-xs shadow-sm">
                     {localSettings.deadlineThresholdDays}d
                   </span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Seção 4: Integrações */}
+          <section className="space-y-6 pt-6 border-t border-slate-100">
+            <div className="flex items-center justify-between">
+              <h4 className="font-black text-slate-800 flex items-center gap-3 text-lg uppercase tracking-wider">
+                <div className="h-8 w-8 bg-red-500 rounded-xl flex items-center justify-center text-white text-sm">
+                  <i className="fa-solid fa-link"></i>
+                </div>
+                Integrações Externas
+              </h4>
+              {settings.googleConnected && (
+                <span className="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full text-[10px] font-black uppercase tracking-wider border border-emerald-100">
+                  <span className="h-1.5 w-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                  Conectado
+                </span>
+              )}
+            </div>
+
+            <div className="bg-slate-50 p-6 rounded-[2rem] border border-slate-200">
+              <div className="flex flex-col md:flex-row items-center gap-6">
+                <div className="h-16 w-16 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-slate-100">
+                  <i className="fa-brands fa-google text-3xl text-red-500"></i>
+                </div>
+                <div className="flex-1 text-center md:text-left space-y-1">
+                  <h5 className="font-black text-slate-800 uppercase text-xs tracking-wider">Google Agenda (Calendar)</h5>
+                  <p className="text-xs text-slate-500">Sincronize seus prazos e audiências do LexAI diretamente com seu calendário pessoal do Google.</p>
+                  {settings.googleConnected && (
+                    <p className="text-[10px] font-bold text-indigo-600 mt-2 flex items-center justify-center md:justify-start gap-1">
+                      <i className="fa-solid fa-circle-check"></i>
+                      Vinculado a: {settings.googleEmail}
+                    </p>
+                  )}
+                </div>
+                <div className="w-full md:w-auto">
+                  {settings.googleConnected ? (
+                    <button
+                      onClick={onDisconnectGoogle}
+                      className="w-full md:w-auto px-6 py-3 bg-white border border-slate-200 text-slate-600 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm"
+                    >
+                      Desconectar
+                    </button>
+                  ) : (
+                    <button
+                      onClick={onConnectGoogle}
+                      className="w-full md:w-auto px-6 py-3 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg flex items-center justify-center gap-2"
+                    >
+                      <i className="fa-brands fa-google"></i>
+                      Conectar Google
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
