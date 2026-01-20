@@ -393,20 +393,21 @@ const Agenda: React.FC<AgendaProps> = ({
 
       {selectedMovement && (
         <MovementSummaryModal
-          movement={selectedMovement}
+          movement={movements.find(m => m.id === selectedMovement.id) || selectedMovement}
           client={clients.find(c => c.id === selectedMovement.clientId || c.caseNumber === selectedMovement.caseNumber)}
           settings={settings}
           onClose={() => setSelectedMovement(null)}
           onEdit={() => {
-            const m = selectedMovement;
+            const m = movements.find(m => m.id === selectedMovement.id) || selectedMovement;
             setSelectedMovement(null);
             handleEditClick(m);
           }}
-          onSyncToGoogle={() => onSyncToGoogle(selectedMovement)}
+          onSyncToGoogle={() => onSyncToGoogle(movements.find(m => m.id === selectedMovement.id) || selectedMovement)}
           googleConnected={googleConnected}
           onDelete={() => {
+            const m = movements.find(m => m.id === selectedMovement.id) || selectedMovement;
             if (window.confirm('Tem certeza que deseja excluir este evento da agenda e do Google Calendar?')) {
-              onDeleteMovement?.(selectedMovement);
+              onDeleteMovement?.(m);
               setSelectedMovement(null);
             }
           }}

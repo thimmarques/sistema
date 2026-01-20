@@ -147,19 +147,20 @@ const Hearings: React.FC<HearingsProps> = ({
             </div>
             {selectedHearing && (
                 <MovementSummaryModal
-                    movement={selectedHearing}
+                    movement={movements.find(m => m.id === selectedHearing.id) || selectedHearing}
                     client={clients.find(c => c.id === selectedHearing.clientId || c.caseNumber === selectedHearing.caseNumber)}
                     settings={settings}
                     onClose={() => setSelectedHearing(null)}
                     onEdit={() => {
-                        const h = selectedHearing;
+                        const h = movements.find(m => m.id === selectedHearing.id) || selectedHearing;
                         setSelectedHearing(null);
                         setMovementToEdit(h);
                         setShowForm(true);
                     }}
                     onDelete={() => {
+                        const h = movements.find(m => m.id === selectedHearing.id) || selectedHearing;
                         if (window.confirm('Tem certeza que deseja excluir esta audiência da agenda e do Google Calendar?')) {
-                            onDeleteMovement?.(selectedHearing);
+                            onDeleteMovement?.(h);
                             setSelectedHearing(null);
                         }
                     }}

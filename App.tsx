@@ -203,7 +203,8 @@ const App: React.FC = () => {
           type: m.type === 'Hearing' ? 'Audiência' : (m.type as any),
           modality: m.modality as any,
           source: m.source || '',
-          syncedToGoogle: m.synced_to_google || false
+          syncedToGoogle: m.synced_to_google || false,
+          googleEventId: m.google_event_id
         }));
 
         setMovements(mappedMovements);
@@ -358,15 +359,32 @@ const App: React.FC = () => {
 
   const deleteMovement = async (movement: CourtMovement) => {
     try {
-      // 1. Se estiver sincronizado com o Google, tenta excluir de lá também
-      if (movement.syncedToGoogle && movement.googleEventId) {
+      // 1. Busca a versão MAIS RECENTE do banco para ter certeza se há um ID do Google
+      const { data: latestData, error: fetchError } = await supabase
+        .from('movements')
+        .select('synced_to_google, google_event_id')
+        .eq('id', movement.id)
+        .single();
+
+      if (fetchError && fetchError.code !== 'PGRST116') {
+        console.error('Erro ao buscar versão mais recente do evento:', fetchError);
+      }
+
+      const isSynced = latestData?.synced_to_google || movement.syncedToGoogle;
+      const gEventId = latestData?.google_event_id || movement.googleEventId;
+
+      let googleDeleted = false;
+
+      // 2. Se estiver sincronizado com o Google e tiver o ID, exclui de lá
+      if (isSynced && gEventId) {
         const token = (session as any)?.provider_token || settings.googleToken;
         if (token) {
-          await GoogleCalendarService.deleteEvent(movement.googleEventId, token);
+          const success = await GoogleCalendarService.deleteEvent(gEventId, token);
+          googleDeleted = success;
         }
       }
 
-      // 2. Exclui do Supabase
+      // 3. Exclui do Supabase
       const { error } = await supabase
         .from('movements')
         .delete()
@@ -374,9 +392,15 @@ const App: React.FC = () => {
 
       if (error) throw error;
 
-      // 3. Atualiza estado local
+      // 4. Atualiza estado local
       setMovements(prev => prev.filter(m => m.id !== movement.id));
-      addNotification('success', 'Evento Removido', 'O evento foi excluído do sistema e da sua agenda.');
+
+      if (isSynced && !googleDeleted) {
+        addNotification('info', 'Removido Localmente', 'O evento foi removido do sistema, mas não pudemos confirmar a remoção no Google Agenda (possivelmente devido a uma sincronização antiga ou erro de conexão).');
+      } else {
+        addNotification('success', 'Evento Removido', 'O evento foi excluído do sistema e da sua agenda.');
+      }
+
       logActivity('DELETE', 'MOVEMENT', movement.id, `Excluiu evento: ${movement.description}`);
     } catch (error: any) {
       addNotification('alert', 'Erro ao Remover', error.message || 'Não foi possível excluir o evento.');
