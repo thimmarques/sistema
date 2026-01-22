@@ -37,44 +37,47 @@ const Sidebar: React.FC<SidebarProps> = ({ activeSection, onSelectSection, logo,
         ></div>
       )}
 
-      <aside className={`fixed inset-y-0 left-0 w-64 bg-slate-900 text-slate-300 flex flex-col z-50 transition-all duration-300 ease-in-out lg:relative lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="p-6 flex flex-col items-center border-b border-slate-800">
-          <div className="w-full aspect-square max-h-24 flex items-center justify-center bg-slate-800 rounded-xl mb-4 overflow-hidden shadow-inner">
+      <aside className={`fixed inset-y-0 left-0 w-64 bg-[#0A0A0B] border-r border-white/5 text-slate-500 flex flex-col z-50 transition-all duration-300 ease-in-out lg:relative lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="p-10 flex flex-col items-center border-b border-white/5 space-y-6">
+          <div className="h-16 w-16 border border-brand-500 flex items-center justify-center relative group overflow-hidden">
+            <div className="absolute inset-0 bg-brand-500/10 blur-xl group-hover:bg-brand-500/30 transition-all"></div>
             {logo && logo.startsWith('data:image') ? (
-              <img src={logo} className="max-h-full max-w-full object-contain p-2" alt="Logo" />
+              <img src={logo} className="h-full w-full object-contain p-2 relative z-10" alt="Logo" />
             ) : (
-              <div className="text-center">
-                <span className="text-2xl font-bold text-brand-400">
-                  {name ? getInitials(name) : 'LX'}
-                </span>
-              </div>
+              <i className="fa-solid fa-scale-balanced text-brand-500 text-2xl relative z-10"></i>
             )}
           </div>
-          <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-widest">{name || 'Sistema LexAI'}</h2>
+          <div className="text-center">
+            <h1 className="text-2xl font-black text-white italic tracking-tighter uppercase font-serif">LexAI</h1>
+            <p className="text-[8px] font-black text-slate-800 uppercase tracking-[0.4em] mt-1">Gestão de Elite</p>
+          </div>
         </div>
 
-        <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto custom-scrollbar">
+        <nav className="flex-1 px-6 py-10 space-y-4 overflow-y-auto custom-scrollbar">
           {menuItems.map((item) => (
             <button
               key={item.id}
               onClick={() => handleSelect(item.id)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${activeSection === item.id
-                ? 'bg-brand-600 text-white shadow-lg shadow-brand-600/20'
-                : 'text-slate-400 hover:bg-slate-800 hover:text-white'
-                }`}
+              className={`w-full flex flex-col items-center group transition-all ${activeSection === item.id ? 'opacity-100 scale-105' : 'opacity-40 hover:opacity-100'}`}
             >
-              <div className="w-5 text-center">
-                <i className={`fa-solid ${item.icon}`}></i>
+              <div className={`w-full p-4 border border-white/5 flex items-center gap-4 transition-all ${activeSection === item.id ? 'bg-brand-500 border-brand-500 text-black shadow-[0_0_30px_rgba(126,138,238,0.3)]' : 'hover:bg-white/5 hover:border-white/10'}`}>
+                <div className="w-5 text-center">
+                  <i className={`fa-solid ${item.icon} text-xs`}></i>
+                </div>
+                <span className="text-[9px] font-black uppercase tracking-[0.3em] truncate">{item.label}</span>
               </div>
-              <span className="truncate">{item.label}</span>
+              {activeSection === item.id && <div className="h-1 w-8 bg-brand-500 mt-2"></div>}
             </button>
           ))}
         </nav>
 
-        <div className="p-4 border-t border-slate-800 mt-auto">
-          <div className="px-4 py-3 bg-slate-800/50 rounded-lg flex items-center gap-3 border border-slate-700/50">
-            <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></div>
-            <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Conexão Segura</p>
+        <div className="p-8 border-t border-white/5 mt-auto">
+          <div className="flex flex-col items-center space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="h-1 w-1 rounded-full bg-brand-500 animate-ping"></div>
+              <p className="text-[8px] font-black text-slate-800 uppercase tracking-[0.5em]">Operacional</p>
+            </div>
+            <p className="text-[7px] text-slate-900 font-black uppercase tracking-[0.2em]">Protocolo v2.0</p>
           </div>
         </div>
       </aside>
