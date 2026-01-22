@@ -151,192 +151,203 @@ const Agenda: React.FC<AgendaProps> = ({
   const isToday = (dateStr: string) => dateStr === new Date().toISOString().split('T')[0];
 
   return (
-    <div className="space-y-8 animate-fade-in">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <div className="space-y-1 text-left">
-          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Calendário Operacional</h2>
-          <p className="text-slate-500">Agenda tática e controle de prazos.</p>
+    <>
+      <div className="space-y-12 animate-fade-in pb-24">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 border-b border-white/5 pb-10">
+          <div className="space-y-4 text-left">
+            <p className="text-[10px] font-black text-brand-500 uppercase tracking-[0.5em]">CONTROLE TEMPORAL</p>
+            <h2 className="text-5xl font-black text-white italic tracking-tighter uppercase font-serif">Agenda Estratégica</h2>
+            <p className="text-[10px] font-black text-slate-700 uppercase tracking-widest">Protocolo de Prazos e Audiências</p>
+          </div>
+          <div className="flex items-center gap-6 w-full md:w-auto">
+            <button
+              onClick={handleToday}
+              className="flex-1 md:flex-none h-14 px-8 border border-white/5 text-slate-500 font-black text-[9px] uppercase tracking-[0.3em] hover:text-white hover:bg-white/5 transition-all"
+            >
+              Terminal Hoje
+            </button>
+            <button
+              onClick={() => setShowForm(true)}
+              className="flex-1 md:flex-none bg-brand-500 text-black px-12 py-5 font-black text-[11px] uppercase tracking-[0.4em] hover:bg-brand-600 transition-all active:scale-95 shadow-2xl"
+            >
+              Novo Evento
+            </button>
+          </div>
         </div>
-        <div className="flex items-center gap-3 w-full md:w-auto">
-          <button
-            onClick={handleToday}
-            className="flex-1 md:flex-none h-12 px-6 bg-white border border-slate-200 rounded-xl text-slate-600 font-bold text-xs uppercase tracking-wider hover:bg-slate-50 transition-all shadow-sm"
-          >
-            Hoje
-          </button>
-          <button
-            onClick={() => setShowForm(true)}
-            className="flex-1 md:flex-none bg-brand-600 text-white px-8 py-3 rounded-xl font-bold text-sm shadow-lg shadow-brand-600/20 hover:bg-brand-700 hover:-translate-y-0.5 active:scale-95 transition-all flex items-center justify-center gap-2"
-          >
-            <i className="fa-solid fa-calendar-plus text-xs"></i>
-            Novo Evento
-          </button>
-        </div>
-      </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
-        <div className="xl:col-span-3 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden p-6 md:p-8">
-          <div className="flex flex-col lg:flex-row justify-between items-center mb-8 gap-6">
-            <div className="flex items-center gap-6">
-              <div className="flex flex-col">
-                <h3 className="text-2xl font-bold text-slate-900 capitalize">
+        <div className="grid grid-cols-1 xl:grid-cols-4 gap-10">
+          <div className="xl:col-span-3 bg-white/[0.02] border border-white/5 p-12">
+            <div className="flex flex-col lg:flex-row justify-between items-center mb-12 gap-10">
+              <div className="flex items-center gap-8">
+                <h3 className="text-2xl font-black text-white uppercase tracking-tighter italic font-serif">
                   {currentDate.toLocaleString('pt-BR', { month: 'long', year: 'numeric' })}
                 </h3>
-              </div>
-              <div className="flex gap-1 bg-slate-100 p-1 rounded-lg">
-                <button onClick={handlePrev} className="h-8 w-8 flex items-center justify-center text-slate-500 hover:text-brand-600 hover:bg-white rounded-md transition-all"><i className="fa-solid fa-chevron-left text-xs"></i></button>
-                <button onClick={handleNext} className="h-8 w-8 flex items-center justify-center text-slate-500 hover:text-brand-600 hover:bg-white rounded-md transition-all"><i className="fa-solid fa-chevron-right text-xs"></i></button>
-              </div>
-            </div>
-            <div className="flex bg-slate-100 p-1 rounded-xl">
-              {['MÊS', 'SEMANA', 'DIA'].map((t) => (
-                <button key={t} onClick={() => setView(t as any)} className={`px-6 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${view === t ? 'bg-white text-brand-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>{t}</button>
-              ))}
-            </div>
-          </div>
-
-          {view === 'MÊS' && (
-            <div className="grid grid-cols-7 border-l border-t border-slate-100 rounded-xl overflow-hidden shadow-sm">
-              {['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'].map(d => (
-                <div key={d} className="py-4 text-center text-[10px] font-bold text-slate-400 tracking-widest border-r border-b border-slate-100 bg-slate-50">{d}</div>
-              ))}
-              {calendarDays.map((d, i) => {
-                const dayMovements = getMovementsForDay(d.fullDate);
-                const dayIsToday = isToday(d.fullDate);
-                return (
-                  <div key={i} onClick={() => handleSelectDay(d.fullDate)} className={`min-h-[120px] p-3 border-r border-b border-slate-100 transition-all group hover:bg-slate-50 cursor-pointer ${dayIsToday ? 'bg-brand-50/50' : ''}`}>
-                    <div className="flex justify-between items-start mb-2">
-                      <span className={`text-sm font-bold ${d.currentMonth ? (dayIsToday ? 'text-brand-600' : 'text-slate-700') : 'text-slate-300'}`}>
-                        {d.day}
-                      </span>
-                      {dayIsToday && <div className="h-1.5 w-1.5 rounded-full bg-brand-500"></div>}
-                    </div>
-                    <div className="space-y-1">
-                      {dayMovements.slice(0, 3).map((m) => (
-                        <div key={m.id} className="flex items-center gap-2 group/task" onClick={(e) => { e.stopPropagation(); setSelectedMovement(m); }}>
-                          <div className={`h-1.5 w-1.5 rounded-full ${m.type === 'Audiência' ? 'bg-orange-500' : m.type === 'Deadline' ? 'bg-rose-500' : 'bg-brand-500'}`}></div>
-                          <p className="text-[10px] font-bold text-slate-500 truncate group-hover/task:text-brand-600 transition-colors">
-                            {m.description}
-                          </p>
-                        </div>
-                      ))}
-                      {dayMovements.length > 3 && <p className="text-[9px] font-bold text-slate-400 pl-3">+ {dayMovements.length - 3}</p>}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-
-          {view === 'SEMANA' && (
-            <div className="space-y-3">
-              {weekDays.map((wd) => {
-                const dayMovements = getMovementsForDay(wd.fullDate);
-                const dayIsToday = isToday(wd.fullDate);
-                return (
-                  <div key={wd.fullDate} onClick={() => handleSelectDay(wd.fullDate)} className={`flex flex-col lg:flex-row gap-0 border border-slate-100 rounded-2xl overflow-hidden transition-all cursor-pointer group hover:border-brand-300 shadow-sm ${dayIsToday ? 'bg-brand-50/20' : 'bg-white'}`}>
-                    <div className="flex flex-row lg:flex-col items-center justify-center min-w-[100px] p-6 bg-slate-50/50 border-b lg:border-b-0 lg:border-r border-slate-100">
-                      <span className={`text-[10px] font-bold tracking-widest uppercase ${dayIsToday ? 'text-brand-600' : 'text-slate-400'}`}>{wd.dayName}</span>
-                      <span className={`text-3xl font-bold ${dayIsToday ? 'text-brand-600' : 'text-slate-800'}`}>{wd.day}</span>
-                    </div>
-                    <div className="flex-1 divide-y divide-slate-100">
-                      {dayMovements.length > 0 ? dayMovements.map(m => (
-                        <div key={m.id} className="p-4 px-6 flex justify-between items-center group/item hover:bg-slate-50" onClick={(e) => { e.stopPropagation(); setSelectedMovement(m); }}>
-                          <div className="space-y-1 text-left">
-                            <span className="text-[10px] font-bold text-brand-600 uppercase tracking-wider">{m.time || '09:00'}</span>
-                            <h4 className="font-bold text-slate-900 group-hover:text-brand-600 transition-colors uppercase text-sm">{m.description}</h4>
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{m.caseNumber} • {m.source}</p>
-                          </div>
-                          <span className={`px-3 py-1 rounded-full font-bold text-[9px] tracking-wider border ${formatMovementType(m.type).color}`}>
-                            {formatMovementType(m.type).label}
-                          </span>
-                        </div>
-                      )) : <div className="p-10 text-[10px] font-bold uppercase text-slate-300 tracking-widest text-center">Nenhum evento</div>}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-
-          {view === 'DIA' && (
-            <div className="space-y-12 py-6">
-              <div className="flex items-center gap-8">
-                <div className="text-center p-6 bg-brand-50 rounded-3xl min-w-[140px]">
-                  <p className="text-[12px] font-bold text-brand-600 uppercase tracking-widest mb-1">{currentDate.toLocaleString('pt-BR', { weekday: 'long' })}</p>
-                  <h4 className="text-6xl font-bold text-brand-700 leading-none">{currentDate.getDate()}</h4>
-                </div>
-                <div className="space-y-1 text-left">
-                  <p className="text-2xl font-bold text-slate-900 uppercase tracking-tight">{currentDate.toLocaleString('pt-BR', { month: 'long', year: 'numeric' })}</p>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Atividade Operacional do Dia</p>
+                <div className="flex bg-white/5 p-1 border border-white/5">
+                  <button onClick={handlePrev} className="h-10 w-10 flex items-center justify-center text-slate-800 hover:text-white transition-all"><i className="fa-solid fa-chevron-left text-xs"></i></button>
+                  <div className="w-[1px] bg-white/5"></div>
+                  <button onClick={handleNext} className="h-10 w-10 flex items-center justify-center text-slate-800 hover:text-white transition-all"><i className="fa-solid fa-chevron-right text-xs"></i></button>
                 </div>
               </div>
+              <div className="flex bg-white/5 p-1 border border-white/5">
+                {['MÊS', 'SEMANA', 'DIA'].map((t) => (
+                  <button key={t} onClick={() => setView(t as any)} className={`px-10 py-3 text-[9px] font-black uppercase tracking-[0.3em] transition-all ${view === t ? 'bg-brand-500 text-black shadow-lg shadow-brand-500/20' : 'text-slate-500 hover:text-white'}`}>{t}</button>
+                ))}
+              </div>
+            </div>
 
-              <div className="space-y-3">
-                {getMovementsForDay(currentDate.toISOString().split('T')[0]).length > 0 ? (
-                  getMovementsForDay(currentDate.toISOString().split('T')[0]).map(m => (
-                    <div key={m.id} className="group flex flex-col lg:flex-row justify-between items-center p-6 border border-slate-100 rounded-2xl hover:border-brand-200 transition-all bg-white shadow-sm hover:shadow-md">
-                      <div className="space-y-4 flex-1 text-left">
-                        <div className="flex items-center gap-4">
-                          <span className="text-xs font-bold text-brand-600 tracking-widest uppercase">{m.time || '09:00'}</span>
-                          <span className={`px-3 py-1 rounded-full text-[9px] font-bold tracking-widest uppercase border ${formatMovementType(m.type).color}`}>{formatMovementType(m.type).label}</span>
-                        </div>
-                        <h5 className="text-2xl font-bold text-slate-900 uppercase">{m.description}</h5>
-                        <div className="flex gap-8">
-                          <div className="space-y-1">
-                            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">PROCESSO</p>
-                            <p className="text-xs font-bold text-slate-600 uppercase">{m.caseNumber}</p>
-                          </div>
-                          <div className="space-y-1">
-                            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">FORO</p>
-                            <p className="text-xs font-bold text-slate-600 uppercase">{m.source}</p>
-                          </div>
-                        </div>
+            {view === 'MÊS' && (
+              <div className="grid grid-cols-7 border border-white/5">
+                {['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'].map(d => (
+                  <div key={d} className="py-6 text-center text-[9px] font-black text-slate-700 tracking-[0.4em] border-b border-r border-white/5 bg-white/[0.01]">{d}</div>
+                ))}
+                {calendarDays.map((d, i) => {
+                  const dayMovements = getMovementsForDay(d.fullDate);
+                  const dayIsToday = isToday(d.fullDate);
+                  return (
+                    <div key={i} onClick={() => handleSelectDay(d.fullDate)} className={`min-h-[140px] p-6 border-r border-b border-white/5 transition-all group hover:bg-white/[0.03] cursor-pointer ${dayIsToday ? 'bg-brand-500/5' : ''}`}>
+                      <div className="flex justify-between items-start mb-6">
+                        <span className={`text-base font-black ${d.currentMonth ? (dayIsToday ? 'text-brand-500' : 'text-slate-500') : 'text-slate-900'}`}>
+                          {d.day}
+                        </span>
+                        {dayIsToday && <div className="h-1 w-1 bg-brand-500 shadow-[0_0_10px_#7e8aee]"></div>}
                       </div>
-                      <div className="flex gap-2 mt-6 lg:mt-0">
-                        <button onClick={() => setSelectedMovement(m)} className="p-3 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-xl transition-all">
-                          <i className="fa-solid fa-eye text-sm"></i>
-                        </button>
-                        <button onClick={() => handleEditClick(m)} className="p-3 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-all">
-                          <i className="fa-solid fa-pen-to-square text-sm"></i>
-                        </button>
+                      <div className="space-y-2">
+                        {dayMovements.slice(0, 3).map((m) => (
+                          <div key={m.id} className="flex items-center gap-3 group/task" onClick={(e) => { e.stopPropagation(); setSelectedMovement(m); }}>
+                            <div className={`h-1 w-1 ${m.type === 'Audiência' ? 'bg-orange-500' : m.type === 'Deadline' ? 'bg-rose-500' : 'bg-brand-500'}`}></div>
+                            <p className="text-[9px] font-black text-slate-800 truncate group-hover/task:text-white transition-all">
+                              {m.description.toUpperCase()}
+                            </p>
+                          </div>
+                        ))}
+                        {dayMovements.length > 3 && <p className="text-[8px] font-black text-slate-900 pl-4">+ {dayMovements.length - 3}</p>}
                       </div>
                     </div>
-                  ))
-                ) : <p className="py-20 text-center text-[10px] font-bold uppercase text-slate-300 tracking-widest">Nenhum Registro detetado</p>}
+                  );
+                })}
               </div>
-            </div>
-          )}
-        </div>
+            )}
 
-        {/* Sidebar Alerts */}
-        <div className="space-y-8">
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 space-y-6">
-            <div className="flex justify-between items-end border-b border-slate-100 pb-4">
-              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-widest">Críticos</h4>
-              <span className="px-2 py-0.5 bg-rose-100 text-rose-600 rounded-md text-[10px] font-bold">{allDeadlines.length}</span>
-            </div>
-            <div className="space-y-4">
-              {paginatedDeadlines.map((m) => (
-                <div key={m.id} onClick={() => handleSelectDay(m.date)} className="p-4 rounded-xl border border-slate-100 hover:border-brand-200 hover:bg-slate-50 transition-all cursor-pointer group text-left">
-                  <p className="text-[9px] font-bold text-rose-500 uppercase tracking-widest mb-1">PRAZO FATAL</p>
-                  <h5 className="text-[11px] font-bold text-slate-800 group-hover:text-brand-700 uppercase transition-colors line-clamp-2">{m.description}</h5>
-                  <div className="mt-4 flex justify-between items-center text-[10px] font-bold text-slate-400">
-                    <span>{new Date(m.date + 'T12:00:00').toLocaleDateString('pt-BR')}</span>
-                    <i className="fa-solid fa-chevron-right text-[8px] group-hover:translate-x-1 transition-transform"></i>
+            {view === 'SEMANA' && (
+              <div className="space-y-6">
+                {weekDays.map((wd) => {
+                  const dayMovements = getMovementsForDay(wd.fullDate);
+                  const dayIsToday = isToday(wd.fullDate);
+                  return (
+                    <div key={wd.fullDate} onClick={() => handleSelectDay(wd.fullDate)} className={`flex flex-col lg:flex-row border border-white/5 transition-all cursor-pointer group hover:border-brand-500/30 ${dayIsToday ? 'bg-brand-500/[0.02]' : 'bg-white/[0.01]'}`}>
+                      <div className="flex flex-row lg:flex-col items-center justify-center min-w-[140px] p-10 bg-white/[0.01] border-b lg:border-b-0 lg:border-r border-white/5">
+                        <span className={`text-[9px] font-black tracking-[0.4em] uppercase ${dayIsToday ? 'text-brand-500' : 'text-slate-800'}`}>{wd.dayName}</span>
+                        <span className={`text-4xl font-black mt-2 tracking-tighter ${dayIsToday ? 'text-brand-500' : 'text-white'}`}>{wd.day}</span>
+                      </div>
+                      <div className="flex-1 divide-y divide-white/5">
+                        {dayMovements.length > 0 ? dayMovements.map(m => (
+                          <div key={m.id} className="p-8 px-12 flex justify-between items-center group/item hover:bg-white/5 transition-all" onClick={(e) => { e.stopPropagation(); setSelectedMovement(m); }}>
+                            <div className="space-y-3 text-left">
+                              <span className="text-[9px] font-black text-brand-500 uppercase tracking-[0.3em]">{m.time || '09:00'}</span>
+                              <h4 className="text-sm font-black text-white group-hover:text-brand-500 transition-all uppercase tracking-widest">{m.description}</h4>
+                              <p className="text-[9px] font-black text-slate-800 uppercase tracking-[0.2em]">{m.caseNumber} • {m.source}</p>
+                            </div>
+                            <span className={`px-4 py-2 text-[8px] font-black tracking-[0.2em] border ${formatMovementType(m.type).color.replace('bg-', 'bg-white/5 border-')}`}>
+                              {formatMovementType(m.type).label}
+                            </span>
+                          </div>
+                        )) : <div className="p-16 text-[9px] font-black uppercase text-slate-900 tracking-[0.4em] text-center italic">Sem Registros Ativos</div>}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {view === 'DIA' && (
+              <div className="space-y-16 py-10">
+                <div className="flex items-center gap-12 border-l-4 border-brand-500 pl-12 bg-white/[0.01] py-10">
+                  <div className="text-center">
+                    <p className="text-[10px] font-black text-brand-500 uppercase tracking-[0.4em] mb-3">{currentDate.toLocaleString('pt-BR', { weekday: 'long' })}</p>
+                    <h4 className="text-8xl font-black text-white tracking-tighter leading-none">{currentDate.getDate()}</h4>
+                  </div>
+                  <div className="space-y-4 text-left">
+                    <p className="text-4xl font-black text-white uppercase tracking-tighter italic font-serif">
+                      {currentDate.toLocaleString('pt-BR', { month: 'long', year: 'numeric' })}
+                    </p>
+                    <div className="flex items-center gap-4">
+                      <div className="h-1.5 w-1.5 bg-brand-500 shadow-[0_0_10px_#7e8aee]"></div>
+                      <p className="text-[10px] font-black text-slate-700 uppercase tracking-[0.4em]">ATIVIDADE OPERACIONAL DISPONÍVEL</p>
+                    </div>
                   </div>
                 </div>
-              ))}
-              {allDeadlines.length === 0 && <p className="text-center text-[10px] font-bold text-slate-300 py-4 uppercase">Nenhum Alerta</p>}
-            </div>
+
+                <div className="space-y-6">
+                  {getMovementsForDay(currentDate.toISOString().split('T')[0]).length > 0 ? (
+                    getMovementsForDay(currentDate.toISOString().split('T')[0]).map(m => (
+                      <div key={m.id} className="group flex flex-col lg:flex-row justify-between items-center p-12 border border-white/5 hover:border-brand-500/30 transition-all bg-white/[0.01] relative overflow-hidden">
+                        <div className="space-y-8 flex-1 text-left">
+                          <div className="flex items-center gap-6">
+                            <span className="text-[10px] font-black text-brand-500 tracking-[0.4em] uppercase">{m.time || '09:00'}</span>
+                            <span className={`px-4 py-2 text-[8px] font-black tracking-[0.2em] uppercase border ${formatMovementType(m.type).color.replace('bg-', 'bg-white/5 border-')}`}>{formatMovementType(m.type).label}</span>
+                          </div>
+                          <h5 className="text-3xl font-black text-white uppercase tracking-widest">{m.description}</h5>
+                          <div className="grid grid-cols-2 lg:flex lg:gap-16 gap-10">
+                            <div className="space-y-2">
+                              <p className="text-[8px] font-black text-slate-800 uppercase tracking-[0.3em]">IDENTIFICADOR</p>
+                              <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{m.caseNumber}</p>
+                            </div>
+                            <div className="space-y-2">
+                              <p className="text-[8px] font-black text-slate-800 uppercase tracking-[0.3em]">TRIBUNAL/ÓRGÃO</p>
+                              <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{m.source}</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex gap-4 mt-12 lg:mt-0">
+                          <button onClick={() => setSelectedMovement(m)} className="p-4 border border-white/5 text-slate-900 hover:text-white hover:border-white/20 transition-all">
+                            <i className="fa-solid fa-eye text-xs"></i>
+                          </button>
+                          <button onClick={() => handleEditClick(m)} className="p-4 border border-white/5 text-slate-900 hover:text-white hover:border-white/20 transition-all">
+                            <i className="fa-solid fa-pen-to-square text-xs"></i>
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="py-32 text-center space-y-6 bg-white/[0.01] border border-white/5">
+                      <i className="fa-solid fa-radar text-5xl text-white/5"></i>
+                      <p className="text-[10px] font-black text-slate-900 uppercase tracking-[0.5em]">Sem Registros Ativos para este Período</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 space-y-6">
-            <h4 className="text-xs font-bold text-slate-900 uppercase tracking-widest border-b border-slate-100 pb-4">Legenda</h4>
-            <div className="space-y-3">
-              <div className="flex items-center gap-3"><div className="h-2 w-2 rounded-full bg-orange-500"></div><span className="text-[10px] font-bold uppercase text-slate-500 tracking-wider">Audiência</span></div>
-              <div className="flex items-center gap-3"><div className="h-2 w-2 rounded-full bg-rose-500"></div><span className="text-[10px] font-bold uppercase text-slate-500 tracking-wider">Prazo Fatal</span></div>
-              <div className="flex items-center gap-3"><div className="h-2 w-2 rounded-full bg-brand-500"></div><span className="text-[10px] font-bold uppercase text-slate-500 tracking-wider">Geral</span></div>
+          <div className="space-y-10">
+            <div className="bg-white/[0.02] border border-white/5 p-10 space-y-10">
+              <div className="flex justify-between items-end border-b border-white/5 pb-6">
+                <h4 className="text-[10px] font-black text-white uppercase tracking-[0.5em]">CRÍTICOS</h4>
+                <span className="px-3 py-1 bg-brand-500 text-black text-[10px] font-black">{allDeadlines.length}</span>
+              </div>
+              <div className="space-y-6">
+                {paginatedDeadlines.map((m) => (
+                  <div key={m.id} onClick={() => handleSelectDay(m.date)} className="p-8 border border-white/5 hover:border-brand-500/30 bg-white/[0.01] transition-all cursor-pointer group text-left relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-1 h-full bg-rose-500 opacity-20 group-hover:opacity-100 transition-all"></div>
+                    <p className="text-[9px] font-black text-rose-500 uppercase tracking-[0.4em] mb-4">PRAZO FATAL</p>
+                    <h5 className="text-[11px] font-black text-white group-hover:text-brand-500 uppercase transition-all line-clamp-2 tracking-widest leading-relaxed">{m.description}</h5>
+                    <div className="mt-8 flex justify-between items-center text-[9px] font-black text-slate-800 uppercase tracking-widest">
+                      <span>{new Date(m.date + 'T12:00:00').toLocaleDateString('pt-BR')}</span>
+                      <i className="fa-solid fa-chevron-right text-[8px] group-hover:translate-x-2 transition-all"></i>
+                    </div>
+                  </div>
+                ))}
+                {allDeadlines.length === 0 && <p className="text-center text-[9px] font-black text-slate-900 py-10 uppercase tracking-[0.4em]">Nenhum Alerta Ativo</p>}
+              </div>
+            </div>
+
+            <div className="bg-white/[0.02] border border-white/5 p-10 space-y-8">
+              <h4 className="text-[10px] font-black text-white uppercase tracking-[0.5em] border-b border-white/5 pb-6">LEGENDA</h4>
+              <div className="space-y-5">
+                <div className="flex items-center gap-4"><div className="h-1.5 w-1.5 bg-orange-500 shadow-[0_0_10px_#f97316]"></div><span className="text-[9px] font-black uppercase text-slate-700 tracking-[0.3em]">Audiência</span></div>
+                <div className="flex items-center gap-4"><div className="h-1.5 w-1.5 bg-rose-500 shadow-[0_0_10px_#f43f5e]"></div><span className="text-[9px] font-black uppercase text-slate-700 tracking-[0.3em]">Prazo Fatal</span></div>
+                <div className="flex items-center gap-4"><div className="h-1.5 w-1.5 bg-brand-500 shadow-[0_0_10px_#7e8aee]"></div><span className="text-[9px] font-black uppercase text-slate-700 tracking-[0.3em]">Operacional</span></div>
+              </div>
             </div>
           </div>
         </div>
@@ -365,7 +376,7 @@ const Agenda: React.FC<AgendaProps> = ({
           }}
         />
       )}
-    </div>
+    </>
   );
 };
 
