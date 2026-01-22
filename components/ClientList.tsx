@@ -275,6 +275,113 @@ const ClientList: React.FC<ClientListProps> = ({
           initialData={formData.financials}
         />
       )}
+
+      {showFormModal && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 overflow-y-auto animate-in fade-in duration-300">
+          <div className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl p-8 md:p-10 space-y-8 animate-in zoom-in-95 my-8">
+            <div className="flex justify-between items-start border-b border-slate-100 pb-6">
+              <div className="space-y-1 text-left">
+                <h3 className="text-xl font-bold text-slate-900 tracking-tight">
+                  {isEditing ? 'Editar Registro' : 'Novo Cliente'}
+                </h3>
+                <p className="text-xs text-slate-500">Gestão de custódia e dados processuais.</p>
+              </div>
+              <button onClick={() => setShowFormModal(false)} className="p-2 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all">
+                <i className="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+
+            <div className="flex bg-slate-100 p-1 rounded-xl">
+              {(['pessoal', 'endereco', 'processo'] as const).map(tab => (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => setFormActiveTab(tab)}
+                  className={`flex-1 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${formActiveTab === tab ? 'bg-white text-brand-600 shadow-sm' : 'text-slate-500'}`}
+                >
+                  {tab === 'pessoal' ? 'PESSOAL' : tab === 'endereco' ? 'ENDEREÇO' : 'PROCESSO'}
+                </button>
+              ))}
+            </div>
+
+            <form onSubmit={handleNextStep} className="space-y-6">
+              {formActiveTab === 'pessoal' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in slide-in-from-right-4 duration-300">
+                  <div className="md:col-span-2 space-y-2 text-left">
+                    <label className="text-[10px] font-bold uppercase text-slate-400 tracking-widest ml-1">Nome Completo</label>
+                    <input type="text" required className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:border-brand-500 outline-none text-sm" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
+                  </div>
+                  <div className="space-y-2 text-left">
+                    <label className="text-[10px] font-bold uppercase text-slate-400 tracking-widest ml-1">CPF / CNPJ</label>
+                    <input type="text" className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:border-brand-500 outline-none text-sm" value={formData.cpf_cnpj} onChange={e => setFormData({ ...formData, cpf_cnpj: e.target.value })} />
+                  </div>
+                  <div className="space-y-2 text-left">
+                    <label className="text-[10px] font-bold uppercase text-slate-400 tracking-widest ml-1">Telefone</label>
+                    <input type="text" className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:border-brand-500 outline-none text-sm" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
+                  </div>
+                  <div className="space-y-2 text-left">
+                    <label className="text-[10px] font-bold uppercase text-slate-400 tracking-widest ml-1">E-mail</label>
+                    <input type="email" className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:border-brand-500 outline-none text-sm" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} />
+                  </div>
+                  <div className="space-y-2 text-left">
+                    <label className="text-[10px] font-bold uppercase text-slate-400 tracking-widest ml-1">Data de Nascimento</label>
+                    <input type="date" className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:border-brand-500 outline-none text-sm" value={formData.birthDate} onChange={e => setFormData({ ...formData, birthDate: e.target.value })} />
+                  </div>
+                </div>
+              )}
+
+              {formActiveTab === 'endereco' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in slide-in-from-right-4 duration-300">
+                  <div className="md:col-span-2 space-y-2 text-left">
+                    <label className="text-[10px] font-bold uppercase text-slate-400 tracking-widest ml-1">Endereço</label>
+                    <input type="text" className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:border-brand-500 outline-none text-sm" value={formData.address} onChange={e => setFormData({ ...formData, address: e.target.value })} />
+                  </div>
+                  <div className="space-y-2 text-left">
+                    <label className="text-[10px] font-bold uppercase text-slate-400 tracking-widest ml-1">Bairro</label>
+                    <input type="text" className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:border-brand-500 outline-none text-sm" value={formData.neighborhood} onChange={e => setFormData({ ...formData, neighborhood: e.target.value })} />
+                  </div>
+                  <div className="space-y-2 text-left">
+                    <label className="text-[10px] font-bold uppercase text-slate-400 tracking-widest ml-1">Cidade</label>
+                    <input type="text" className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:border-brand-500 outline-none text-sm" value={formData.city} onChange={e => setFormData({ ...formData, city: e.target.value })} />
+                  </div>
+                </div>
+              )}
+
+              {formActiveTab === 'processo' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in slide-in-from-right-4 duration-300">
+                  <div className="md:col-span-2 space-y-2 text-left">
+                    <label className="text-[10px] font-bold uppercase text-slate-400 tracking-widest ml-1">Número do Processo</label>
+                    <input type="text" required className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:border-brand-500 outline-none text-sm" value={formData.caseNumber} onChange={e => setFormData({ ...formData, caseNumber: e.target.value })} />
+                  </div>
+                  <div className="space-y-2 text-left">
+                    <label className="text-[10px] font-bold uppercase text-slate-400 tracking-widest ml-1">Modalidade</label>
+                    <select className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:border-brand-500 outline-none text-sm" value={formData.origin} onChange={e => setFormData({ ...formData, origin: e.target.value as any })}>
+                      <option value="Particular">Particular</option>
+                      <option value="Defensoria">Defensoria</option>
+                    </select>
+                  </div>
+                  <div className="space-y-2 text-left">
+                    <label className="text-[10px] font-bold uppercase text-slate-400 tracking-widest ml-1">Natureza</label>
+                    <select className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:border-brand-500 outline-none text-sm" value={formData.caseType} onChange={e => setFormData({ ...formData, caseType: e.target.value })}>
+                      <option value="Cível">Cível</option>
+                      <option value="Trabalhista">Trabalhista</option>
+                      <option value="Criminal">Criminal</option>
+                      <option value="Família">Família</option>
+                    </select>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex items-center gap-4 pt-6 border-t border-slate-100">
+                <button type="button" onClick={() => setShowFormModal(false)} className="flex-1 py-3 text-slate-500 font-bold text-xs uppercase tracking-widest hover:bg-slate-50 rounded-xl transition-all">Cancelar</button>
+                <button type="submit" className="flex-[2] bg-brand-600 text-white py-3 rounded-xl font-bold text-sm shadow-lg shadow-brand-600/20 hover:bg-brand-700 transition-all active:scale-95">
+                  {formActiveTab === 'processo' ? 'Financeiro' : 'Próximo'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
