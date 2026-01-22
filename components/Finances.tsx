@@ -207,121 +207,116 @@ const Finances: React.FC<FinancesProps> = ({ clients, currentUserId, onUpdateCli
   }, [tableData]);
 
   return (
-    <div className="space-y-12 animate-in fade-in duration-1000">
-      <div className="flex flex-col md:flex-row justify-between items-end gap-10">
-        <div className="space-y-2 text-left">
-          <span className="text-[9px] font-black text-brand-500 uppercase tracking-[0.4em]">Fluxo de Caixa</span>
-          <h2 className="text-4xl font-black text-white font-serif italic tracking-tight">Ativos & Honorários</h2>
+    <div className="space-y-8 animate-fade-in">
+      <div className="flex flex-col md:flex-row justify-between items-end gap-6">
+        <div className="space-y-1 text-left">
+          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Tesouraria & Honorários</h2>
+          <p className="text-slate-500">Gestão financeira e controle de ativos.</p>
         </div>
-        <div className="bg-white/5 border border-white/5 rounded-none px-10 py-5 flex items-center gap-6">
-          <div className="h-1 w-1 bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,1)]"></div>
-          <span className="text-[9px] font-black text-slate-600 uppercase tracking-[0.4em]">Monitoramento Bancário Ativo</span>
+        <div className="bg-white border border-slate-200 rounded-xl px-6 py-3 flex items-center gap-3 shadow-sm">
+          <div className="h-2 w-2 rounded-full bg-emerald-500"></div>
+          <span className="text-xs font-bold text-slate-600 uppercase tracking-widest">Monitoramento Ativo</span>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-1">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {[
-          { label: 'RECEITA CONSOLIDADA', value: stats.recebidos, color: 'text-emerald-500' },
-          { label: 'PREVISÃO PARTICULAR', value: stats.aReceber, color: 'text-brand-500' },
-          { label: 'EXPECTATIVA CONVÊNIO', value: stats.defensoriaPendente, color: 'text-slate-500' }
+          { label: 'RECEITA CONSOLIDADA', value: stats.recebidos, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+          { label: 'PREVISÃO PARTICULAR', value: stats.aReceber, color: 'text-brand-600', bg: 'bg-brand-50' },
+          { label: 'EXPECTATIVA CONVÊNIO', value: stats.defensoriaPendente, color: 'text-slate-600', bg: 'bg-slate-100' }
         ].map((s, idx) => (
-          <div key={idx} className="bg-white/[0.02] border border-white/5 p-10 space-y-4">
-            <p className="text-[8px] font-black text-slate-700 uppercase tracking-[0.3em]">{s.label}</p>
+          <div key={idx} className="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm space-y-2">
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{s.label}</p>
             <div className="flex items-baseline gap-2">
-              <span className="text-xl font-black text-slate-800 italic">R$</span>
-              <h3 className={`text-4xl font-black tracking-tighter text-white`}>{s.value.toLocaleString('pt-BR')}</h3>
+              <span className="text-lg font-bold text-slate-400">R$</span>
+              <h3 className={`text-3xl font-bold tracking-tight text-slate-900`}>{s.value.toLocaleString('pt-BR')}</h3>
             </div>
-            <div className="h-[1px] w-8 bg-white/10"></div>
           </div>
         ))}
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-0 items-center border-b border-white/5 pb-10">
-        <div className="flex bg-white/5 p-1 border border-white/5">
+      <div className="flex flex-col lg:flex-row gap-4 items-center border-b border-slate-200 pb-6">
+        <div className="flex bg-slate-100 p-1 rounded-xl w-full lg:w-fit">
           {['GERAL', 'PARTICULAR', 'DEFENSORIA'].map(tab => (
-            <button key={tab} onClick={() => setActiveTab(tab as any)} className={`px-10 py-4 text-[9px] font-black uppercase tracking-[0.2em] transition-all ${activeTab === tab ? 'bg-brand-500 text-black' : 'text-slate-600 hover:text-slate-300'}`}>
+            <button key={tab} onClick={() => setActiveTab(tab as any)} className={`px-6 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${activeTab === tab ? 'bg-white text-brand-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
               {tab}
             </button>
           ))}
         </div>
-        <div className="relative flex-1 w-full mt-10 lg:mt-0 lg:ml-10 group">
-          <input type="text" placeholder="LOCALIZAR LANÇAMENTO..." className="w-full bg-white/5 border border-white/10 p-5 text-xs font-black uppercase tracking-widest text-white outline-none focus:border-brand-500 transition-all" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
-          <div className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-700 group-focus-within:text-brand-500"><i className="fa-solid fa-magnifying-glass text-xs"></i></div>
+        <div className="relative flex-1 w-full group">
+          <input type="text" placeholder="Localizar lançamento..." className="w-full bg-white border border-slate-200 rounded-xl p-3 pl-10 text-sm font-medium text-slate-900 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-brand-500 transition-colors"><i className="fa-solid fa-magnifying-glass text-xs"></i></div>
         </div>
       </div>
 
-      <div className="bg-[#0A0A0B] border border-white/5">
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div className="overflow-x-auto custom-scrollbar">
           <table className="w-full text-left min-w-[1000px] border-collapse">
-            <thead className="bg-white/5 text-[9px] uppercase font-black text-slate-600 tracking-[0.3em]">
+            <thead className="bg-slate-50 text-[10px] uppercase font-bold text-slate-500 tracking-widest">
               <tr>
-                <th className="px-10 py-8">Titularidade / Registro</th>
-                <th className="px-6 py-8">Origem</th>
-                <th className="px-6 py-8 text-center">Status Financeiro</th>
-                <th className="px-10 py-8 text-right">Valor em Custódia</th>
-                <th className="px-10 py-8 text-right">Ação</th>
+                <th className="px-6 py-4">Titularidade / Registro</th>
+                <th className="px-6 py-4">Origem</th>
+                <th className="px-6 py-4 text-center">Status</th>
+                <th className="px-6 py-4 text-right">Valor</th>
+                <th className="px-6 py-4 text-right">Ação</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-slate-100">
               {groupedData.map(group => {
                 const client = group[0].client;
                 const isExpanded = expandedClients.has(client.id);
                 return (
                   <React.Fragment key={client.id}>
-                    <tr className="hover:bg-white/[0.01] transition-all cursor-pointer group/row" onClick={() => toggleClient(client.id)}>
-                      <td className="px-10 py-10">
-                        <div className="flex items-center gap-6">
-                          <i className={`fa-solid ${isExpanded ? 'fa-minus' : 'fa-plus'} text-[8px] text-brand-500`}></i>
-                          <div className="space-y-1 text-left">
-                            <p className="font-black text-white text-lg tracking-tight uppercase italic group-hover/row:text-brand-500 transition-colors">{client.name}</p>
-                            <p className="text-[9px] font-black text-slate-700 uppercase tracking-widest">{client.caseNumber || 'SEM PROCESSO'}</p>
+                    <tr className="hover:bg-slate-50 transition-all cursor-pointer group/row" onClick={() => toggleClient(client.id)}>
+                      <td className="px-6 py-5">
+                        <div className="flex items-center gap-4">
+                          <i className={`fa-solid ${isExpanded ? 'fa-chevron-down' : 'fa-chevron-right'} text-[10px] text-slate-300 group-hover/row:text-brand-500`}></i>
+                          <div className="text-left">
+                            <p className="font-bold text-slate-900 group-hover/row:text-brand-600 transition-colors">{client.name}</p>
+                            <p className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">{client.caseNumber || 'Sem Processo'}</p>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-10">
-                        <span className={`text-[10px] font-black uppercase tracking-tighter ${client.origin === 'Particular' ? 'text-brand-500' : 'text-emerald-500'}`}>{client.origin}</span>
+                      <td className="px-6 py-5">
+                        <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md ${client.origin === 'Particular' ? 'bg-brand-50 text-brand-600' : 'bg-emerald-50 text-emerald-600'}`}>{client.origin}</span>
                       </td>
-                      <td className="px-6 py-10 text-center">
-                        <div className="flex items-center justify-center gap-2">
-                          <div className="h-1 w-6 bg-white/5"></div>
-                          <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest italic">{isExpanded ? 'DETALHADO' : 'AGRUPADO'}</span>
-                          <div className="h-1 w-6 bg-white/5"></div>
-                        </div>
+                      <td className="px-6 py-5 text-center">
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{isExpanded ? 'Detalhista' : 'Resumido'}</span>
                       </td>
-                      <td className="px-10 py-10 text-right">
-                        <p className="text-xl font-black text-white italic tracking-tighter">
+                      <td className="px-6 py-5 text-right">
+                        <p className="font-bold text-slate-900">
                           {formatCurrency(client.financials?.totalAgreed || 0)}
                         </p>
                       </td>
-                      <td className="px-10 py-10 text-right">
-                        <button onClick={(e) => { e.stopPropagation(); setEditingClient(client); }} className="h-12 w-12 bg-white/5 text-slate-600 hover:text-white transition-all flex items-center justify-center">
-                          <i className="fa-solid fa-terminal text-xs"></i>
+                      <td className="px-6 py-5 text-right">
+                        <button onClick={(e) => { e.stopPropagation(); setEditingClient(client); }} className="p-2 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-all">
+                          <i className="fa-solid fa-pen-to-square text-sm"></i>
                         </button>
                       </td>
                     </tr>
                     {isExpanded && group.map((item, idx) => (
-                      <tr key={item.id} className="bg-white/[0.02] border-l border-brand-500/30 animate-in slide-in-from-left-2 duration-500">
-                        <td className="px-10 py-6 pl-24">
-                          <div className="flex items-center gap-4">
-                            <div className="h-[1px] w-4 bg-white/10"></div>
-                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{item.type}</span>
+                      <tr key={item.id} className="bg-slate-50/50">
+                        <td className="px-6 py-4 pl-16">
+                          <div className="flex items-center gap-3">
+                            <div className="h-px w-3 bg-slate-200"></div>
+                            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{item.type}</span>
                           </div>
                         </td>
-                        <td className="px-6 py-6 text-[9px] font-black text-slate-700 uppercase italic">
+                        <td className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase">
                           {item.date.includes('T') ? new Date(item.date).toLocaleDateString('pt-BR') : item.date.split('-').reverse().join('/')}
                         </td>
-                        <td className="px-6 py-6 text-center">
-                          <span className={`px-4 py-1.5 border font-black text-[9px] tracking-widest uppercase ${item.status === 'LIQUIDADO' || item.status === 'PAGO PELO ESTADO' ? 'border-emerald-500 text-emerald-500' : 'border-slate-800 text-slate-700'}`}>
+                        <td className="px-6 py-4 text-center">
+                          <span className={`px-3 py-1 rounded-full font-bold text-[9px] tracking-wider uppercase border ${item.status === 'LIQUIDADO' || item.status === 'PAGO PELO ESTADO' ? 'bg-emerald-50 border-emerald-100 text-emerald-600' : 'bg-slate-100 border-slate-200 text-slate-500'}`}>
                             {item.status}
                           </span>
                         </td>
-                        <td className="px-10 py-6 text-right">
-                          <p className="text-lg font-black text-white opacity-60 tracking-tighter italic">{formatCurrency(item.value)}</p>
+                        <td className="px-6 py-4 text-right">
+                          <p className="text-sm font-bold text-slate-600">{formatCurrency(item.value)}</p>
                         </td>
-                        <td className="px-10 py-6 text-right">
+                        <td className="px-6 py-4 text-right text-xs">
                           {item.isParticular && (
-                            <button onClick={() => togglePaymentStatus(item.client, item.id, item.status)} className={`h-10 w-10 transition-all flex items-center justify-center ${item.status === 'LIQUIDADO' ? 'bg-emerald-500 text-black' : 'bg-white/5 text-slate-800 hover:text-white'}`}>
-                              <i className={`fa-solid ${item.status === 'LIQUIDADO' ? 'fa-check-double' : 'fa-check'} text-[10px]`}></i>
+                            <button onClick={() => togglePaymentStatus(item.client, item.id, item.status)} className={`p-2 rounded-lg transition-all ${item.status === 'LIQUIDADO' ? 'text-emerald-600 bg-emerald-100' : 'text-slate-400 hover:text-emerald-600 hover:bg-emerald-50'}`}>
+                              <i className={`fa-solid ${item.status === 'LIQUIDADO' ? 'fa-check-double' : 'fa-check'}`}></i>
                             </button>
                           )}
                         </td>
@@ -333,7 +328,7 @@ const Finances: React.FC<FinancesProps> = ({ clients, currentUserId, onUpdateCli
             </tbody>
           </table>
           {groupedData.length === 0 && (
-            <div className="py-40 text-center text-[10px] font-black uppercase text-slate-900 tracking-[1em]">Vazio Operacional</div>
+            <div className="py-20 text-center text-slate-400 italic">Nenhum lançamento encontrado.</div>
           )}
         </div>
       </div>

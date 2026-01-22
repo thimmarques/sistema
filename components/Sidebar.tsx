@@ -37,62 +37,44 @@ const Sidebar: React.FC<SidebarProps> = ({ activeSection, onSelectSection, logo,
         ></div>
       )}
 
-      <aside className={`fixed inset-y-0 left-0 w-72 bg-[#0A0A0B] text-slate-500 flex flex-col z-50 transition-all duration-500 ease-in-out border-r border-white/5 lg:relative lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="p-10 flex flex-col items-center">
-          {/* Logo Container - Technical Luxury */}
-          <div className="w-full h-32 flex items-center justify-center bg-white/5 border border-white/5 shadow-2xl mb-12 overflow-hidden group relative rounded-none">
-            <div className="absolute inset-0 bg-gradient-to-tr from-brand-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-
+      <aside className={`fixed inset-y-0 left-0 w-64 bg-slate-900 text-slate-300 flex flex-col z-50 transition-all duration-300 ease-in-out lg:relative lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="p-6 flex flex-col items-center border-b border-slate-800">
+          <div className="w-full aspect-square max-h-24 flex items-center justify-center bg-slate-800 rounded-xl mb-4 overflow-hidden shadow-inner">
             {logo && logo.startsWith('data:image') ? (
-              <img src={logo} className="max-h-full max-w-full object-contain relative z-10 grayscale brightness-125 hover:grayscale-0 transition-all duration-700" alt="Logo" />
+              <img src={logo} className="max-h-full max-w-full object-contain p-2" alt="Logo" />
             ) : (
-              <div className="text-center relative z-10 transition-transform duration-700 group-hover:scale-105">
-                <div className="flex flex-col items-center">
-                  <span className="text-4xl font-black text-white tracking-widest leading-none mb-2">
-                    {name ? getInitials(name) : 'LX'}
-                  </span>
-                  <div className="h-[1px] w-12 bg-brand-500 mb-3 grayscale brightness-150"></div>
-                  <span className="text-[8px] font-black text-slate-600 tracking-[0.6em] uppercase">Lex Architect</span>
-                </div>
+              <div className="text-center">
+                <span className="text-2xl font-bold text-brand-400">
+                  {name ? getInitials(name) : 'LX'}
+                </span>
               </div>
             )}
           </div>
+          <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-widest">{name || 'Sistema LexAI'}</h2>
         </div>
 
-        <nav className="flex-1 px-8 space-y-12 overflow-y-auto custom-scrollbar">
-          <div>
-            <p className="text-[9px] font-black text-slate-700 uppercase tracking-[0.4em] mb-8 px-2">SISTEMA v4.0</p>
-            <ul className="space-y-4">
-              {menuItems.map((item) => (
-                <li key={item.id}>
-                  <button
-                    onClick={() => handleSelect(item.id)}
-                    className={`w-full flex items-center gap-5 px-4 py-3 transition-all duration-500 group relative ${activeSection === item.id
-                      ? 'text-brand-500'
-                      : 'text-slate-600 hover:text-slate-300'
-                      }`}
-                  >
-                    {activeSection === item.id && (
-                      <div className="absolute left-0 w-[1px] h-4 bg-brand-500 animate-in slide-in-from-left duration-500"></div>
-                    )}
-                    <div className={`text-sm transition-all duration-700 ${activeSection === item.id ? 'scale-110 brightness-125' : 'grayscale group-hover:grayscale-0'}`}>
-                      <i className={`fa-solid ${item.icon}`}></i>
-                    </div>
-                    <span className="font-black text-[10px] uppercase tracking-[0.25em]">{item.label}</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
+        <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto custom-scrollbar">
+          {menuItems.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => handleSelect(item.id)}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${activeSection === item.id
+                ? 'bg-brand-600 text-white shadow-lg shadow-brand-600/20'
+                : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+                }`}
+            >
+              <div className="w-5 text-center">
+                <i className={`fa-solid ${item.icon}`}></i>
+              </div>
+              <span className="truncate">{item.label}</span>
+            </button>
+          ))}
         </nav>
 
-        <div className="p-10 mt-auto">
-          <div className="p-6 border border-white/5 bg-white/5 relative overflow-hidden group">
-            <p className="text-[8px] font-black text-brand-500 uppercase tracking-[0.4em] mb-2">SECURE MODE</p>
-            <div className="flex items-center gap-3">
-              <div className="h-1 w-1 bg-brand-500 shadow-[0_0_8px_rgba(197,160,89,1)]"></div>
-              <p className="text-[8px] text-slate-500 uppercase font-black tracking-widest">TLS 1.3 Active</p>
-            </div>
+        <div className="p-4 border-t border-slate-800 mt-auto">
+          <div className="px-4 py-3 bg-slate-800/50 rounded-lg flex items-center gap-3 border border-slate-700/50">
+            <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></div>
+            <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Conexão Segura</p>
           </div>
         </div>
       </aside>

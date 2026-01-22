@@ -78,88 +78,88 @@ const MovementFormModal: React.FC<MovementFormModalProps> = ({ isOpen, onClose, 
 
     if (!isOpen) return null;
 
-    const inputClass = "w-full p-5 bg-white/5 border border-white/10 rounded-none focus:border-brand-500 outline-none transition-all text-xs font-black uppercase tracking-widest text-white placeholder:text-slate-800";
-    const labelClass = "block text-[9px] font-black uppercase text-slate-600 mb-3 tracking-[0.4em]";
+    const inputClass = "w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 outline-none transition-all text-sm font-medium text-slate-900 placeholder:text-slate-400";
+    const labelClass = "block text-[10px] font-bold uppercase text-slate-400 mb-2 tracking-widest ml-1";
 
     return (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-[#0A0A0B]/90 backdrop-blur-xl p-4 overflow-y-auto animate-in fade-in duration-500">
-            <div className="bg-[#0A0A0B] w-full max-w-2xl border border-white/10 p-16 space-y-12 animate-in zoom-in-95 my-8">
-                <div className="flex justify-between items-end border-b border-white/5 pb-8">
-                    <div className="space-y-2">
-                        <span className="text-[9px] font-black text-brand-500 uppercase tracking-[0.4em] italic">Protocolo de Registro</span>
-                        <h3 className="text-3xl font-black text-white italic tracking-tighter uppercase font-serif">
-                            {initialData ? 'Modificar Lançamento' : 'Novo Lançamento Táctico'}
+        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 overflow-y-auto animate-in fade-in duration-300">
+            <div className="bg-white w-full max-w-xl rounded-3xl shadow-2xl p-8 md:p-10 space-y-8 animate-in zoom-in-95 my-8">
+                <div className="flex justify-between items-start border-b border-slate-100 pb-6">
+                    <div className="space-y-1 text-left">
+                        <h3 className="text-xl font-bold text-slate-900 tracking-tight">
+                            {initialData ? 'Editar Evento' : 'Novo Agendamento'}
                         </h3>
+                        <p className="text-xs text-slate-500">Preencha os dados do compromisso judicial.</p>
                     </div>
-                    <button onClick={onClose} className="h-12 w-12 bg-white/5 text-slate-600 hover:text-white transition-all flex items-center justify-center">
-                        <i className="fa-solid fa-xmark text-xs"></i>
+                    <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all">
+                        <i className="fa-solid fa-xmark"></i>
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-10">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                        <div className="md:col-span-2">
-                            <label className={labelClass}>Identificação do Processo</label>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="md:col-span-2 space-y-2 text-left">
+                            <label className={labelClass}>Número do Processo</label>
                             <input
                                 type="text"
                                 required
                                 className={inputClass}
-                                placeholder="CÓDIGO ÚNICO (CNJ)"
+                                placeholder="0000000-00.0000.0.00.0000"
                                 value={formData.caseNumber}
                                 onChange={(e) => handleCaseNumberChange(e.target.value)}
                             />
                             {matchedClientName && (
-                                <p className="mt-3 text-[9px] font-black text-brand-500 uppercase tracking-[0.2em] italic">
-                                    <i className="fa-solid fa-user-check mr-2"></i>Custodiado: {matchedClientName}
+                                <p className="mt-2 text-[10px] font-bold text-brand-600 uppercase tracking-wider flex items-center gap-2">
+                                    <i className="fa-solid fa-user-check"></i> Cliente: {matchedClientName}
                                 </p>
                             )}
                         </div>
 
-                        <div className="md:col-span-2">
-                            <label className={labelClass}>Vincular Entidade de Custódia</label>
+                        <div className="md:col-span-2 space-y-2 text-left">
+                            <label className={labelClass}>Vincular Cliente</label>
                             <select className={inputClass} value={formData.clientId} onChange={(e) => handleClientChange(e.target.value)}>
-                                <option value="" className="bg-[#0A0A0B]">-- SELECIONAR CLIENTE --</option>
-                                {clients.map(c => <option key={c.id} value={c.id} className="bg-[#0A0A0B]">{c.name.toUpperCase()}</option>)}
+                                <option value="">-- Selecione o Cliente --</option>
+                                {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                             </select>
                         </div>
 
-                        <div>
-                            <label className={labelClass}>Data da Operação</label>
+                        <div className="space-y-2 text-left">
+                            <label className={labelClass}>Data</label>
                             <input type="date" required className={inputClass} value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} />
                         </div>
 
-                        <div>
-                            <label className={labelClass}>Natureza do Evento</label>
+                        <div className="space-y-2 text-left">
+                            <label className={labelClass}>Tipo de Evento</label>
                             <select className={inputClass} value={formData.type} onChange={(e) => setFormData({ ...formData, type: e.target.value as any })}>
-                                <option value="Deadline" className="bg-[#0A0A0B]">PRAZO PROCESSUAL</option>
-                                <option value="Audiência" className="bg-[#0A0A0B]">AUDIÊNCIA / DILIGÊNCIA</option>
-                                <option value="Notification" className="bg-[#0A0A0B]">NOTIFICAÇÃO EXTERNA</option>
+                                <option value="Deadline">Prazo Processual</option>
+                                <option value="Audiência">Audiência / Diligência</option>
+                                <option value="Notification">Notificação</option>
                             </select>
                         </div>
 
                         {formData.type === 'Audiência' && (
-                            <div className="md:col-span-2 grid grid-cols-2 gap-10 animate-in slide-in-from-top-4 duration-700">
-                                <div><label className={labelClass}>Horário</label><input type="time" required className={inputClass} value={formData.time} onChange={(e) => setFormData({ ...formData, time: e.target.value })} /></div>
-                                <div><label className={labelClass}>Modalidade</label><select className={inputClass} value={formData.modality} onChange={(e) => setFormData({ ...formData, modality: e.target.value as any })}><option value="Presencial" className="bg-[#0A0A0B]">FÍSICO / PRESENCIAL</option><option value="Online" className="bg-[#0A0A0B]">VIRTUAL / VIDEOCONFERÊNCIA</option></select></div>
+                            <div className="md:col-span-2 grid grid-cols-2 gap-6 animate-in slide-in-from-top-2 duration-300">
+                                <div className="space-y-2 text-left"><label className={labelClass}>Horário</label><input type="time" required className={inputClass} value={formData.time} onChange={(e) => setFormData({ ...formData, time: e.target.value })} /></div>
+                                <div className="space-y-2 text-left"><label className={labelClass}>Modalidade</label><select className={inputClass} value={formData.modality} onChange={(e) => setFormData({ ...formData, modality: e.target.value as any })}><option value="Presencial">Presencial</option><option value="Online">Virtual / Online</option></select></div>
                             </div>
                         )}
 
-                        <div className="md:col-span-2">
-                            <label className={labelClass}>Detalhamento Operacional</label>
+                        <div className="md:col-span-2 space-y-2 text-left">
+                            <label className={labelClass}>Descrição / Observações</label>
                             <textarea
                                 required
-                                className={`${inputClass} h-32 resize-none`}
-                                placeholder="DESREVER AÇÃO OU PRAZO COM PRECISÃO TÉCNICA..."
+                                className={`${inputClass} h-28 resize-none`}
+                                placeholder="Detalhes do compromisso..."
                                 value={formData.description}
                                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                             />
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-10 pt-10 border-t border-white/5">
-                        <button type="button" onClick={onClose} className="text-[9px] font-black text-slate-800 uppercase tracking-[0.4em] hover:text-white transition-all">ABORTAR</button>
-                        <button type="submit" className="flex-1 bg-brand-500 text-black py-5 font-black text-[10px] uppercase tracking-[0.3em] hover:bg-brand-600 transition-all active:scale-95 shadow-2xl">
-                            {initialData ? 'SINCRONIZAR ALTERAÇÕES' : 'CONSOLIDAR LANÇAMENTO'}
+                    <div className="flex items-center gap-4 pt-6 border-t border-slate-100">
+                        <button type="button" onClick={onClose} className="flex-1 py-3 text-slate-500 font-bold text-xs uppercase tracking-widest hover:bg-slate-50 rounded-xl transition-all">Cancelar</button>
+                        <button type="submit" className="flex-[2] bg-brand-600 text-white py-3 rounded-xl font-bold text-sm shadow-lg shadow-brand-600/20 hover:bg-brand-700 transition-all active:scale-95">
+                            {initialData ? 'Salvar Alterações' : 'Agendar Evento'}
                         </button>
                     </div>
                 </form>

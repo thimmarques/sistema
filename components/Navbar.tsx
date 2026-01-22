@@ -39,34 +39,39 @@ const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-30 mx-0 mb-8 border-b border-white/5 bg-[#0A0A0B]/80 backdrop-blur-3xl px-8 shadow-2xl">
-      <div className="flex h-24 w-full items-center justify-between">
-        <div className="flex items-center gap-10">
+    <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-slate-200 px-6 py-4 shadow-sm">
+      <div className="flex items-center justify-between max-w-[1920px] mx-auto">
+        <div className="flex items-center gap-4">
           <button
             onClick={onMenuClick}
-            className="flex h-12 w-12 items-center justify-center bg-white/5 text-slate-500 hover:text-brand-500 transition-all duration-500 lg:hidden"
+            className="p-2 text-slate-500 hover:text-brand-600 lg:hidden rounded-lg hover:bg-slate-100 transition-colors"
           >
             <i className="fa-solid fa-bars-staggered"></i>
           </button>
 
           <div className="flex flex-col">
-            <span className="text-[8px] font-black text-slate-600 uppercase tracking-[0.6em] mb-1.5 leading-none">LEX ARCHITECT V.04</span>
-            <h1 className="text-2xl font-black text-white tracking-widest leading-none uppercase italic">
-              {getSectionTitle()}
+            <span className="text-[10px] font-bold text-brand-600 uppercase tracking-widest mb-0.5">LexAI Intelligence</span>
+            <h1 className="text-xl font-bold text-slate-900 leading-tight">
+              {getSectionTitle() === "Terminal de Comando" ? "Dashboard" :
+                getSectionTitle() === "Custódia de Clientes" ? "Clientes" :
+                  getSectionTitle() === "Fluxo de Capital" ? "Tesouraria" :
+                    getSectionTitle() === "Agenda Estratégica" ? "Agenda" :
+                      getSectionTitle() === "Lex AI Analytics" ? "Relatórios" :
+                        getSectionTitle() === "Escritório Digital" ? "Configurações" : getSectionTitle()}
             </h1>
           </div>
         </div>
 
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-4 md:gap-6">
           {/* Notifications */}
           <div className="relative">
             <button
               onClick={() => setShowNotifications(!showNotifications)}
-              className={`relative flex h-12 w-12 items-center justify-center transition-all duration-700 ${showNotifications ? 'bg-brand-500 text-black' : 'bg-white/5 text-slate-500 hover:text-white'}`}
+              className={`relative p-2.5 rounded-xl transition-all ${showNotifications ? 'bg-brand-600 text-white shadow-lg shadow-brand-600/20' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
             >
-              <i className="fa-solid fa-bell text-sm"></i>
+              <i className="fa-solid fa-bell text-lg"></i>
               {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center bg-brand-500 text-[8px] font-black text-black">
+                <span className="absolute top-1 right-1 flex h-5 w-5 items-center justify-center bg-rose-500 text-[10px] font-bold text-white rounded-full border-2 border-white">
                   {unreadCount}
                 </span>
               )}
@@ -81,21 +86,21 @@ const Navbar: React.FC<NavbarProps> = ({
             )}
           </div>
 
-          <div className="h-4 w-[1px] bg-white/10 hidden sm:block"></div>
+          <div className="h-6 w-[1px] bg-slate-200 hidden sm:block"></div>
 
           {/* User Profile */}
-          <div className="flex items-center gap-6 group cursor-pointer" onClick={() => onLogout()}>
-            <div className="text-right hidden sm:block">
-              <p className="text-[10px] font-black text-white group-hover:text-brand-500 transition-colors uppercase tracking-[0.2em]">{settings.name || 'Advogado'}</p>
-              <p className="text-[8px] text-slate-600 font-black uppercase tracking-widest mt-1">OAB/{settings.oabState || 'SP'} {settings.oab || '...'} </p>
-            </div>
+          <div className="flex items-center gap-4 group cursor-pointer hover:bg-slate-50 p-1.5 rounded-2xl transition-all pr-4" onClick={() => onLogout()}>
             <div className="relative">
               <img
-                src={settings.profileImage || `https://ui-avatars.com/api/?name=${settings.name || 'User'}&background=c5a059&color=000&size=200`}
-                className="h-12 w-12 border border-white/10 grayscale hover:grayscale-0 transition-all duration-700"
+                src={settings.profileImage || `https://ui-avatars.com/api/?name=${settings.name || 'User'}&background=7e8aee&color=fff&size=100`}
+                className="h-10 w-10 border border-slate-200 rounded-xl object-cover shadow-sm"
                 alt="Advogado"
               />
-              <div className="absolute -bottom-1 -right-1 h-2 w-2 bg-brand-500 shadow-[0_0_5px_rgba(197,160,89,1)]"></div>
+              <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 bg-emerald-500 border-2 border-white rounded-full"></div>
+            </div>
+            <div className="text-left hidden sm:block">
+              <p className="text-sm font-bold text-slate-900 leading-none mb-1 group-hover:text-brand-600 transition-colors">{settings.name || 'Advogado'}</p>
+              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">OAB/{settings.oabState || 'SP'} {settings.oab || '...'} </p>
             </div>
           </div>
         </div>

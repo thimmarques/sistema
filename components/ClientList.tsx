@@ -128,108 +128,110 @@ const ClientList: React.FC<ClientListProps> = ({
   };
 
   return (
-    <div className="space-y-12 animate-in fade-in duration-1000">
-      <div className="flex flex-col md:flex-row justify-between items-end gap-10">
-        <div className="space-y-2 text-left">
-          <span className="text-[9px] font-black text-brand-500 uppercase tracking-[0.4em]">Custódia Jurídica</span>
-          <h2 className="text-4xl font-black text-white font-serif italic tracking-tight">Portfólio de Clientes</h2>
+    <div className="space-y-8 animate-fade-in">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div className="space-y-1 text-left">
+          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Custódia Jurídica</h2>
+          <p className="text-slate-500">Gestão completa de registro de clientes.</p>
         </div>
         <button
           onClick={handleOpenCreate}
-          className="bg-brand-500 text-black px-10 py-5 rounded-none font-black text-[10px] uppercase tracking-[0.3em] shadow-2xl hover:bg-brand-600 hover:-translate-y-1 transition-all active:scale-95 flex items-center justify-center gap-4"
+          className="bg-brand-600 text-white px-8 py-3 rounded-xl font-bold text-sm shadow-lg shadow-brand-600/20 hover:bg-brand-700 hover:-translate-y-0.5 transition-all active:scale-95 flex items-center justify-center gap-2"
         >
           <i className="fa-solid fa-plus text-xs"></i>
-          Novo Registro
+          Novo Cliente
         </button>
       </div>
 
-      <div className="flex flex-col xl:flex-row gap-0 items-center justify-between border-b border-white/5 pb-8">
-        <div className="flex bg-white/5 p-1 rounded-none w-full xl:w-fit border border-white/5">
+      <div className="flex flex-col xl:flex-row gap-4 items-center justify-between border-b border-slate-200 pb-6">
+        <div className="flex bg-slate-100 p-1 rounded-xl w-full xl:w-fit">
           {(['Geral', 'Particular', 'Defensoria'] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-10 py-4 font-black text-[9px] uppercase tracking-[0.2em] transition-all ${activeTab === tab
-                ? 'bg-brand-500 text-black'
-                : 'text-slate-600 hover:text-slate-300'
+              className={`px-8 py-2 rounded-lg font-bold text-xs uppercase tracking-wider transition-all ${activeTab === tab
+                ? 'bg-white text-brand-600 shadow-sm'
+                : 'text-slate-500 hover:text-slate-700'
                 }`}
             >
               {tab}
             </button>
           ))}
         </div>
-        <div className="w-full xl:max-w-xl relative group mt-8 xl:mt-0">
+        <div className="w-full xl:max-w-md relative group">
           <input
             type="text"
-            placeholder="PESQUISAR REGISTRO..."
-            className="w-full pl-6 pr-12 py-5 bg-white/5 border border-white/10 text-xs font-black uppercase tracking-widest text-white shadow-sm focus:border-brand-500 outline-none transition-all"
+            placeholder="Pesquisar registro..."
+            className="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-900 shadow-sm focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <div className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-700 group-focus-within:text-brand-500 transition-colors">
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-brand-500 transition-colors">
             <i className="fa-solid fa-magnifying-glass text-xs"></i>
           </div>
         </div>
       </div>
 
-      <div className="bg-[#0A0A0B] overflow-hidden border border-white/5">
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div className="overflow-x-auto custom-scrollbar">
           <table className="w-full text-left min-w-[1000px] border-collapse">
-            <thead className="bg-white/5 text-[9px] uppercase font-black text-slate-600 tracking-[0.3em]">
+            <thead className="bg-slate-50 text-[10px] uppercase font-bold text-slate-500 tracking-widest">
               <tr>
-                <th className="px-10 py-6">Entidade / Identificação</th>
-                <th className="px-6 py-6 text-center">Natureza</th>
-                <th className="px-6 py-6 text-right">Patrimônio / Valor</th>
-                <th className="px-10 py-6 text-right">Ações de Comando</th>
+                <th className="px-6 py-4">Entidade / Identificação</th>
+                <th className="px-6 py-4 text-center">Natureza</th>
+                <th className="px-6 py-4 text-right">Patrimônio / Valor</th>
+                <th className="px-6 py-4 text-right">Ações</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-slate-100">
               {paginatedClients.map(client => (
-                <tr key={client.id} className="hover:bg-white/[0.02] transition-all group/row">
-                  <td className="px-10 py-8">
-                    <div className="flex items-center gap-6">
-                      <div className={`h-10 w-10 border flex items-center justify-center text-[10px] font-black italic ${client.origin === 'Particular' ? 'border-brand-500 text-brand-500' : 'border-emerald-500 text-emerald-500'}`}>
+                <tr key={client.id} className="hover:bg-slate-50 transition-all group/row">
+                  <td className="px-6 py-5">
+                    <div className="flex items-center gap-4">
+                      <div className={`h-10 w-10 rounded-xl border flex items-center justify-center text-xs font-bold ${client.origin === 'Particular' ? 'bg-brand-50 border-brand-100 text-brand-600' : 'bg-emerald-50 border-emerald-100 text-emerald-600'}`}>
                         {client.name.substring(0, 2).toUpperCase()}
                       </div>
-                      <div className="space-y-1 text-left">
-                        <p className="font-black text-white text-base tracking-tight group-hover/row:text-brand-500 transition-colors uppercase italic">{client.name}</p>
-                        <div className="flex items-center gap-4">
-                          <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest">{client.caseNumber || 'S/ PROC'}</span>
-                          {client.status === 'Active' && <div className="h-1 w-1 bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,1)]"></div>}
+                      <div className="text-left">
+                        <p className="font-bold text-slate-900 group-hover/row:text-brand-600 transition-colors">{client.name}</p>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{client.caseNumber || 'S/ Proc'}</span>
+                          {client.status === 'Active' && <div className="h-1.5 w-1.5 rounded-full bg-emerald-500"></div>}
                         </div>
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-8 text-center text-[10px]">
-                    <span className={`px-4 py-1.5 border font-black uppercase tracking-widest ${getCaseTypeStyle(client.caseType)}`}>
+                  <td className="px-6 py-5 text-center">
+                    <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${getCaseTypeStyle(client.caseType)}`}>
                       {client.caseType}
                     </span>
                   </td>
-                  <td className="px-6 py-8 text-right">
+                  <td className="px-6 py-5 text-right">
                     <div className="flex flex-col items-end">
-                      <span className="text-xl font-black text-white tracking-tighter italic">
+                      <span className="font-bold text-slate-900">
                         {client.userId === currentUserId
                           ? `R$ ${(client.financials?.totalAgreed || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
                           : "PROTEGIDO"}
                       </span>
-                      <span className="text-[8px] font-black text-slate-700 uppercase tracking-[0.2em]">Fluxo Contratual</span>
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Honorários</span>
                     </div>
                   </td>
-                  <td className="px-10 py-8 text-right">
-                    <div className="flex justify-end gap-1">
+                  <td className="px-6 py-5 text-right">
+                    <div className="flex justify-end gap-2">
                       {client.origin === 'Particular' && client.userId === currentUserId && (
                         <>
                           <button
                             onClick={() => generateClientPDF('procuration', client, settings!)}
-                            className="h-10 w-10 bg-white/5 text-slate-600 hover:text-brand-500 transition-all active:scale-90 flex items-center justify-center"
+                            className="p-2 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-all"
+                            title="Procuração"
                           >
-                            <i className="fa-solid fa-file-signature text-[10px]"></i>
+                            <i className="fa-solid fa-file-signature"></i>
                           </button>
                           <button
                             onClick={() => generateClientPDF('declaration', client, settings!)}
-                            className="h-10 w-10 bg-white/5 text-slate-600 hover:text-emerald-500 transition-all active:scale-90 flex items-center justify-center"
+                            className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
+                            title="Declaração"
                           >
-                            <i className="fa-solid fa-hand-holding-dollar text-[10px]"></i>
+                            <i className="fa-solid fa-hand-holding-dollar"></i>
                           </button>
                         </>
                       )}
@@ -237,20 +239,22 @@ const ClientList: React.FC<ClientListProps> = ({
                         <>
                           <button
                             onClick={() => handleOpenEdit(client)}
-                            className="h-10 w-10 bg-white/5 text-slate-600 hover:text-white transition-all active:scale-90 flex items-center justify-center"
+                            className="p-2 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all"
+                            title="Editar"
                           >
-                            <i className="fa-solid fa-terminal text-[10px]"></i>
+                            <i className="fa-solid fa-pen-to-square"></i>
                           </button>
                           <button
                             onClick={() => { setClientToDelete(client); setShowDeleteModal(true); onDeleteClient(client.id); }}
-                            className="h-10 w-10 bg-white/5 text-slate-600 hover:text-rose-500 transition-all active:scale-90 flex items-center justify-center"
+                            className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all"
+                            title="Excluir"
                           >
-                            <i className="fa-solid fa-trash-can text-[10px]"></i>
+                            <i className="fa-solid fa-trash-can"></i>
                           </button>
                         </>
                       ) : (
-                        <div className="px-4 py-2 bg-white/5 text-[8px] font-black uppercase text-slate-800 tracking-[0.2em] flex items-center gap-3">
-                          <i className="fa-solid fa-eye-slash text-[8px]"></i> Privado
+                        <div className="px-3 py-1 bg-slate-100 text-[10px] font-bold uppercase text-slate-400 tracking-wider rounded-lg flex items-center gap-2">
+                          <i className="fa-solid fa-eye-slash"></i> Privado
                         </div>
                       )}
                     </div>

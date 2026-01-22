@@ -29,102 +29,102 @@ const MovementSummaryModal: React.FC<MovementSummaryModalProps> = ({
     const weekday = date.toLocaleString('pt-BR', { weekday: 'long' });
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#0A0A0B]/90 backdrop-blur-xl p-4 animate-in fade-in duration-500">
-            <div className="bg-[#0A0A0B] w-full max-w-2xl border border-white/10 overflow-hidden animate-in zoom-in-95 duration-700">
+        <div className="fixed inset-0 z-[130] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
+            <div className="bg-white w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-500">
                 {/* Header Section */}
-                <div className="p-16 border-b border-white/5 space-y-8">
+                <div className="p-8 md:p-10 border-b border-slate-100 space-y-6 text-left">
                     <div className="flex justify-between items-start">
                         <div className="space-y-1">
-                            <span className={`px-4 py-1.5 border text-[8px] font-black tracking-[0.3em] uppercase ${movement.type === 'Audiência' ? 'border-orange-500 text-orange-500' : 'border-brand-500 text-brand-500'}`}>
+                            <span className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase border ${movement.type === 'Audiência' ? 'bg-orange-50 border-orange-100 text-orange-600' : 'bg-brand-50 border-brand-100 text-brand-600'}`}>
                                 {movement.type === 'Audiência' ? 'AUDIÊNCIA' : 'PRAZO JURÍDICO'}
                             </span>
-                            <p className="text-[10px] font-black text-slate-700 uppercase tracking-[0.4em] mt-2 italic">{weekday}, {day} de {month}</p>
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">{weekday}, {day} de {month}</p>
                         </div>
-                        <button onClick={onClose} className="h-12 w-12 bg-white/5 text-slate-600 hover:text-white transition-all flex items-center justify-center group">
-                            <i className="fa-solid fa-xmark text-xs group-hover:rotate-90 transition-transform"></i>
+                        <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all group">
+                            <i className="fa-solid fa-xmark"></i>
                         </button>
                     </div>
 
-                    <h3 className="text-4xl font-black text-white italic tracking-tight font-serif leading-tight">
+                    <h3 className="text-2xl font-bold text-slate-900 tracking-tight leading-tight">
                         {movement.description}
                     </h3>
                 </div>
 
-                <div className="p-16 space-y-16">
+                <div className="p-8 md:p-10 space-y-10 text-left">
                     {/* Information Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                        <div className="space-y-4">
-                            <span className="text-[9px] font-black uppercase text-slate-700 tracking-[0.4em]">Custodiado (Cliente)</span>
-                            <div className="flex items-center gap-6">
-                                <div className="h-12 w-12 bg-white/5 border border-white/10 flex items-center justify-center text-brand-500 font-black italic">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="space-y-3">
+                            <span className="text-[10px] font-bold uppercase text-slate-400 tracking-widest">Cliente</span>
+                            <div className="flex items-center gap-4">
+                                <div className="h-10 w-10 bg-brand-50 rounded-xl flex items-center justify-center text-brand-600 font-bold">
                                     {(client?.name || 'V').charAt(0).toUpperCase()}
                                 </div>
                                 <div>
-                                    <p className="font-black text-white text-lg tracking-tight uppercase italic">{client?.name || 'REGISTRO AVULSO'}</p>
-                                    <p className="text-[9px] font-black text-slate-800 uppercase tracking-widest">{movement.caseNumber || 'N/A'}</p>
+                                    <p className="font-bold text-slate-900 text-sm tracking-tight">{client?.name || 'Registro Avulso'}</p>
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{movement.caseNumber || 'N/A'}</p>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="space-y-4">
-                            <span className="text-[9px] font-black uppercase text-slate-700 tracking-[0.4em]">Especificações</span>
+                        <div className="space-y-3 text-left">
+                            <span className="text-[10px] font-bold uppercase text-slate-400 tracking-widest">Especificações</span>
                             <div className="flex flex-wrap gap-2">
-                                <span className="px-4 py-1.5 bg-white/5 text-[9px] font-black text-slate-400 uppercase tracking-widest border border-white/5">
+                                <span className="px-3 py-1 bg-slate-50 text-[10px] font-bold text-slate-600 uppercase tracking-widest rounded-lg border border-slate-100">
                                     {movement.time || '09:00'}
                                 </span>
-                                <span className={`px-4 py-1.5 bg-white/5 text-[9px] font-black uppercase tracking-widest border border-white/5 ${movement.modality === 'Online' ? 'text-cyan-500' : 'text-emerald-500'}`}>
+                                <span className={`px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest border ${movement.modality === 'Online' ? 'bg-cyan-50 border-cyan-100 text-cyan-600' : 'bg-emerald-50 border-emerald-100 text-emerald-600'}`}>
                                     {movement.modality || 'PRESENCIAL'}
                                 </span>
                             </div>
                         </div>
                     </div>
 
-                    <div className="space-y-4 pt-12 border-t border-white/5">
-                        <span className="text-[9px] font-black uppercase text-slate-700 tracking-[0.4em]">Fonte de Referência</span>
-                        <div className="flex items-start gap-8 bg-white/[0.01] p-8 border border-white/5 group">
-                            <div className="h-10 w-10 flex items-center justify-center bg-white/5 text-brand-500">
+                    <div className="space-y-3 pt-8 border-t border-slate-100 text-left">
+                        <span className="text-[10px] font-bold uppercase text-slate-400 tracking-widest">Fórum / Instância</span>
+                        <div className="flex items-start gap-4 bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                            <div className="h-10 w-10 flex items-center justify-center bg-white rounded-xl shadow-sm text-brand-600 border border-slate-100">
                                 <i className="fa-solid fa-location-dot"></i>
                             </div>
-                            <div className="space-y-2 flex-1">
-                                <p className="text-[10px] font-black text-white uppercase tracking-widest">{movement.source || 'INSTÂNCIA JUDICIAL'}</p>
-                                <p className="text-[9px] text-slate-700 font-black uppercase tracking-tighter">SINCRONIZAÇÃO AUTOMÁTICA EM CURSO</p>
+                            <div className="space-y-1">
+                                <p className="text-xs font-bold text-slate-900 uppercase tracking-wider">{movement.source || 'Fórum Central'}</p>
+                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Sincronização Ativa</p>
                             </div>
                         </div>
                     </div>
 
                     {/* Actions */}
-                    <div className="flex flex-col gap-2 pt-8 border-t border-white/5">
+                    <div className="flex flex-col gap-3 pt-6 border-t border-slate-100">
                         {googleConnected && !movement.syncedToGoogle && onSyncToGoogle && (
                             <button
                                 onClick={onSyncToGoogle}
-                                className="w-full h-16 bg-brand-500 text-black font-black text-[10px] uppercase tracking-[0.3em] hover:bg-brand-600 transition-all flex items-center justify-center gap-4"
+                                className="w-full py-4 bg-brand-600 text-white font-bold text-xs uppercase tracking-widest rounded-2xl shadow-lg shadow-brand-600/20 hover:bg-brand-700 transition-all flex items-center justify-center gap-3"
                             >
-                                <i className="fa-brands fa-google text-lg"></i>
-                                SINCRONIZAR COM A NUVEM
+                                <i className="fa-brands fa-google"></i>
+                                Sincronizar com Google Agenda
                             </button>
                         )}
                         {movement.syncedToGoogle && (
-                            <div className="w-full h-16 bg-white/5 text-emerald-500 font-black text-[10px] uppercase tracking-[0.3em] border border-emerald-500/20 flex items-center justify-center gap-4">
-                                <i className="fa-solid fa-circle-check text-lg"></i>
-                                REGISTRO SINCRONIZADO
+                            <div className="w-full py-4 bg-emerald-50 text-emerald-600 font-bold text-xs uppercase tracking-widest rounded-2xl border border-emerald-100 flex items-center justify-center gap-3">
+                                <i className="fa-solid fa-circle-check"></i>
+                                Sincronizado com Google
                             </div>
                         )}
 
-                        <div className="grid grid-cols-2 gap-2 mt-4">
+                        <div className="grid grid-cols-2 gap-3 mt-2">
                             {onEdit && (
                                 <button
                                     onClick={onEdit}
-                                    className="h-14 bg-white/5 text-slate-600 font-black text-[9px] uppercase tracking-[0.3em] hover:text-white transition-all flex items-center justify-center gap-3"
+                                    className="py-3 bg-slate-50 text-slate-600 font-bold text-xs uppercase tracking-widest rounded-xl border border-slate-200 hover:bg-slate-100 transition-all flex items-center justify-center gap-2"
                                 >
-                                    <i className="fa-solid fa-pen-nib"></i> REVISAR
+                                    <i className="fa-solid fa-pen-to-square"></i> Editar
                                 </button>
                             )}
                             {onDelete && (
                                 <button
                                     onClick={onDelete}
-                                    className="h-14 bg-white/5 text-rose-900 font-black text-[9px] uppercase tracking-[0.3em] hover:text-rose-500 transition-all flex items-center justify-center gap-3"
+                                    className="py-3 bg-rose-50 text-rose-500 font-bold text-xs uppercase tracking-widest rounded-xl border border-rose-100 hover:bg-rose-100 transition-all flex items-center justify-center gap-2"
                                 >
-                                    <i className="fa-solid fa-trash-can"></i> ELIMINAR
+                                    <i className="fa-solid fa-trash-can"></i> Excluir
                                 </button>
                             )}
                         </div>

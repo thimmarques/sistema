@@ -1,35 +1,31 @@
 @import "tailwindcss";
 
 @theme {
-  /* LexAI Premium: Dark Luxury Palette */
-  --color-brand-50: #fafaf9;
-  --color-brand-100: #f5f5f4;
-  --color-brand-200: #e7e5e4;
-  --color-brand-300: #d6d3d1;
-  --color-brand-400: #a8a29e;
-  --color-brand-500: #C5A059;
-  --color-brand-600: #B38F48;
-  --color-brand-700: #8B6E32;
-  --color-brand-800: #6B5527;
-  --color-brand-900: #4B3C1C;
-  --color-brand-950: #2D2411;
+  --color-brand-50: #f5f7ff;
+  --color-brand-100: #ebf0fe;
+  --color-brand-200: #dce4fd;
+  --color-brand-300: #c2cdfa;
+  --color-brand-400: #a2aff5;
+  --color-brand-500: #7e8aee;
+  --color-brand-600: #6366e6;
+  --color-brand-700: #5453d1;
+  --color-brand-800: #4644aa;
+  --color-brand-900: #3d3c88;
+  --color-brand-950: #25244f;
 
-  --color-accent-emerald: #064E3B;
-  --color-accent-rose: #7F1D1D;
-  --color-accent-amber: #B45309;
-  --color-accent-slate: #0A0A0B;
   --color-accent-violet: #8b5cf6;
+  --color-accent-emerald: #10b981;
+  --color-accent-rose: #f43f5e;
+  --color-accent-amber: #f59e0b;
   --color-accent-sky: #0ea5e9;
 
-  /* Sharp Geometric Tension */
-  --radius-xl: 0rem;
-  --radius-2xl: 0rem;
-  --radius-3xl: 0rem;
-  --radius-4xl: 0rem;
-  --radius-5xl: 0rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --radius-3xl: 2rem;
+  --radius-4xl: 2.5rem;
+  --radius-5xl: 3rem;
 
-  --shadow-premium: 0 10px 50px -10px rgba(0, 0, 0, 0.8);
-  --shadow-gold: 0 4px 20px -2px rgba(197, 160, 89, 0.2);
+  --shadow-premium: 0 20px 50px -12px rgba(0, 0, 0, 0.05);
   --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
 }
 
@@ -38,8 +34,9 @@
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     line-height: 1.5;
     font-weight: 400;
-    color-scheme: dark;
-    background-color: #0A0A0B;
+    color-scheme: light dark;
+    background-color: #f8fafc;
+    color: #1e293b;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -48,29 +45,13 @@
     margin: 0;
     min-width: 320px;
     min-height: 100vh;
-    color: #94a3b8;
-    background-color: #0A0A0B;
-  }
-
-  h1,
-  h2,
-  h3,
-  h4 {
-    font-family: 'Playfair Display', serif;
   }
 }
 
-/* Custom Utilities */
-@layer utilities {
-  .animate-reveal {
-    animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
-}
-
-/* Luxury Scrollbar - Global styles */
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -78,20 +59,20 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 0;
+  background: #e2e8f0;
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: #cbd5e1;
 }
 
 .custom-scrollbar::-webkit-scrollbar {
-  width: 3px;
+  width: 4px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(197, 160, 89, 0.2);
+  background: #cbd5e1;
 }
 
 @keyframes fadeIn {
@@ -104,4 +85,8 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
 }

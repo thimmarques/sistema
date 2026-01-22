@@ -77,36 +77,120 @@ const Hearings: React.FC<HearingsProps> = ({
     };
 
     return (
-        <div className="space-y-16 animate-in fade-in duration-1000 pb-40">
-            <div className="space-y-2 text-left">
-                <span className="text-[9px] font-black text-brand-500 uppercase tracking-[0.4em]">Cronograma Operacional</span>
-                <h2 className="text-4xl font-black text-white font-serif italic tracking-tight">Agenda de Audiências</h2>
+        <div className="space-y-12 animate-fade-in pb-20">
+            <div className="space-y-1 text-left">
+                <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Agenda de Audiências</h2>
+                <p className="text-slate-500">Controle tático de compromissos judiciais.</p>
             </div>
 
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-1 border-t border-white/5 pt-16">
-                <div className="space-y-10 p-4">
-                    <div className="flex items-center gap-6">
-                        <div className="h-[1px] w-12 bg-brand-500"></div>
-                        <h3 className="text-[11px] font-black text-white uppercase tracking-[0.5em] italic">Carteira Particular</h3>
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 border-t border-slate-100 pt-10">
+                <div className="space-y-8">
+                    <div className="flex items-center gap-4">
+                        <div className="h-1 w-8 bg-brand-600 rounded-full"></div>
+                        <h3 className="text-xs font-bold text-slate-900 uppercase tracking-widest">Carteira Particular</h3>
                     </div>
-                    <div className="space-y-8">
-                        {hearingsByOrigin.Particular.length > 0 ? hearingsByOrigin.Particular.map(renderHearingCard) : (
-                            <div className="p-24 text-center border border-white/5 bg-white/[0.01]">
-                                <p className="text-[9px] font-black text-slate-900 uppercase tracking-[1em]">FLUXO LIMPO</p>
+                    <div className="space-y-4">
+                        {hearingsByOrigin.Particular.length > 0 ? hearingsByOrigin.Particular.map(h => {
+                            const client = clients.find(c => c.id === h.clientId);
+                            const date = new Date(h.date + 'T12:00:00');
+                            const day = date.getDate();
+                            const month = date.toLocaleString('pt-BR', { month: 'short' }).toUpperCase().replace('.', '');
+
+                            return (
+                                <div
+                                    key={h.id}
+                                    className="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm hover:shadow-md hover:border-brand-200 transition-all cursor-pointer flex gap-6"
+                                    onClick={() => setSelectedHearing(h)}
+                                >
+                                    <div className="flex flex-col items-center justify-center min-w-[70px] h-20 bg-slate-50 rounded-xl border border-slate-100">
+                                        <span className="text-[10px] font-bold text-brand-600 tracking-wider mb-0.5">{month}</span>
+                                        <span className="text-2xl font-bold text-slate-900 leading-none">{day < 10 ? `0${day}` : day}</span>
+                                        <span className="text-[10px] font-bold text-slate-400 mt-1">{h.time || '09:00'}</span>
+                                    </div>
+                                    <div className="flex-1 space-y-4 text-left">
+                                        <div className="flex justify-between items-start gap-4">
+                                            <div className="space-y-0.5">
+                                                <h4 className="font-bold text-slate-900 uppercase text-sm leading-tight group-hover:text-brand-600 transition-colors">
+                                                    {client?.name || 'Registro Avulso'}
+                                                </h4>
+                                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{h.caseNumber}</p>
+                                            </div>
+                                            <span className={`px-3 py-1 rounded-full font-bold text-[9px] tracking-widest uppercase border ${h.modality === 'Online' ? 'bg-cyan-50 border-cyan-100 text-cyan-600' : 'bg-emerald-50 border-emerald-100 text-emerald-600'}`}>
+                                                {h.modality || 'PRESENCIAL'}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center justify-between border-t border-slate-50 pt-3">
+                                            <div className="flex items-center gap-2">
+                                                <i className="fa-solid fa-location-dot text-slate-300 text-[10px]"></i>
+                                                <span className="text-[10px] font-bold text-slate-500 uppercase truncate max-w-[150px]">{h.source || 'Fórum Central'}</span>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <button onClick={(e) => { e.stopPropagation(); setSelectedHearing(h); }} className="p-2 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-all"><i className="fa-solid fa-eye text-xs"></i></button>
+                                                <button onClick={(e) => { e.stopPropagation(); setMovementToEdit(h); setShowForm(true); }} className="p-2 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all"><i className="fa-solid fa-pen-to-square text-xs"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        }) : (
+                            <div className="py-12 text-center bg-slate-50/50 rounded-2xl border border-dashed border-slate-200">
+                                <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">Sem compromissos hoje</p>
                             </div>
                         )}
                     </div>
                 </div>
 
-                <div className="space-y-10 p-4 xl:border-l border-white/5">
-                    <div className="flex items-center gap-6">
-                        <div className="h-[1px] w-12 bg-emerald-500"></div>
-                        <h3 className="text-[11px] font-black text-white uppercase tracking-[0.5em] italic">Convênio Público</h3>
+                <div className="space-y-8">
+                    <div className="flex items-center gap-4">
+                        <div className="h-1 w-8 bg-emerald-500 rounded-full"></div>
+                        <h3 className="text-xs font-bold text-slate-900 uppercase tracking-widest">Convênio Público</h3>
                     </div>
-                    <div className="space-y-8">
-                        {hearingsByOrigin.Defensoria.length > 0 ? hearingsByOrigin.Defensoria.map(renderHearingCard) : (
-                            <div className="p-24 text-center border border-white/5 bg-white/[0.01]">
-                                <p className="text-[9px] font-black text-slate-900 uppercase tracking-[1em]">FLUXO LIMPO</p>
+                    <div className="space-y-4">
+                        {hearingsByOrigin.Defensoria.length > 0 ? hearingsByOrigin.Defensoria.map(h => {
+                            const client = clients.find(c => c.id === h.clientId);
+                            const date = new Date(h.date + 'T12:00:00');
+                            const day = date.getDate();
+                            const month = date.toLocaleString('pt-BR', { month: 'short' }).toUpperCase().replace('.', '');
+
+                            return (
+                                <div
+                                    key={h.id}
+                                    className="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm hover:shadow-md hover:border-emerald-200 transition-all cursor-pointer flex gap-6"
+                                    onClick={() => setSelectedHearing(h)}
+                                >
+                                    <div className="flex flex-col items-center justify-center min-w-[70px] h-20 bg-slate-50 rounded-xl border border-slate-100">
+                                        <span className="text-[10px] font-bold text-emerald-600 tracking-wider mb-0.5">{month}</span>
+                                        <span className="text-2xl font-bold text-slate-900 leading-none">{day < 10 ? `0${day}` : day}</span>
+                                        <span className="text-[10px] font-bold text-slate-400 mt-1">{h.time || '09:00'}</span>
+                                    </div>
+                                    <div className="flex-1 space-y-4 text-left">
+                                        <div className="flex justify-between items-start gap-4">
+                                            <div className="space-y-0.5">
+                                                <h4 className="font-bold text-slate-900 uppercase text-sm leading-tight group-hover:text-emerald-600 transition-colors">
+                                                    {client?.name || 'Registro Avulso'}
+                                                </h4>
+                                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{h.caseNumber}</p>
+                                            </div>
+                                            <span className={`px-3 py-1 rounded-full font-bold text-[9px] tracking-widest uppercase border ${h.modality === 'Online' ? 'bg-cyan-50 border-cyan-100 text-cyan-600' : 'bg-emerald-50 border-emerald-100 text-emerald-600'}`}>
+                                                {h.modality || 'PRESENCIAL'}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center justify-between border-t border-slate-50 pt-3">
+                                            <div className="flex items-center gap-2">
+                                                <i className="fa-solid fa-location-dot text-slate-300 text-[10px]"></i>
+                                                <span className="text-[10px] font-bold text-slate-500 uppercase truncate max-w-[150px]">{h.source || 'Fórum Central'}</span>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <button onClick={(e) => { e.stopPropagation(); setSelectedHearing(h); }} className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"><i className="fa-solid fa-eye text-xs"></i></button>
+                                                <button onClick={(e) => { e.stopPropagation(); setMovementToEdit(h); setShowForm(true); }} className="p-2 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-all"><i className="fa-solid fa-pen-to-square text-xs"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        }) : (
+                            <div className="py-12 text-center bg-slate-50/50 rounded-2xl border border-dashed border-slate-200">
+                                <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">Sem compromissos hoje</p>
                             </div>
                         )}
                     </div>
