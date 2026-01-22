@@ -34,7 +34,7 @@ const Layout: React.FC<LayoutProps> = ({
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     return (
-        <div className="flex min-h-screen bg-slate-50 font-sans">
+        <div className="flex min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-brand-500/10 selection:text-brand-600">
             <Sidebar
                 activeSection={activeSection}
                 onSelectSection={onSelectSection}
@@ -44,10 +44,10 @@ const Layout: React.FC<LayoutProps> = ({
                 onClose={() => setIsMobileMenuOpen(false)}
             />
 
-            <main className="flex-1 overflow-x-hidden relative h-screen">
+            <main className="flex-1 relative h-screen flex flex-col overflow-hidden">
                 {isLoading && (
-                    <div className="absolute top-0 left-0 w-full h-1 bg-slate-100 overflow-hidden z-50">
-                        <div className="h-full bg-amber-500 animate-progress origin-left"></div>
+                    <div className="absolute top-0 left-0 w-full h-1 bg-white/40 overflow-hidden z-50">
+                        <div className="h-full bg-gradient-to-r from-brand-500 to-accent-violet animate-pulse origin-left"></div>
                     </div>
                 )}
 
@@ -63,8 +63,8 @@ const Layout: React.FC<LayoutProps> = ({
                     onLogout={onLogout}
                 />
 
-                <div className="w-full">
-                    <div className={`max-w-[1920px] mx-auto p-4 md:p-8 transition-opacity duration-300 ${isLoading ? 'opacity-50' : 'opacity-100'}`}>
+                <div className="flex-1 overflow-y-auto custom-scrollbar">
+                    <div className={`max-w-[1920px] mx-auto p-4 md:p-8 transition-all duration-500 ease-out ${isLoading ? 'opacity-30 scale-[0.99] grayscale-[0.5]' : 'opacity-100 scale-100 grayscale-0'}`}>
                         {children}
                     </div>
                 </div>

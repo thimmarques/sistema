@@ -1,11 +1,11 @@
 @import "tailwindcss";
 
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
+  color-scheme: light dark;
+  background-color: #f8fafc;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -14,4 +14,60 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  color: #1e293b;
+  @apply bg-slate-50;
+}
+
+/* Glassmorphism Utilities */
+.glass-panel {
+  @apply bg-white/70 backdrop-blur-xl border border-white/20 shadow-glass;
+}
+
+.glass-card {
+  @apply bg-white/80 backdrop-blur-md border border-white/40 shadow-premium;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-200 rounded-full hover:bg-slate-300 transition-colors;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-white/10 rounded-full hover:bg-white/20;
+}
+
+/* Premium Animations */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.hover-zoom {
+  @apply transition-transform duration-500 hover:scale-[1.02];
 }

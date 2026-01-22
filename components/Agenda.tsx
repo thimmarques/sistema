@@ -171,65 +171,99 @@ const Agenda: React.FC<AgendaProps> = ({
 
   return (
     <div className="space-y-8 animate-in fade-in duration-700">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h2 className="text-3xl font-black text-slate-800 tracking-tight">Agenda & Prazos</h2>
-          <p className="text-sm text-slate-400 font-medium mt-1">Organize suas audiências, reuniões e prazos fatais.</p>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+        <div className="space-y-1">
+          <span className="text-[10px] font-black text-brand-500 uppercase tracking-[0.3em]">Gestão de Prazos</span>
+          <h2 className="text-3xl font-black text-slate-800 tracking-tight">Agenda Jurídica</h2>
         </div>
-        <div className="flex items-center gap-3">
-          <button onClick={handleToday} className="h-11 px-4 bg-white border border-slate-100 rounded-xl flex items-center justify-center text-slate-500 hover:text-indigo-600 transition-all shadow-sm text-[10px] font-black uppercase tracking-widest">Hoje</button>
-          <button onClick={() => setShowForm(true)} className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg shadow-indigo-100 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2">
-            <i className="fa-solid fa-plus"></i> Novo Evento
+        <div className="flex items-center gap-4 w-full md:w-auto">
+          <button
+            onClick={handleToday}
+            className="flex-1 md:flex-none h-14 px-6 bg-white border border-slate-100 rounded-2xl flex items-center justify-center text-slate-500 hover:text-brand-600 hover:border-brand-100 transition-all shadow-sm text-[10px] font-black uppercase tracking-widest active:scale-95"
+          >
+            Hoje
+          </button>
+          <button
+            onClick={() => setShowForm(true)}
+            className="flex-1 md:flex-none bg-brand-600 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-[0.15em] shadow-xl shadow-brand-500/20 hover:bg-brand-700 hover:-translate-y-1 active:scale-95 transition-all flex items-center justify-center gap-3"
+          >
+            <i className="fa-solid fa-calendar-plus text-base"></i>
+            Novo Evento
           </button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
-        <div className="xl:col-span-3 bg-white rounded-[2.5rem] shadow-sm border border-slate-50 p-8">
-          <div className="flex flex-col sm:flex-row justify-between items-center mb-10 gap-4">
-            <div className="flex items-center gap-6">
-              <h3 className="text-xl font-black text-slate-800 tracking-tight min-w-[180px]">
-                {currentDate.toLocaleString('pt-BR', { month: 'long', year: 'numeric' }).toUpperCase()}
-              </h3>
-              <div className="flex gap-4">
-                <button onClick={handlePrev} className="h-10 w-10 flex items-center justify-center rounded-full text-slate-300 hover:text-indigo-600 hover:bg-slate-50 transition-all"><i className="fa-solid fa-chevron-left"></i></button>
-                <button onClick={handleNext} className="h-10 w-10 flex items-center justify-center rounded-full text-slate-300 hover:text-indigo-600 hover:bg-slate-50 transition-all"><i className="fa-solid fa-chevron-right"></i></button>
+        <div className="xl:col-span-3 bg-white rounded-[3rem] shadow-premium border border-white/40 p-10 relative overflow-hidden">
+          {/* Subtle Background Accent */}
+          <div className="absolute top-0 right-0 h-64 w-64 bg-brand-500/5 rounded-full blur-[100px] -mr-32 -mt-32"></div>
+
+          <div className="flex flex-col lg:flex-row justify-between items-center mb-12 gap-8 relative z-10">
+            <div className="flex items-center gap-8">
+              <div className="flex flex-col">
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] mb-1">Período de Visualização</span>
+                <h3 className="text-2xl font-black text-slate-800 tracking-tight min-w-[220px]">
+                  {currentDate.toLocaleString('pt-BR', { month: 'long', year: 'numeric' }).toUpperCase()}
+                </h3>
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={handlePrev}
+                  className="h-12 w-12 flex items-center justify-center rounded-2xl bg-slate-50 text-slate-400 hover:text-brand-600 hover:bg-brand-50 transition-all active:scale-90 border border-slate-100"
+                >
+                  <i className="fa-solid fa-chevron-left"></i>
+                </button>
+                <button
+                  onClick={handleNext}
+                  className="h-12 w-12 flex items-center justify-center rounded-2xl bg-slate-50 text-slate-400 hover:text-brand-600 hover:bg-brand-50 transition-all active:scale-90 border border-slate-100"
+                >
+                  <i className="fa-solid fa-chevron-right"></i>
+                </button>
               </div>
             </div>
-            <div className="flex p-1 bg-slate-100 rounded-xl">
+            <div className="flex p-1.5 bg-slate-100/50 backdrop-blur-sm rounded-2xl border border-slate-100 shadow-inner">
               {['MÊS', 'SEMANA', 'DIA'].map((t) => (
-                <button key={t} onClick={() => setView(t as any)} className={`px-6 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${view === t ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-400'}`}>{t}</button>
+                <button key={t} onClick={() => setView(t as any)} className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${view === t ? 'bg-white text-brand-600 shadow-lg' : 'text-slate-400 hover:text-slate-600'}`}>{t}</button>
               ))}
             </div>
           </div>
 
           {view === 'MÊS' && (
-            <div className="grid grid-cols-7 border-t border-l border-slate-50">
+            <div className="grid grid-cols-7 border border-slate-100 rounded-3xl overflow-hidden bg-white relative z-10">
               {['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'].map(d => (
-                <div key={d} className="py-4 text-center text-[10px] font-black text-slate-300 tracking-widest border-r border-b border-slate-50 uppercase">{d}</div>
+                <div key={d} className="py-5 text-center text-[10px] font-black text-slate-300 tracking-[0.2em] border-b border-r border-slate-50 uppercase bg-slate-50/30">{d}</div>
               ))}
               {calendarDays.map((d, i) => {
                 const dayMovements = getMovementsForDay(d.fullDate);
                 const dayIsToday = isToday(d.fullDate);
                 return (
-                  <div key={i} onClick={() => handleSelectDay(d.fullDate)} className={`min-h-[120px] p-3 border-r border-b border-slate-50 transition-all group hover:bg-slate-50/50 cursor-pointer ${dayIsToday ? 'bg-indigo-50/20' : ''}`}>
-                    <div className="flex justify-between items-start mb-2 pointer-events-none">
-                      <span className={`text-sm font-bold ${d.currentMonth ? 'text-slate-800' : 'text-slate-200'} ${dayIsToday ? 'h-7 w-7 bg-indigo-600 text-white rounded-full flex items-center justify-center -mt-1 -ml-1 text-xs shadow-md' : ''}`}>{d.day}</span>
+                  <div key={i} onClick={() => handleSelectDay(d.fullDate)} className={`min-h-[140px] p-4 border-r border-b border-slate-50 transition-all group hover:bg-brand-50/30 cursor-pointer ${dayIsToday ? 'bg-brand-50/20' : ''}`}>
+                    <div className="flex justify-between items-start mb-3 pointer-events-none">
+                      <span className={`text-base font-black transition-transform duration-300 group-hover:scale-110 ${d.currentMonth ? 'text-slate-800' : 'text-slate-200'} ${dayIsToday ? 'h-9 w-9 bg-brand-600 text-white rounded-2xl flex items-center justify-center -mt-1 -ml-1 text-xs shadow-lg shadow-brand-500/30' : ''}`}>{d.day}</span>
                     </div>
-                    <div className="space-y-1">
-                      {dayMovements.map((m) => (
-                        <div
-                          key={m.id}
-                          className={`${formatMovementType(m.type).color} border px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-tight truncate cursor-pointer hover:brightness-95 transition-all`}
-                          title={m.description}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedMovement(m);
-                          }}
-                        >
-                          {m.type === 'Audiência' ? '⚖️ ' : '📅 '}{m.time && <span className="mr-1">{m.time}</span>}{m.description}
+                    <div className="space-y-1.5">
+                      {dayMovements.slice(0, 3).map((m) => {
+                        const style = formatMovementType(m.type);
+                        return (
+                          <div
+                            key={m.id}
+                            className={`${style.color.replace('bg-', 'bg-').replace('text-', 'text-')} border px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-tight truncate cursor-pointer hover:brightness-90 transition-all shadow-sm`}
+                            title={m.description}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedMovement(m);
+                            }}
+                          >
+                            <span className="mr-1.5 opacity-60 font-bold">{m.time || '—'}</span>
+                            {m.description}
+                          </div>
+                        );
+                      })}
+                      {dayMovements.length > 3 && (
+                        <div className="text-[8px] font-black text-slate-300 text-center uppercase tracking-widest pt-1">
+                          + {dayMovements.length - 3} Eventos
                         </div>
-                      ))}
+                      )}
                     </div>
                   </div>
                 );
@@ -238,37 +272,51 @@ const Agenda: React.FC<AgendaProps> = ({
           )}
 
           {view === 'SEMANA' && (
-            <div className="space-y-4">
+            <div className="space-y-6 relative z-10">
               {weekDays.map((wd) => {
                 const dayMovements = getMovementsForDay(wd.fullDate);
                 const dayIsToday = isToday(wd.fullDate);
                 return (
-                  <div key={wd.fullDate} onClick={() => handleSelectDay(wd.fullDate)} className={`flex gap-6 p-4 rounded-3xl border transition-all cursor-pointer group ${dayIsToday ? 'bg-indigo-50/30 border-indigo-100 ring-1 ring-indigo-100' : 'bg-slate-50/50 border-slate-100 hover:bg-white hover:shadow-md'}`}>
-                    <div className="flex flex-col items-center justify-center min-w-[60px]">
-                      <span className={`text-[10px] font-black tracking-widest ${dayIsToday ? 'text-indigo-600' : 'text-slate-300'}`}>{wd.dayName}</span>
-                      <span className={`text-2xl font-black ${dayIsToday ? 'text-indigo-600' : 'text-slate-800'}`}>{wd.day}</span>
+                  <div key={wd.fullDate} onClick={() => handleSelectDay(wd.fullDate)} className={`flex flex-col md:flex-row gap-8 p-8 rounded-[2.5rem] border transition-all cursor-pointer group hover:shadow-xl active:scale-[0.99] ${dayIsToday ? 'bg-brand-50/40 border-brand-100 ring-4 ring-brand-500/5' : 'bg-slate-50/50 border-slate-100 hover:bg-white hover:border-brand-200'}`}>
+                    <div className="flex md:flex-col items-center justify-center min-w-[100px] border-b md:border-b-0 md:border-r border-slate-200/50 pb-6 md:pb-0 md:pr-8 gap-4 md:gap-1">
+                      <span className={`text-[11px] font-black tracking-[0.3em] uppercase ${dayIsToday ? 'text-brand-600' : 'text-slate-300'}`}>{wd.dayName}</span>
+                      <span className={`text-4xl font-black tracking-tighter ${dayIsToday ? 'text-brand-600' : 'text-slate-800'}`}>{wd.day}</span>
                     </div>
-                    <div className="flex-1 space-y-2">
+                    <div className="flex-1 grid grid-cols-1 gap-4">
                       {dayMovements.length > 0 ? dayMovements.map(m => (
                         <div
                           key={m.id}
-                          className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex justify-between items-center transition-all group-hover:border-indigo-200 cursor-pointer"
+                          className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 transition-all group-hover:border-brand-100 cursor-pointer hover:shadow-md"
                           onClick={(e) => {
                             e.stopPropagation();
                             setSelectedMovement(m);
                           }}
                         >
-                          <div>
-                            <div className="flex items-center gap-2 mb-1">
-                              {m.time && <span className="text-[10px] font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full">{m.time}</span>}
-                              {m.modality && <span className="text-[9px] font-black text-slate-400 border border-slate-100 px-2 py-0.5 rounded-full uppercase tracking-tighter">{m.modality}</span>}
-                              <p className="font-black text-slate-800 text-sm uppercase tracking-tight">{m.description}</p>
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-3">
+                              {m.time && <span className="text-[10px] font-black text-brand-600 bg-brand-50 px-3 py-1 rounded-full uppercase tracking-widest">{m.time}</span>}
+                              <h4 className="font-black text-slate-800 text-sm uppercase tracking-tight">{m.description}</h4>
                             </div>
-                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">PROCESSO: {m.caseNumber}</p>
+                            <div className="flex items-center gap-4">
+                              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest flex items-center gap-2">
+                                <i className="fa-solid fa-file-invoice text-[9px]"></i> {m.caseNumber}
+                              </p>
+                              {m.modality && (
+                                <span className="text-[9px] font-black text-slate-300 border border-slate-100 px-2 py-0.5 rounded-md uppercase tracking-tighter">
+                                  <i className={`fa-solid ${m.modality === 'Online' ? 'fa-video' : 'fa-building-columns'} mr-1`}></i>
+                                  {m.modality}
+                                </span>
+                              )}
+                            </div>
                           </div>
-                          <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider ${formatMovementType(m.type).color}`}>{formatMovementType(m.type).label}</span>
+                          <span className={`px-5 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border ${formatMovementType(m.type).color}`}>{formatMovementType(m.type).label}</span>
                         </div>
-                      )) : <div className="h-full flex items-center italic text-slate-300 text-xs">Sem eventos para este dia.</div>}
+                      )) : (
+                        <div className="h-full flex items-center gap-4 py-4 px-2 text-slate-300">
+                          <i className="fa-solid fa-calendar-day opacity-50"></i>
+                          <span className="text-[10px] font-black uppercase tracking-widest">Livre de compromissos</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 );
@@ -277,56 +325,81 @@ const Agenda: React.FC<AgendaProps> = ({
           )}
 
           {view === 'DIA' && (
-            <div className="space-y-8 py-4">
-              <div className="flex items-center gap-6">
-                <div className="h-20 w-20 bg-indigo-600 rounded-[2rem] flex flex-col items-center justify-center text-white shadow-xl shadow-indigo-100">
-                  <span className="text-[10px] font-black uppercase tracking-widest opacity-80">{currentDate.toLocaleString('pt-BR', { weekday: 'short' })}</span>
-                  <span className="text-3xl font-black">{currentDate.getDate()}</span>
+            <div className="space-y-12 py-6 relative z-10">
+              <div className="flex items-center gap-8">
+                <div className="h-24 w-24 bg-brand-600 rounded-[2.5rem] flex flex-col items-center justify-center text-white shadow-[0_20px_40px_-15px_rgba(var(--color-brand-600),0.3)]">
+                  <span className="text-[11px] font-black uppercase tracking-[0.3em] opacity-80 mb-1">{currentDate.toLocaleString('pt-BR', { weekday: 'short' })}</span>
+                  <span className="text-4xl font-black">{currentDate.getDate()}</span>
                 </div>
                 <div>
-                  <h4 className="text-2xl font-black text-slate-800">{currentDate.toLocaleDateString('pt-BR', { dateStyle: 'full' })}</h4>
-                  <p className="text-slate-400 font-bold text-xs uppercase tracking-widest mt-1">Visão Detalhada do Dia</p>
+                  <h4 className="text-3xl font-black text-slate-800 tracking-tighter">{currentDate.toLocaleDateString('pt-BR', { dateStyle: 'full' })}</h4>
+                  <p className="text-brand-500 font-black text-[10px] uppercase tracking-[0.4em] mt-2">Visão Estratégica Diária</p>
                 </div>
               </div>
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {getMovementsForDay(currentDate.toISOString().split('T')[0]).length > 0 ? (
                   getMovementsForDay(currentDate.toISOString().split('T')[0]).map(m => (
-                    <div key={m.id} className="bg-slate-50 p-8 rounded-[2rem] border border-slate-100 flex justify-between items-start transition-all hover:bg-white hover:shadow-md">
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-3">
-                          <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] ${formatMovementType(m.type).color}`}>{formatMovementType(m.type).label}</span>
-                          {m.time && <span className="text-sm font-black text-slate-800">{m.time}</span>}
-                          {m.modality && <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-white border border-slate-100 px-3 py-1 rounded-full"><i className={`fa-solid ${m.modality === 'Online' ? 'fa-video' : 'fa-building-columns'} mr-2`}></i>{m.modality}</span>}
+                    <div key={m.id} className="bg-slate-50/50 p-10 rounded-[3rem] border border-slate-100 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-10 transition-all hover:bg-white hover:shadow-premium hover:-translate-y-1 group">
+                      <div className="space-y-6 flex-1">
+                        <div className="flex flex-wrap items-center gap-4">
+                          <span className={`px-5 py-2 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] border shadow-sm ${formatMovementType(m.type).color}`}>{formatMovementType(m.type).label}</span>
+                          {m.time && <span className="text-lg font-black text-slate-800 tracking-tighter bg-white px-4 py-2 rounded-2xl border border-slate-100">{m.time}</span>}
+                          {m.modality && (
+                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-white border border-slate-100 px-4 py-2 rounded-2xl shadow-sm">
+                              <i className={`fa-solid ${m.modality === 'Online' ? 'fa-video' : 'fa-building-columns'} mr-3 text-brand-500`}></i>
+                              {m.modality}
+                            </span>
+                          )}
                         </div>
-                        <h5 className="text-xl font-black text-slate-800 leading-tight">{m.description}</h5>
-                        <div className="flex items-center gap-6">
-                          <div className="flex items-center gap-2 text-slate-400"><i className="fa-solid fa-file-contract text-xs"></i><span className="text-xs font-bold uppercase tracking-widest">{m.caseNumber}</span></div>
-                          <div className="flex items-center gap-2 text-slate-400"><i className="fa-solid fa-map-pin text-xs"></i><span className="text-xs font-bold uppercase tracking-widest">{m.source}</span></div>
+                        <h5 className="text-2xl font-black text-slate-800 leading-tight group-hover:text-brand-600 transition-colors">{m.description}</h5>
+                        <div className="flex flex-wrap items-center gap-8">
+                          <div className="flex items-center gap-3 text-slate-400">
+                            <div className="h-8 w-8 bg-slate-100 rounded-xl flex items-center justify-center text-xs">
+                              <i className="fa-solid fa-file-contract"></i>
+                            </div>
+                            <span className="text-[10px] font-black uppercase tracking-[0.1em]">{m.caseNumber}</span>
+                          </div>
+                          <div className="flex items-center gap-3 text-slate-400">
+                            <div className="h-8 w-8 bg-slate-100 rounded-xl flex items-center justify-center text-xs">
+                              <i className="fa-solid fa-map-pin"></i>
+                            </div>
+                            <span className="text-[10px] font-black uppercase tracking-[0.1em]">{m.source}</span>
+                          </div>
                         </div>
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex flex-wrap gap-3 w-full lg:w-auto">
                         {googleConnected && !m.syncedToGoogle && (
                           <button
                             onClick={() => onSyncToGoogle(m)}
-                            className="h-12 px-4 rounded-2xl bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-all border border-indigo-100 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest"
+                            className="flex-1 lg:flex-none h-14 px-8 rounded-2xl bg-brand-50 text-brand-600 hover:bg-brand-600 hover:text-white transition-all border border-brand-100 flex items-center justify-center gap-3 text-[10px] font-black uppercase tracking-[0.15em] shadow-sm hover:shadow-brand-500/20 active:scale-95"
                             title="Sincronizar com Google Agenda"
                           >
-                            <i className="fa-brands fa-google"></i>
+                            <i className="fa-brands fa-google text-lg"></i>
                             Sincronizar
                           </button>
                         )}
                         {m.syncedToGoogle && (
-                          <div className="h-12 px-4 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest select-none">
-                            <i className="fa-solid fa-circle-check"></i>
+                          <div className="flex-1 lg:flex-none h-14 px-8 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center gap-3 text-[10px] font-black uppercase tracking-[0.15em] select-none shadow-sm">
+                            <i className="fa-solid fa-circle-check text-lg"></i>
                             Sincronizado
                           </div>
                         )}
-                        <button onClick={() => setSelectedMovement(m)} className="h-12 w-12 rounded-2xl bg-white border border-slate-200 text-slate-400 hover:text-indigo-600 transition-all shadow-sm flex items-center justify-center"><i className="fa-solid fa-eye"></i></button>
-                        <button onClick={() => handleEditClick(m)} className="h-12 w-12 rounded-2xl bg-white border border-slate-200 text-slate-400 hover:text-emerald-600 transition-all shadow-sm flex items-center justify-center"><i className="fa-solid fa-pen-to-square"></i></button>
+                        <div className="flex gap-3 flex-1 lg:flex-none">
+                          <button onClick={() => setSelectedMovement(m)} className="flex-1 lg:h-14 lg:w-14 h-14 rounded-2xl bg-white border border-slate-200 text-slate-400 hover:text-brand-600 hover:border-brand-200 transition-all shadow-sm flex items-center justify-center active:scale-95"><i className="fa-solid fa-eye text-lg"></i></button>
+                          <button onClick={() => handleEditClick(m)} className="flex-1 lg:h-14 lg:w-14 h-14 rounded-2xl bg-white border border-slate-200 text-slate-400 hover:text-emerald-600 hover:border-emerald-200 transition-all shadow-sm flex items-center justify-center active:scale-95"><i className="fa-solid fa-pen-to-square text-lg"></i></button>
+                        </div>
                       </div>
                     </div>
                   ))
-                ) : <div className="py-20 text-center border-2 border-dashed border-slate-100 rounded-[3rem]"><i className="fa-solid fa-calendar-xmark text-slate-200 text-5xl mb-4"></i><p className="text-slate-400 font-black text-xs uppercase tracking-widest">Nenhum evento agendado para hoje.</p></div>}
+                ) : (
+                  <div className="py-32 text-center border-2 border-dashed border-slate-100 rounded-[4rem] group hover:border-brand-200 transition-all animate-in fade-in zoom-in-95 duration-700">
+                    <div className="h-24 w-24 bg-slate-50 text-slate-200 rounded-[2.5rem] flex items-center justify-center text-4xl mx-auto mb-8 shadow-inner border border-slate-100 group-hover:scale-110 transition-transform duration-500">
+                      <i className="fa-solid fa-calendar-xmark"></i>
+                    </div>
+                    <p className="text-slate-400 font-black text-xs uppercase tracking-[0.3em]">Nenhum evento agendado para hoje.</p>
+                    <button onClick={() => setShowForm(true)} className="mt-8 text-[10px] font-black text-brand-600 uppercase tracking-widest hover:underline underline-offset-8">Agendar Novo Evento</button>
+                  </div>
+                )}
               </div>
             </div>
           )}
