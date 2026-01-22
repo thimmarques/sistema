@@ -9,42 +9,57 @@ interface NotificationCenterProps {
 
 const NotificationCenter: React.FC<NotificationCenterProps> = ({ notifications, onClose, onMarkRead }) => {
   return (
-    <div className="absolute right-0 mt-6 w-96 max-h-[500px] bg-[#0A0A0B] border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col animate-in fade-in slide-in-from-top-6 duration-500 z-[200]">
-      <div className="p-6 border-b border-white/5 bg-white/[0.02] flex items-center justify-between">
-        <h3 className="text-[10px] font-black text-white uppercase tracking-[0.5em] italic">Centro de Notificações</h3>
-        <button onClick={onClose} className="text-slate-600 hover:text-white transition-all"><i className="fa-solid fa-xmark text-xs"></i></button>
+    <div className="absolute right-0 mt-6 w-96 max-h-[500px] bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-in fade-in slide-in-from-top-4 duration-300 z-[200]">
+      <div className="p-5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="h-2 w-2 rounded-full bg-brand-500"></div>
+          <h3 className="text-xs font-bold text-slate-900 uppercase tracking-widest">Notificações</h3>
+        </div>
+        <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-slate-900 hover:bg-slate-200 rounded-lg transition-all">
+          <i className="fa-solid fa-xmark text-xs"></i>
+        </button>
       </div>
 
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         {notifications.length > 0 ? (
-          <div className="divide-y divide-white/5">
+          <div className="divide-y divide-slate-100">
             {notifications.map((n) => (
               <div
                 key={n.id}
-                className={`p-8 hover:bg-white/[0.01] transition-all cursor-pointer relative group ${!n.read ? 'bg-white/[0.02]' : ''}`}
+                className={`p-6 hover:bg-slate-50 transition-all cursor-pointer relative group ${!n.read ? 'bg-brand-50/30' : ''}`}
                 onClick={() => onMarkRead(n.id)}
               >
-                {!n.read && <div className="absolute top-8 left-4 h-1 w-1 bg-brand-500 shadow-[0_0_8px_rgba(197,160,89,1)]"></div>}
-                <div className="pl-4 space-y-2">
+                {!n.read && <div className="absolute top-7 left-3 h-2 w-2 rounded-full bg-brand-500"></div>}
+                <div className="pl-4 space-y-1 text-left">
                   <div className="flex justify-between items-start">
-                    <p className={`text-[9px] font-black uppercase tracking-widest ${n.type === 'alert' ? 'text-rose-500' : 'text-brand-500'}`}>{n.title}</p>
-                    <span className="text-[8px] font-black text-slate-800 uppercase">{new Date(n.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                    <p className={`text-[10px] font-bold uppercase tracking-widest ${n.type === 'alert' ? 'text-rose-600' : 'text-brand-600'}`}>
+                      {n.title}
+                    </p>
+                    <span className="text-[9px] font-bold text-slate-400 uppercase">
+                      {new Date(n.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
                   </div>
-                  <p className="text-[11px] text-slate-500 font-medium leading-relaxed group-hover:text-slate-300 transition-colors uppercase tracking-tighter italic">{n.message}</p>
+                  <p className={`text-xs leading-relaxed transition-colors ${!n.read ? 'text-slate-900 font-semibold' : 'text-slate-500 font-medium'}`}>
+                    {n.message}
+                  </p>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="py-24 text-center space-y-4">
-            <i className="fa-solid fa-bell-slash text-slate-900 text-3xl"></i>
-            <p className="text-[9px] font-black text-slate-800 uppercase tracking-[0.5em]">SEM PENDÊNCIAS</p>
+          <div className="py-16 text-center space-y-4">
+            <div className="h-16 w-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto text-slate-200">
+              <i className="fa-solid fa-bell-slash text-2xl"></i>
+            </div>
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Nenhuma notificação</p>
           </div>
         )}
       </div>
 
-      <div className="p-4 border-t border-white/5 bg-white/[0.01] text-center">
-        <button className="text-[9px] font-black text-slate-700 hover:text-brand-500 uppercase tracking-widest transition-all">LIMPAR PROTOCOLO</button>
+      <div className="p-4 border-t border-slate-100 bg-slate-50/30 text-center">
+        <button className="text-[10px] font-bold text-slate-500 hover:text-brand-600 uppercase tracking-widest transition-all">
+          Marcar todas como lidas
+        </button>
       </div>
     </div>
   );

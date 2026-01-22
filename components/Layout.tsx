@@ -64,7 +64,7 @@ const Layout: React.FC<LayoutProps> = ({
                 />
 
                 <div className="flex-1 overflow-y-auto custom-scrollbar">
-                    <div className={`max-w-[1920px] mx-auto p-4 md:p-8 transition-all duration-500 ease-out ${isLoading ? 'opacity-30 scale-[0.99] grayscale-[0.5]' : 'opacity-100 scale-100 grayscale-0'}`}>
+                    <div className={`max-w-[1920px] mx-auto p-4 md:p-8 transition-opacity duration-500 ${isLoading ? 'opacity-40' : 'opacity-100'}`}>
                         {children}
                     </div>
                 </div>

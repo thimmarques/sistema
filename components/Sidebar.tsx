@@ -14,11 +14,11 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ activeSection, onSelectSection, logo, name, isOpen, onClose }) => {
   const menuItems = [
     { id: AppSection.DASHBOARD, label: 'Dashboard', icon: 'fa-grip-vertical' },
-    { id: AppSection.CLIENTS, label: 'Projetos / Clientes', icon: 'fa-user-shield' },
-    { id: AppSection.FINANCES, label: 'Tesouraria', icon: 'fa-vault' },
-    { id: AppSection.AGENDA, label: 'Calendário Lex', icon: 'fa-calendar-check' },
-    { id: AppSection.HEARINGS, label: 'Soluções / Audiências', icon: 'fa-gavel' },
-    { id: AppSection.REPORTS, label: 'Lex Intelligence', icon: 'fa-microchip' },
+    { id: AppSection.CLIENTS, label: 'Clientes', icon: 'fa-user-shield' },
+    { id: AppSection.FINANCES, label: 'Finanças', icon: 'fa-vault' },
+    { id: AppSection.AGENDA, label: 'Calendário', icon: 'fa-calendar-check' },
+    { id: AppSection.HEARINGS, label: 'Audiências', icon: 'fa-gavel' },
+    { id: AppSection.REPORTS, label: 'Relatórios', icon: 'fa-microchip' },
     { id: AppSection.SETTINGS, label: 'Configurações', icon: 'fa-gear' },
   ];
 

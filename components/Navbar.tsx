@@ -28,12 +28,13 @@ const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const getSectionTitle = () => {
     switch (activeSection) {
-      case AppSection.DASHBOARD: return "Terminal de Comando";
-      case AppSection.CLIENTS: return "Custódia de Clientes";
-      case AppSection.FINANCES: return "Fluxo de Capital";
-      case AppSection.AGENDA: return "Agenda Estratégica";
-      case AppSection.REPORTS: return "Lex AI Analytics";
-      case AppSection.SETTINGS: return "Escritório Digital";
+      case AppSection.DASHBOARD: return "Dashboard";
+      case AppSection.CLIENTS: return "Clientes";
+      case AppSection.FINANCES: return "Finanças";
+      case AppSection.AGENDA: return "Calendário";
+      case AppSection.HEARINGS: return "Audiências";
+      case AppSection.REPORTS: return "Relatórios";
+      case AppSection.SETTINGS: return "Configurações";
       default: return "LexAI Intelligence";
     }
   };
@@ -52,12 +53,7 @@ const Navbar: React.FC<NavbarProps> = ({
           <div className="flex flex-col">
             <span className="text-[10px] font-bold text-brand-600 uppercase tracking-widest mb-0.5">LexAI Intelligence</span>
             <h1 className="text-xl font-bold text-slate-900 leading-tight">
-              {getSectionTitle() === "Terminal de Comando" ? "Dashboard" :
-                getSectionTitle() === "Custódia de Clientes" ? "Clientes" :
-                  getSectionTitle() === "Fluxo de Capital" ? "Tesouraria" :
-                    getSectionTitle() === "Agenda Estratégica" ? "Agenda" :
-                      getSectionTitle() === "Lex AI Analytics" ? "Relatórios" :
-                        getSectionTitle() === "Escritório Digital" ? "Configurações" : getSectionTitle()}
+              {getSectionTitle()}
             </h1>
           </div>
         </div>
