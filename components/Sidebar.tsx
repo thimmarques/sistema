@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { AppSection } from '../types';
+import { getInitials } from '../src/utils/format';
 
 interface SidebarProps {
   activeSection: AppSection;
@@ -27,9 +27,6 @@ const Sidebar: React.FC<SidebarProps> = ({ activeSection, onSelectSection, logo,
     if (onClose) onClose();
   };
 
-  const getInitials = (n: string) => {
-    return n.split(' ').map(part => part[0]).join('').substring(0, 3).toUpperCase();
-  };
 
   return (
     <>

@@ -1,7 +1,7 @@
-
 import React, { useMemo, useState } from 'react';
 import { Client, CourtMovement, ActivityLog, AppSection, UserSettings } from '../types';
 import MovementSummaryModal from './MovementSummaryModal';
+import { formatCurrency } from '../src/utils/format';
 
 interface DashboardProps {
   clients: Client[];
@@ -31,9 +31,6 @@ const Dashboard: React.FC<DashboardProps> = ({ clients, movements, activities = 
     });
     return { totalAgreed, totalDefensoria };
   }, [clients]);
-
-  const formatCurrency = (val: number) =>
-    new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(val);
 
   const stats = [
     {

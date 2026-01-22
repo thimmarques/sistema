@@ -1,6 +1,7 @@
 
 import React, { useMemo, useState } from 'react';
 import { Client, CourtMovement, ClientOrigin, UserSettings } from '../types';
+import { formatCurrency, formatCurrencyShort } from '../src/utils/format';
 import {
   BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer
@@ -81,8 +82,6 @@ const Reports: React.FC<ReportsProps> = ({ clients, movements, settings, current
     return { totalAgreed, totalInitial, totalPending };
   }, [filteredClients]);
 
-  const formatCurrency = (val: number) =>
-    new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(val);
 
   return (
     <div className="space-y-12 animate-in fade-in duration-1000 pb-20">

@@ -52,9 +52,15 @@ const Finances: React.FC<FinancesProps> = ({ clients, currentUserId, onUpdateCli
           });
 
           // Êxito / Trabalhista / Previdenciário (Simulação de expectativa)
-          if (c.financials.successFeeStatus === 'paid' || c.financials.laborPaymentDate) {
+          const isPaid = c.financials.successFeeStatus === 'paid' ||
+            (c.financials.laborPaymentDate && new Date(c.financials.laborPaymentDate + 'T23:59:59') <= new Date());
+
+          if (isPaid) {
             const val = c.financials.laborFinalValue || (c.financials.totalAgreed * (c.financials.successFeePercentage || 0)) / 100;
             recebidos += val;
+          } else if (c.financials.successFeePercentage) {
+            const val = c.financials.laborFinalValue || (c.financials.totalAgreed * (c.financials.successFeePercentage || 0)) / 100;
+            aReceber += val;
           }
         }
 
