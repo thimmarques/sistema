@@ -153,8 +153,6 @@ const MovementSummaryModal: React.FC<MovementSummaryModalProps> = ({
                 </div>
             </div>
         </div>
-            </div >
-        </div >
     );
 };
 
