@@ -129,6 +129,8 @@ export interface UserSettings {
   googleToken?: string;
 }
 
+export type Lawyer = UserSettings;
+
 export enum AppSection {
   DASHBOARD = 'dashboard',
   CLIENTS = 'clients',

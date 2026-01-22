@@ -1,8 +1,8 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Client, AppSection, UserSettings, ClientOrigin, Lawyer } from '../types';
 import { formatCurrency } from '../src/utils/format';
-import { generateClientPDF } from '../src/utils/pdf';
-import FinancialModal from './FinancialModal';
+import { generateClientPDF } from '../pdfService';
+import FinancialModal from "./FinancialModal.tsx";
 
 interface ClientListProps {
   clients: Client[];
@@ -48,6 +48,7 @@ const ClientList: React.FC<ClientListProps> = ({
     address: '', addressNumber: '', neighborhood: '', city: '', state: '', zipCode: '',
     origin: 'Particular' as ClientOrigin,
     caseNumber: '', caseType: 'Cível', caseDescription: '', status: 'Active' as any,
+    financials: undefined as any
   };
 
   const [formData, setFormData] = useState(initialFormData);
