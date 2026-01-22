@@ -14,12 +14,12 @@ interface DashboardProps {
 
 const Dashboard: React.FC<DashboardProps> = ({ clients, movements, activities = [], onSelectSection, settings, currentUserId }) => {
   const [selectedMovement, setSelectedMovement] = useState<CourtMovement | null>(null);
+
   const financialStats = useMemo(() => {
     let totalAgreed = 0;
     let totalDefensoria = 0;
 
     clients.forEach(c => {
-      // Only include financial stats for clients owned by the current user
       if (c.userId === currentUserId && c.financials) {
         if (c.origin === 'Particular') {
           totalAgreed += c.financials.totalAgreed || 0;
@@ -30,204 +30,116 @@ const Dashboard: React.FC<DashboardProps> = ({ clients, movements, activities = 
       }
     });
     return { totalAgreed, totalDefensoria };
-  }, [clients]);
+  }, [clients, currentUserId]);
 
   const stats = [
-    {
-      label: 'Clientes Ativos',
-      value: clients.length.toString(),
-      badge: 'Ver Todos',
-      gradient: 'from-blue-600 to-indigo-700',
-      icon: 'fa-users-rectangle',
-      shadow: 'shadow-blue-500/20',
-      action: () => onSelectSection(AppSection.CLIENTS)
-    },
-    {
-      label: 'Prazos Jurídicos',
-      value: movements.filter(m => m.type === 'Deadline').length.toString(),
-      badge: 'Ver Agenda',
-      gradient: 'from-violet-600 to-purple-800',
-      icon: 'fa-calendar-day',
-      shadow: 'shadow-violet-500/20',
-      action: () => onSelectSection(AppSection.AGENDA)
-    },
-    {
-      label: 'Faturamento Particular',
-      value: formatCurrency(financialStats.totalAgreed),
-      badge: 'Particular',
-      gradient: 'from-rose-500 to-pink-700',
-      icon: 'fa-coins',
-      shadow: 'shadow-rose-500/20',
-      action: () => onSelectSection(AppSection.FINANCES, 'PARTICULAR')
-    },
-    {
-      label: 'Faturamento Convênio',
-      value: formatCurrency(financialStats.totalDefensoria),
-      badge: 'Defensoria',
-      gradient: 'from-emerald-500 to-teal-700',
-      icon: 'fa-landmark',
-      shadow: 'shadow-emerald-500/20',
-      action: () => onSelectSection(AppSection.FINANCES, 'DEFENSORIA')
-    },
-    {
-      label: 'Audiências',
-      value: movements.filter(m => m.type === 'Audiência').length.toString(),
-      badge: 'Próximas',
-      gradient: 'from-brand-600 to-brand-800',
-      icon: 'fa-gavel',
-      shadow: 'shadow-brand-500/20',
-      action: () => onSelectSection(AppSection.HEARINGS)
-    }
+    { label: 'Projetos Ativos', value: clients.length.toString(), action: () => onSelectSection(AppSection.CLIENTS) },
+    { label: 'Prazos Críticos', value: movements.filter(m => m.type === 'Deadline').length.toString(), action: () => onSelectSection(AppSection.AGENDA) },
+    { label: 'Faturamento', value: formatCurrency(financialStats.totalAgreed + financialStats.totalDefensoria), action: () => onSelectSection(AppSection.FINANCES) },
+    { label: 'Audiências', value: movements.filter(m => m.type === 'Audiência').length.toString(), action: () => onSelectSection(AppSection.HEARINGS) }
   ];
 
-  const recentActivities = useMemo(() => {
-    if (activities.length > 0) {
-      return activities.map(act => ({
-        type: act.entityType.toLowerCase(),
-        title: act.description,
-        detail: `Por ${act.userName || 'Sistema'}`,
-        time: new Date(act.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-        icon: act.actionType === 'CREATE' ? 'fa-plus' : act.actionType === 'DELETE' ? 'fa-trash' : 'fa-pen',
-        color: act.actionType === 'CREATE' ? 'bg-emerald-500' :
-          act.actionType === 'DELETE' ? 'bg-rose-500' : 'bg-amber-500'
-      }));
-    }
-
-    return clients.slice(0, 5).map(c => ({
-      type: 'client',
-      title: 'Cliente Cadastrado',
-      detail: c.name,
-      time: new Date(c.createdAt).toLocaleDateString('pt-BR'),
-      icon: 'fa-user-plus',
-      color: 'bg-brand-500'
-    }));
-  }, [activities, clients]);
-
   return (
-    <div className="space-y-8 animate-in fade-in duration-700">
-      {/* Top Stats Cards - Bento Grid Style */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-        {stats.map((item, idx) => (
-          <button
-            key={idx}
-            onClick={item.action}
-            className={`group relative overflow-hidden bg-gradient-to-br ${item.gradient} p-7 rounded-[2rem] shadow-xl ${item.shadow} flex flex-col justify-between h-52 transition-all duration-500 hover:scale-[1.02] hover:-translate-y-2 text-left`}
-          >
-            {/* Glossy Overlay */}
-            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-            <div className="absolute -right-6 -top-6 h-32 w-32 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-all duration-700"></div>
+    <div className="min-h-screen bg-[#0A0A0B] text-slate-400 p-0 sm:p-2 animate-in fade-in duration-1000">
 
-            <div className="flex justify-between items-start relative z-10">
-              <div className="h-14 w-14 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-xl text-white shadow-lg border border-white/20 transition-transform duration-700 group-hover:rotate-[10deg]">
-                <i className={`fa-solid ${item.icon}`}></i>
-              </div>
-              <span className="px-3 py-1 rounded-full bg-black/10 backdrop-blur-sm border border-white/10 text-[9px] font-black uppercase text-white tracking-widest">
-                {item.badge}
-              </span>
-            </div>
-
-            <div className="relative z-10">
-              <p className="text-[10px] font-black text-white/60 uppercase tracking-widest mb-1">{item.label}</p>
-              <h3 className="text-3xl font-black text-white tracking-tighter drop-shadow-sm">{item.value}</h3>
-            </div>
-          </button>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Prazos e Audiências */}
-        <div className="bg-white rounded-[2.5rem] shadow-premium border border-white/40 p-10 relative overflow-hidden group">
-          <div className="absolute top-0 right-0 h-40 w-40 bg-brand-500/5 rounded-full blur-3xl -mr-20 -mt-20"></div>
-          <div className="flex items-center justify-between mb-10 relative z-10">
-            <div>
-              <p className="text-[10px] font-black text-brand-500 uppercase tracking-[0.3em] mb-1">Próximos Eventos</p>
-              <h3 className="text-2xl font-black text-slate-800 tracking-tight">Agenda Jurídica</h3>
-            </div>
-            <button className="h-10 w-10 flex items-center justify-center rounded-xl bg-slate-50 text-slate-400 hover:bg-brand-500 hover:text-white transition-all duration-300">
-              <i className="fa-solid fa-calendar-plus"></i>
-            </button>
+      {/* MONOLITHIC HERO - Asymmetric 80/20 */}
+      <section className="relative flex flex-col xl:flex-row gap-1 border-b border-white/5 pb-20">
+        <div className="flex-1 space-y-12">
+          <div className="space-y-4">
+            <span className="text-[8px] font-black tracking-[0.8em] text-brand-500 uppercase opacity-50">SITUAÇÃO ATUAL</span>
+            <h1 className="text-6xl sm:text-8xl font-black text-white italic tracking-tighter leading-none font-serif">
+              Sua rede de <br /> <span className="text-brand-500 not-italic">Inteligência</span> Jurídica.
+            </h1>
           </div>
 
-          <div className="space-y-6 relative z-10">
-            {movements.length > 0 ? movements.slice(0, 5).map((m, idx) => {
-              const [year, monthNum, dayStr] = m.date.split('-');
-              const date = new Date(parseInt(year), parseInt(monthNum) - 1, parseInt(dayStr));
-              const month = date.toLocaleString('pt-BR', { month: 'short' }).toUpperCase().replace('.', '');
-              const day = date.getDate();
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-12 max-w-4xl">
+            {stats.map((s, idx) => (
+              <button key={idx} onClick={s.action} className="group text-left space-y-3 transition-transform hover:translate-y-[-4px] duration-500">
+                <p className="text-[8px] font-black uppercase tracking-[0.3em] text-slate-600 group-hover:text-brand-500 transition-colors">{s.label}</p>
+                <h4 className="text-3xl font-black text-white tracking-tighter">{s.value}</h4>
+                <div className="h-[1px] w-4 bg-white/10 group-hover:w-full group-hover:bg-brand-500 transition-all duration-700"></div>
+              </button>
+            ))}
+          </div>
+        </div>
 
-              return (
-                <div
-                  key={idx}
-                  className="flex items-center gap-6 group/item cursor-pointer p-4 rounded-3xl transition-all duration-300 hover:bg-brand-50/50 hover:translate-x-1"
-                  onClick={() => setSelectedMovement(m)}
-                >
-                  <div className="flex flex-col items-center justify-center min-w-[70px] h-20 bg-white border border-slate-100 rounded-[1.5rem] shadow-sm group-hover/item:border-brand-200 transition-colors">
-                    <span className="text-[10px] font-black text-brand-500 tracking-widest">{month}</span>
-                    <span className="text-2xl font-black text-slate-800">{day < 10 ? `0${day}` : day}</span>
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className={`h-2 w-2 rounded-full ${m.type === 'Audiência' ? 'bg-rose-500' : 'bg-brand-500'} animate-pulse`}></span>
-                      <h4 className="font-black text-slate-800 text-base leading-tight group-hover/item:text-brand-600 transition-colors">
-                        {m.type === 'Audiência' ? 'Audiência de Conciliação' : m.description}
-                      </h4>
-                    </div>
-                    <p className="text-xs text-slate-400 font-bold uppercase tracking-tight">{m.caseNumber} • {m.source}</p>
-                  </div>
-                  <div className="text-right">
-                    <div className="bg-slate-50 px-3 py-2 rounded-xl border border-slate-100 group-hover/item:bg-brand-100 group-hover/item:border-brand-200 transition-all">
-                      <span className="text-xs font-black text-slate-700 group-hover/item:text-brand-700">{m.time || '09:00'}</span>
-                    </div>
-                  </div>
+        {/* Asymmetric Side Stats */}
+        <div className="xl:w-80 flex flex-col justify-end pt-20 xl:pt-0">
+          <div className="p-8 border-l border-white/5 space-y-6">
+            <p className="text-[10px] font-black text-slate-500 leading-relaxed italic">
+              "A precisão técnica é o alicerce do sucesso jurídico no século XXI."
+            </p>
+            <div className="h-[1px] w-full bg-gradient-to-r from-brand-500 to-transparent"></div>
+            <div className="space-y-1">
+              <p className="text-[8px] font-black text-white uppercase tracking-widest">Equipe Operacional</p>
+              <p className="text-[10px] font-medium text-slate-600">3 Colaboradores Online</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* VERTICAL STREAM - Staggered Timelines */}
+      <section className="grid grid-cols-1 lg:grid-cols-3 gap-0 mt-20">
+        {/* Timeline Jurídica */}
+        <div className="lg:col-span-2 border-r border-white/5 pr-0 lg:pr-20 space-y-16 pb-20">
+          <div className="flex justify-between items-end">
+            <h3 className="text-3xl font-black text-white font-serif italic tracking-tight">Agenda Táctica</h3>
+            <span className="text-[10px] font-black text-slate-700 uppercase tracking-widest">PRÓXIMOS 7 DIAS</span>
+          </div>
+
+          <div className="relative space-y-1">
+            {movements.length > 0 ? movements.slice(0, 6).map((m, idx) => (
+              <div
+                key={idx}
+                onClick={() => setSelectedMovement(m)}
+                className="group flex gap-12 p-8 hover:bg-white/[0.02] transition-all duration-500 cursor-pointer border-l-[1px] border-transparent hover:border-brand-500"
+              >
+                <div className="min-w-[60px] text-right pt-1">
+                  <p className="text-xl font-black text-white leading-none">{m.date.split('-')[2]}</p>
+                  <p className="text-[8px] font-black text-slate-600 uppercase mt-1 tracking-widest">OUT</p>
                 </div>
-              );
-            }) : (
-              <div className="flex flex-col items-center justify-center py-10 text-center">
-                <div className="h-16 w-16 rounded-full bg-slate-50 flex items-center justify-center text-slate-200 mb-4">
-                  <i className="fa-solid fa-calendar-xmark text-2xl"></i>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3">
+                    <span className={`h-1 w-1 ${m.type === 'Audiência' ? 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.6)]' : 'bg-brand-500 shadow-[0_0_8px_rgba(197,160,89,0.6)]'}`}></span>
+                    <h5 className="font-black text-sm text-slate-300 uppercase tracking-widest group-hover:text-white transition-colors">
+                      {m.type === 'Audiência' ? 'Audiência de Conciliação' : m.description}
+                    </h5>
+                  </div>
+                  <p className="text-[10px] font-medium text-slate-500 max-w-md uppercase tracking-tighter opacity-60">Proc. {m.caseNumber} • {m.source}</p>
                 </div>
-                <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Nenhum evento agendado</p>
+                <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity self-center">
+                  <i className="fa-solid fa-arrow-right-long text-brand-500"></i>
+                </div>
+              </div>
+            )) : (
+              <div className="py-20 text-center opacity-20">
+                <i className="fa-solid fa-ghost text-4xl mb-4"></i>
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Silêncio nos Tribunais</p>
               </div>
             )}
           </div>
         </div>
 
-        {/* Atividade Recente */}
-        <div className="bg-white rounded-[2.5rem] shadow-premium border border-white/40 p-10 relative overflow-hidden">
-          <div className="absolute top-0 left-0 h-40 w-40 bg-emerald-500/5 rounded-full blur-3xl -ml-20 -mt-20"></div>
-          <div className="flex items-center justify-between mb-10 relative z-10">
-            <div>
-              <p className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.3em] mb-1">Feed de Ações</p>
-              <h3 className="text-2xl font-black text-slate-800 tracking-tight">Atividade Recente</h3>
-            </div>
-            <button className="h-10 w-10 flex items-center justify-center rounded-xl bg-slate-50 text-slate-400 hover:bg-emerald-500 hover:text-white transition-all duration-300">
-              <i className="fa-solid fa-list-ul"></i>
-            </button>
-          </div>
+        {/* Atividade Atômica */}
+        <div className="pl-0 lg:pl-16 space-y-16 pt-20 lg:pt-0">
+          <h3 className="text-3xl font-black text-white font-serif italic tracking-tight">Fluxo Interno</h3>
 
-          <div className="relative pl-10 space-y-10 relative z-10">
-            {/* Timeline Line */}
-            <div className="absolute left-[19px] top-2 bottom-2 w-[2px] bg-slate-100"></div>
-
-            {recentActivities.slice(0, 5).map((act, idx) => (
-              <div key={idx} className="relative group/act">
-                {/* Timeline Dot */}
-                <div className={`absolute -left-[31px] top-1.5 h-6 w-6 rounded-full border-4 border-white shadow-md flex items-center justify-center ${act.color} text-[8px] text-white transition-transform duration-300 group-hover/act:scale-125`}>
-                  <i className={`fa-solid ${act.icon}`}></i>
-                </div>
-
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-4 rounded-2xl transition-all duration-300 hover:bg-slate-50">
-                  <div>
-                    <h4 className="text-sm font-black text-slate-800 leading-tight group-hover/act:text-brand-600 transition-colors uppercase tracking-tight">{act.title}</h4>
-                    <p className="text-[10px] text-slate-400 mt-1 font-bold uppercase tracking-wider">{act.detail}</p>
+          <div className="space-y-12">
+            {activities.slice(0, 5).map((act, idx) => (
+              <div key={idx} className="group relative pl-8 border-l border-white/5 hover:border-brand-500 transition-colors duration-700">
+                <div className="absolute -left-1 top-0 h-2 w-2 bg-slate-900 border border-white/20 group-hover:bg-brand-500 group-hover:border-brand-500 transition-all duration-500"></div>
+                <div className="space-y-1">
+                  <p className="text-[9px] font-black text-white uppercase tracking-widest">{act.description}</p>
+                  <div className="flex items-center gap-4">
+                    <span className="text-[8px] font-black text-slate-700 uppercase">{act.userName || 'SISTEMA'}</span>
+                    <span className="text-[8px] font-black text-slate-800 tracking-tighter">{new Date(act.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span>
                   </div>
-                  <span className="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em] bg-slate-100/50 px-2 py-1 rounded-lg">{act.time}</span>
                 </div>
               </div>
             ))}
           </div>
         </div>
-      </div>
+      </section>
 
       {selectedMovement && (
         <MovementSummaryModal

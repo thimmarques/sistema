@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState } from 'react';
 import { Client, CourtMovement, UserSettings } from '../types';
 import MovementSummaryModal from './MovementSummaryModal';
@@ -24,72 +23,52 @@ const Hearings: React.FC<HearingsProps> = ({
     const [selectedHearing, setSelectedHearing] = useState<CourtMovement | null>(null);
     const [movementToEdit, setMovementToEdit] = useState<CourtMovement | null>(null);
     const [showForm, setShowForm] = useState(false);
+
     const hearingsByOrigin = useMemo(() => {
         const hearings = movements.filter(m => m.type === 'Audiência');
-
         return {
-            Particular: hearings.filter(h => {
-                const client = clients.find(c => c.id === h.clientId);
-                return client?.origin === 'Particular';
-            }),
-            Defensoria: hearings.filter(h => {
-                const client = clients.find(c => c.id === h.clientId);
-                return client?.origin === 'Defensoria';
-            })
+            Particular: hearings.filter(h => clients.find(c => c.id === h.clientId)?.origin === 'Particular'),
+            Defensoria: hearings.filter(h => clients.find(c => c.id === h.clientId)?.origin === 'Defensoria')
         };
     }, [movements, clients]);
 
     const renderHearingCard = (h: CourtMovement) => {
         const client = clients.find(c => c.id === h.clientId);
-        const date = new Date(h.date);
-        const day = date.getDate() + 1;
+        const date = new Date(h.date + 'T12:00:00');
+        const day = date.getDate();
         const month = date.toLocaleString('pt-BR', { month: 'short' }).toUpperCase().replace('.', '');
 
         return (
             <div
                 key={h.id}
-                className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-all group cursor-pointer"
+                className="bg-white/[0.01] border border-white/5 p-10 group hover:bg-white/[0.02] hover:border-brand-500/30 transition-all cursor-pointer flex flex-col md:flex-row gap-10"
                 onClick={() => setSelectedHearing(h)}
             >
-                <div className="flex items-start gap-6">
-                    <div className="flex flex-col items-center justify-center min-w-[70px] h-20 bg-slate-50 rounded-2xl border border-slate-100">
-                        <span className="text-[10px] font-black text-rose-500 tracking-widest leading-none mb-1">{month}</span>
-                        <span className="text-2xl font-black text-slate-800 leading-none">{day < 10 ? `0${day}` : day}</span>
-                        <span className="text-[10px] font-bold text-slate-400 mt-1">{h.time || '09:00'}</span>
-                    </div>
-                    <div className="flex-1">
-                        <div className="flex justify-between items-start">
-                            <h4 className="font-bold text-slate-800 text-lg group-hover:text-indigo-600 transition-colors">
-                                {client?.name || 'Cliente não encontrado'}
+                <div className="flex flex-col items-center justify-center min-w-[100px] h-24 bg-white/[0.02] border border-white/5">
+                    <span className="text-[10px] font-black text-brand-500 tracking-[0.3em] mb-1">{month}</span>
+                    <span className="text-4xl font-black text-white italic tracking-tighter leading-none">{day < 10 ? `0${day}` : day}</span>
+                    <span className="text-[10px] font-black text-slate-800 mt-2">{h.time || '09:00'}</span>
+                </div>
+                <div className="flex-1 space-y-6">
+                    <div className="flex flex-col md:flex-row justify-between items-start gap-4">
+                        <div className="space-y-1">
+                            <h4 className="text-2xl font-black text-white italic tracking-tight group-hover:text-brand-500 transition-colors uppercase">
+                                {client?.name || 'REGISTRO AVULSO'}
                             </h4>
-                            <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${h.modality === 'Online' ? 'bg-blue-50 text-blue-500' : 'bg-amber-50 text-amber-500'}`}>
-                                {h.modality || 'Presencial'}
-                            </span>
+                            <p className="text-[9px] font-black text-slate-700 uppercase tracking-widest">{h.caseNumber}</p>
                         </div>
-                        <p className="text-sm text-slate-400 font-medium mt-1">{h.caseNumber}</p>
-                        <div className="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                            <div className="flex items-center gap-3">
-                                <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 text-xs">
-                                    <i className="fa-solid fa-location-dot"></i>
-                                </div>
-                                <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">{h.source || 'Fórum Central'}</span>
-                            </div>
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={(e) => { e.stopPropagation(); setSelectedHearing(h); }}
-                                    className="h-9 px-4 bg-white border border-slate-100 rounded-xl text-slate-400 hover:text-indigo-600 transition-all shadow-sm flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest"
-                                >
-                                    <i className="fa-solid fa-eye text-xs"></i>
-                                    Ver
-                                </button>
-                                <button
-                                    onClick={(e) => { e.stopPropagation(); setMovementToEdit(h); setShowForm(true); }}
-                                    className="h-9 px-4 bg-white border border-slate-100 rounded-xl text-slate-400 hover:text-emerald-600 transition-all shadow-sm flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest"
-                                >
-                                    <i className="fa-solid fa-pen-to-square text-xs"></i>
-                                    Editar
-                                </button>
-                            </div>
+                        <span className={`px-4 py-1.5 border font-black text-[9px] tracking-[0.2em] uppercase ${h.modality === 'Online' ? 'border-cyan-500 text-cyan-500' : 'border-emerald-500 text-emerald-500'}`}>
+                            {h.modality || 'PRESENCIAL'}
+                        </span>
+                    </div>
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-6 border-t border-white/5 pt-6">
+                        <div className="flex items-center gap-4">
+                            <i className="fa-solid fa-location-dot text-brand-500 text-xs"></i>
+                            <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest">{h.source || 'INSTÂNCIA CENTRAL'}</span>
+                        </div>
+                        <div className="flex gap-1 w-full md:w-auto">
+                            <button onClick={(e) => { e.stopPropagation(); setSelectedHearing(h); }} className="h-12 w-12 bg-white/5 text-slate-600 hover:text-white transition-all flex items-center justify-center"><i className="fa-solid fa-eye text-xs"></i></button>
+                            <button onClick={(e) => { e.stopPropagation(); setMovementToEdit(h); setShowForm(true); }} className="h-12 w-12 bg-white/5 text-slate-600 hover:text-white transition-all flex items-center justify-center"><i className="fa-solid fa-pen-nib text-xs"></i></button>
                         </div>
                     </div>
                 </div>
@@ -98,53 +77,42 @@ const Hearings: React.FC<HearingsProps> = ({
     };
 
     return (
-        <div className="space-y-12 animate-in fade-in duration-500">
-            <div className="flex justify-between items-end">
-                <div className="space-y-1">
-                    <h2 className="text-3xl font-black text-slate-800 tracking-tight">Audiências Agendadas</h2>
-                    <p className="text-slate-500 font-medium font-bold uppercase text-[10px] tracking-widest">Cronograma Jurídico LexAI</p>
-                </div>
+        <div className="space-y-16 animate-in fade-in duration-1000 pb-40">
+            <div className="space-y-2 text-left">
+                <span className="text-[9px] font-black text-brand-500 uppercase tracking-[0.4em]">Cronograma Operacional</span>
+                <h2 className="text-4xl font-black text-white font-serif italic tracking-tight">Agenda de Audiências</h2>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                {/* Particular Section */}
-                <div className="space-y-6">
-                    <div className="flex items-center gap-4 px-2">
-                        <div className="h-10 w-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center shadow-sm">
-                            <i className="fa-solid fa-user-tie"></i>
-                        </div>
-                        <h3 className="text-xl font-black text-slate-800 tracking-tight">Setor Particular</h3>
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-1 border-t border-white/5 pt-16">
+                <div className="space-y-10 p-4">
+                    <div className="flex items-center gap-6">
+                        <div className="h-[1px] w-12 bg-brand-500"></div>
+                        <h3 className="text-[11px] font-black text-white uppercase tracking-[0.5em] italic">Carteira Particular</h3>
                     </div>
-                    <div className="grid grid-cols-1 gap-4">
-                        {hearingsByOrigin.Particular.length > 0 ? (
-                            hearingsByOrigin.Particular.map(renderHearingCard)
-                        ) : (
-                            <div className="bg-slate-50/50 border-2 border-dashed border-slate-200 rounded-[2rem] p-12 text-center">
-                                <p className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">Nenhuma audiência particular agendada</p>
+                    <div className="space-y-8">
+                        {hearingsByOrigin.Particular.length > 0 ? hearingsByOrigin.Particular.map(renderHearingCard) : (
+                            <div className="p-24 text-center border border-white/5 bg-white/[0.01]">
+                                <p className="text-[9px] font-black text-slate-900 uppercase tracking-[1em]">FLUXO LIMPO</p>
                             </div>
                         )}
                     </div>
                 </div>
 
-                {/* Defensoria Section */}
-                <div className="space-y-6">
-                    <div className="flex items-center gap-4 px-2">
-                        <div className="h-10 w-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center shadow-sm">
-                            <i className="fa-solid fa-landmark"></i>
-                        </div>
-                        <h3 className="text-xl font-black text-slate-800 tracking-tight">Convênio Defensoria</h3>
+                <div className="space-y-10 p-4 xl:border-l border-white/5">
+                    <div className="flex items-center gap-6">
+                        <div className="h-[1px] w-12 bg-emerald-500"></div>
+                        <h3 className="text-[11px] font-black text-white uppercase tracking-[0.5em] italic">Convênio Público</h3>
                     </div>
-                    <div className="grid grid-cols-1 gap-4">
-                        {hearingsByOrigin.Defensoria.length > 0 ? (
-                            hearingsByOrigin.Defensoria.map(renderHearingCard)
-                        ) : (
-                            <div className="bg-slate-50/50 border-2 border-dashed border-slate-200 rounded-[2rem] p-12 text-center">
-                                <p className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">Nenhuma audiência da defensoria agendada</p>
+                    <div className="space-y-8">
+                        {hearingsByOrigin.Defensoria.length > 0 ? hearingsByOrigin.Defensoria.map(renderHearingCard) : (
+                            <div className="p-24 text-center border border-white/5 bg-white/[0.01]">
+                                <p className="text-[9px] font-black text-slate-900 uppercase tracking-[1em]">FLUXO LIMPO</p>
                             </div>
                         )}
                     </div>
                 </div>
             </div>
+
             {selectedHearing && (
                 <MovementSummaryModal
                     movement={movements.find(m => m.id === selectedHearing.id) || selectedHearing}
@@ -159,7 +127,7 @@ const Hearings: React.FC<HearingsProps> = ({
                     }}
                     onDelete={() => {
                         const h = movements.find(m => m.id === selectedHearing.id) || selectedHearing;
-                        if (window.confirm('Tem certeza que deseja excluir esta audiência da agenda e do Google Calendar?')) {
+                        if (window.confirm('EXCLUIR REGISTRO PERMANENTEMENTE?')) {
                             onDeleteMovement?.(h);
                             setSelectedHearing(null);
                         }
@@ -171,11 +139,8 @@ const Hearings: React.FC<HearingsProps> = ({
                 isOpen={showForm}
                 onClose={() => { setShowForm(false); setMovementToEdit(null); }}
                 onSubmit={(data) => {
-                    if (data.id) {
-                        onUpdateMovement?.(data as CourtMovement);
-                    } else {
-                        onAddMovement?.(data as CourtMovement);
-                    }
+                    if (data.id) onUpdateMovement?.(data as CourtMovement);
+                    else onAddMovement?.(data as CourtMovement);
                     setShowForm(false);
                     setMovementToEdit(null);
                 }}

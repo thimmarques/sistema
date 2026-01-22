@@ -28,45 +28,45 @@ const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const getSectionTitle = () => {
     switch (activeSection) {
-      case AppSection.DASHBOARD: return "Painel Geral";
-      case AppSection.CLIENTS: return "Carteira de Clientes";
-      case AppSection.FINANCES: return "Gestão Financeira";
-      case AppSection.AGENDA: return "Agenda Jurídica";
-      case AppSection.REPORTS: return "Relatórios Estratégicos";
-      case AppSection.SETTINGS: return "Perfil do Escritório";
+      case AppSection.DASHBOARD: return "Terminal de Comando";
+      case AppSection.CLIENTS: return "Custódia de Clientes";
+      case AppSection.FINANCES: return "Fluxo de Capital";
+      case AppSection.AGENDA: return "Agenda Estratégica";
+      case AppSection.REPORTS: return "Lex AI Analytics";
+      case AppSection.SETTINGS: return "Escritório Digital";
       default: return "LexAI Intelligence";
     }
   };
 
   return (
-    <header className="sticky top-6 z-30 mx-4 md:mx-8 mb-4">
-      <div className="flex h-20 w-full items-center justify-between rounded-3xl bg-white/70 backdrop-blur-xl border border-white/40 px-6 shadow-premium">
-        <div className="flex items-center gap-6">
+    <header className="sticky top-0 z-30 mx-0 mb-8 border-b border-white/5 bg-[#0A0A0B]/80 backdrop-blur-3xl px-8 shadow-2xl">
+      <div className="flex h-24 w-full items-center justify-between">
+        <div className="flex items-center gap-10">
           <button
             onClick={onMenuClick}
-            className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-100/50 text-slate-600 hover:bg-brand-500 hover:text-white transition-all duration-300 shadow-sm lg:hidden active:scale-95"
+            className="flex h-12 w-12 items-center justify-center bg-white/5 text-slate-500 hover:text-brand-500 transition-all duration-500 lg:hidden"
           >
             <i className="fa-solid fa-bars-staggered"></i>
           </button>
 
           <div className="flex flex-col">
-            <span className="text-[10px] font-black text-brand-500 uppercase tracking-[0.2em] leading-none mb-1">LexAI System</span>
-            <h1 className="text-xl font-black text-slate-800 tracking-tight leading-none">
+            <span className="text-[8px] font-black text-slate-600 uppercase tracking-[0.6em] mb-1.5 leading-none">LEX ARCHITECT V.04</span>
+            <h1 className="text-2xl font-black text-white tracking-widest leading-none uppercase italic">
               {getSectionTitle()}
             </h1>
           </div>
         </div>
 
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-8">
           {/* Notifications */}
           <div className="relative">
             <button
               onClick={() => setShowNotifications(!showNotifications)}
-              className={`relative flex h-11 w-11 items-center justify-center rounded-2xl transition-all duration-300 shadow-sm active:scale-95 ${showNotifications ? 'bg-brand-500 text-white shadow-brand-500/20' : 'bg-slate-100/50 text-slate-600 hover:bg-slate-200/50'}`}
+              className={`relative flex h-12 w-12 items-center justify-center transition-all duration-700 ${showNotifications ? 'bg-brand-500 text-black' : 'bg-white/5 text-slate-500 hover:text-white'}`}
             >
-              <i className="fa-solid fa-bell"></i>
+              <i className="fa-solid fa-bell text-sm"></i>
               {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-rose-500 text-[10px] font-black text-white ring-4 ring-white shadow-lg animate-in zoom-in">
+                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center bg-brand-500 text-[8px] font-black text-black">
                   {unreadCount}
                 </span>
               )}
@@ -81,21 +81,21 @@ const Navbar: React.FC<NavbarProps> = ({
             )}
           </div>
 
-          <div className="h-8 w-[1px] bg-slate-200 mx-1 hidden sm:block"></div>
+          <div className="h-4 w-[1px] bg-white/10 hidden sm:block"></div>
 
           {/* User Profile */}
-          <div className="flex items-center gap-4 group cursor-pointer" onClick={() => onLogout()}>
+          <div className="flex items-center gap-6 group cursor-pointer" onClick={() => onLogout()}>
             <div className="text-right hidden sm:block">
-              <p className="text-sm font-black text-slate-800 leading-none mb-1 group-hover:text-brand-500 transition-colors">{settings.name || 'Seu Nome'}</p>
-              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider leading-none">OAB/{settings.oabState || 'SP'} {settings.oab || '...'} </p>
+              <p className="text-[10px] font-black text-white group-hover:text-brand-500 transition-colors uppercase tracking-[0.2em]">{settings.name || 'Advogado'}</p>
+              <p className="text-[8px] text-slate-600 font-black uppercase tracking-widest mt-1">OAB/{settings.oabState || 'SP'} {settings.oab || '...'} </p>
             </div>
             <div className="relative">
               <img
-                src={settings.profileImage || `https://ui-avatars.com/api/?name=${settings.name || 'User'}&background=6366f1&color=fff&size=200`}
-                className="h-11 w-11 rounded-2xl border-2 border-white shadow-premium object-cover group-hover:scale-105 transition-transform duration-300"
+                src={settings.profileImage || `https://ui-avatars.com/api/?name=${settings.name || 'User'}&background=c5a059&color=000&size=200`}
+                className="h-12 w-12 border border-white/10 grayscale hover:grayscale-0 transition-all duration-700"
                 alt="Advogado"
               />
-              <div className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full bg-emerald-500 border-2 border-white shadow-sm ring-2 ring-emerald-500/20 animate-pulse"></div>
+              <div className="absolute -bottom-1 -right-1 h-2 w-2 bg-brand-500 shadow-[0_0_5px_rgba(197,160,89,1)]"></div>
             </div>
           </div>
         </div>

@@ -17,87 +17,75 @@ const Auth: React.FC<AuthProps> = ({ onSuccess }) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
-
         try {
             if (isSignUp) {
-                const { error: signUpError } = await supabase.auth.signUp({
-                    email,
-                    password,
-                });
+                const { error: signUpError } = await supabase.auth.signUp({ email, password });
                 if (signUpError) throw signUpError;
-                alert('Cadastro realizado! Verifique seu e-mail para confirmar.');
+                alert('CONTA CRIADA. VERIFIQUE SEU TERMINAL DE E-MAIL.');
             } else {
-                const { error: signInError } = await supabase.auth.signInWithPassword({
-                    email,
-                    password,
-                });
+                const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
                 if (signInError) throw signInError;
                 onSuccess();
             }
         } catch (err: any) {
-            setError(err.message || 'Erro ao processar autenticação');
+            setError(err.message || 'FALHA NA AUTENTICAÇÃO OPERACIONAL');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen w-full flex items-center justify-center bg-slate-950 relative overflow-hidden font-sans">
-            {/* Background Orbs */}
-            <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-amber-500/10 rounded-full blur-[120px] animate-pulse"></div>
-            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-slate-500/10 rounded-full blur-[120px] animate-pulse"></div>
+        <div className="min-h-screen w-full flex items-center justify-center bg-[#0A0A0B] relative overflow-hidden">
+            {/* Structural Background Accents */}
+            <div className="absolute top-0 right-0 w-1/2 h-full bg-white/[0.01] skew-x-[-20deg] translate-x-1/2"></div>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-brand-500/5 rounded-full blur-[150px] pointer-events-none"></div>
 
-            <div className="w-full max-w-md p-8 relative z-10">
-                <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] shadow-2xl p-8 md:p-10">
-                    <div className="flex flex-col items-center mb-10">
-                        <div className="h-16 w-16 bg-gradient-to-br from-amber-400 to-amber-600 rounded-2xl flex items-center justify-center shadow-lg shadow-amber-500/20 mb-6">
-                            <i className="fa-solid fa-scale-balanced text-white text-2xl"></i>
+            <div className="w-full max-w-lg p-12 relative z-10">
+                <div className="bg-[#0A0A0B] border border-white/10 p-16 space-y-12 animate-in fade-in duration-1000">
+                    <div className="flex flex-col items-center space-y-6">
+                        <div className="h-20 w-20 border border-brand-500 flex items-center justify-center relative group">
+                            <div className="absolute inset-0 bg-brand-500/20 blur-xl group-hover:bg-brand-500/40 transition-all"></div>
+                            <i className="fa-solid fa-scale-balanced text-brand-500 text-3xl relative z-10"></i>
                         </div>
-                        <h1 className="text-2xl font-black text-white tracking-tight uppercase">LexAI Management</h1>
-                        <p className="text-slate-400 text-xs font-bold uppercase tracking-[0.2em] mt-2">Acesso Privado</p>
+                        <div className="text-center space-y-2">
+                            <h1 className="text-4xl font-black text-white italic tracking-tighter uppercase font-serif">LexAI</h1>
+                            <p className="text-[10px] font-black text-slate-700 uppercase tracking-[0.5em]">Sistema de Gestão de Elite</p>
+                        </div>
                     </div>
 
-                    <form onSubmit={handleAuth} className="space-y-6">
+                    <form onSubmit={handleAuth} className="space-y-10">
                         {error && (
-                            <div className="bg-rose-500/10 border border-rose-500/20 text-rose-500 px-4 py-3 rounded-xl text-xs font-bold flex items-center gap-3 animate-in shake duration-500">
-                                <i className="fa-solid fa-circle-exclamation text-base"></i>
+                            <div className="bg-rose-500/5 border border-rose-500/20 text-rose-500 p-5 text-[10px] font-black uppercase tracking-widest flex items-center gap-4 animate-in slide-in-from-top-4">
+                                <i className="fa-solid fa-triangle-exclamation"></i>
                                 {error}
                             </div>
                         )}
 
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">E-mail Profissional</label>
-                            <div className="relative">
-                                <i className="fa-solid fa-envelope absolute left-5 top-1/2 -translate-y-1/2 text-slate-500"></i>
-                                <input
-                                    type="email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    placeholder="seu@parceiro.adv.br"
-                                    required
-                                    className="w-full bg-slate-900/50 border border-white/10 rounded-2xl pl-12 pr-5 py-4 text-white placeholder:text-slate-600 outline-none focus:ring-2 focus:ring-amber-500/20 transition-all font-medium"
-                                />
-                            </div>
+                        <div className="space-y-4">
+                            <label className="text-[9px] font-black text-slate-700 uppercase tracking-[0.3em]">Identificação (E-mail)</label>
+                            <input
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="USUARIO@ESCRITORIO.ADV.BR"
+                                required
+                                className="w-full bg-white/5 border border-white/10 p-5 text-xs font-black uppercase tracking-widest text-white outline-none focus:border-brand-500 transition-all placeholder:text-slate-900"
+                            />
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Senha de Acesso</label>
+                        <div className="space-y-4">
+                            <label className="text-[9px] font-black text-slate-700 uppercase tracking-[0.3em]">Código de Acesso (Senha)</label>
                             <div className="relative">
-                                <i className="fa-solid fa-lock absolute left-5 top-1/2 -translate-y-1/2 text-slate-500"></i>
                                 <input
                                     type={showPassword ? "text" : "password"}
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     placeholder="••••••••"
                                     required
-                                    className="w-full bg-slate-900/50 border border-white/10 rounded-2xl pl-12 pr-14 py-4 text-white placeholder:text-slate-600 outline-none focus:ring-2 focus:ring-amber-500/20 transition-all font-medium"
+                                    className="w-full bg-white/5 border border-white/10 p-5 text-xs font-black uppercase tracking-widest text-white outline-none focus:border-brand-500 transition-all placeholder:text-slate-900"
                                 />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors"
-                                >
-                                    <i className={`fa-solid ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+                                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-800 hover:text-white transition-all">
+                                    <i className={`fa-solid ${showPassword ? 'fa-eye-slash' : 'fa-eye'} text-xs`}></i>
                                 </button>
                             </div>
                         </div>
@@ -105,32 +93,22 @@ const Auth: React.FC<AuthProps> = ({ onSuccess }) => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-amber-500 hover:bg-amber-600 text-slate-900 font-black text-xs uppercase tracking-[0.2em] py-5 rounded-2xl shadow-xl shadow-amber-500/20 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                            className="w-full bg-brand-500 text-black py-6 font-black text-[11px] uppercase tracking-[0.4em] hover:bg-brand-600 transition-all active:scale-95 shadow-2xl relative group"
                         >
                             {loading ? (
-                                <>
-                                    <i className="fa-solid fa-circle-notch animate-spin text-lg"></i>
-                                    Processando...
-                                </>
+                                <i className="fa-solid fa-circle-notch animate-spin text-lg"></i>
                             ) : (
-                                <>
-                                    <i className="fa-solid fa-right-to-bracket text-lg"></i>
-                                    {isSignUp ? 'Cadastrar Escritório' : 'Entrar no Sistema'}
-                                </>
+                                <span className="group-hover:tracking-[0.5em] transition-all">{isSignUp ? 'REGISTRAR TERMINAL' : 'INICIAR SESSÃO'}</span>
                             )}
                         </button>
                     </form>
 
-                    <div className="mt-8 pt-8 border-t border-white/5 flex flex-col items-center gap-4">
-                        <button
-                            onClick={() => setIsSignUp(!isSignUp)}
-                            className="text-slate-400 hover:text-white text-xs font-bold uppercase tracking-widest transition-colors"
-                        >
-                            {isSignUp ? 'Já possui uma conta? Entrar' : 'Novo por aqui? Criar conta'}
+                    <div className="pt-10 border-t border-white/5 flex flex-col items-center space-y-6">
+                        <button onClick={() => setIsSignUp(!isSignUp)} className="text-[9px] font-black text-slate-700 hover:text-white uppercase tracking-widest transition-all">
+                            {isSignUp ? 'SESSÃO EXISTENTE / LOGIN' : 'REQUISITAR NOVO TERMINAL'}
                         </button>
-                        <p className="text-[9px] text-slate-600 font-black uppercase tracking-[0.2em]">
-                            LexAI Legal &bull; Segurança de Ponta
-                        </p>
+                        <div className="h-1 w-8 bg-brand-500/30"></div>
+                        <p className="text-[8px] text-slate-900 font-black uppercase tracking-[0.8em]">LexAI &bull; Protocolo 2025</p>
                     </div>
                 </div>
             </div>
