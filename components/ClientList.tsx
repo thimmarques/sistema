@@ -279,122 +279,226 @@ const ClientList: React.FC<ClientListProps> = ({
 
       {showFormModal && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 overflow-y-auto animate-in fade-in duration-300">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl p-10 md:p-14 space-y-10 animate-in zoom-in-95 my-8 relative">
-            <button onClick={() => setShowFormModal(false)} className="absolute top-8 right-8 p-2 rounded-lg text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-all">
-              <i className="fa-solid fa-xmark text-2xl"></i>
-            </button>
-
-            <div className="space-y-1 text-left">
-              <p className="text-[10px] font-bold text-blue-600 uppercase tracking-[0.2em]">Ficha Cadastral</p>
-              <h3 className="text-3xl font-black text-slate-900 tracking-tight">
-                {isEditing ? 'Atualizar Cliente' : 'Novo Cliente'}
+          <div className="bg-white rounded-[40px] shadow-2xl w-full max-w-4xl p-8 md:p-12 animate-in zoom-in-95 my-8 relative">
+            <div className="flex justify-between items-center mb-10">
+              <h3 className="text-2xl font-black text-[#1E293B] tracking-tight">
+                Cadastro de Cliente LexAI
               </h3>
+              <button
+                onClick={() => setShowFormModal(false)}
+                className="w-10 h-10 flex items-center justify-center rounded-full bg-[#F1F5F9] text-[#64748B] hover:bg-[#E2E8F0] transition-all"
+              >
+                <i className="fa-solid fa-xmark text-lg"></i>
+              </button>
             </div>
 
-            <div className="flex bg-slate-50/80 p-1.5 rounded-xl border border-slate-100">
+            <div className="flex bg-[#F1F5F9] p-2 rounded-2xl mb-10">
               {(['pessoal', 'endereco', 'processo'] as const).map(tab => (
                 <button
                   key={tab}
                   type="button"
                   onClick={() => setFormActiveTab(tab)}
-                  className={`flex-1 py-3.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${formActiveTab === tab ? 'bg-white text-blue-600 shadow-sm border border-slate-100' : 'text-slate-400 hover:text-slate-600'}`}
+                  className={`flex-1 py-3 px-4 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${formActiveTab === tab
+                      ? 'bg-[#4F46E5] text-white shadow-lg shadow-[#4F46E5]/20'
+                      : 'text-[#94A3B8] hover:text-[#64748B]'
+                    }`}
                 >
-                  {tab === 'pessoal' ? 'Pessoal' : tab === 'endereco' ? 'Endereço' : 'Processo'}
+                  {tab === 'pessoal' ? 'PESSOAL' : tab === 'endereco' ? 'ENDERECO' : 'PROCESSO'}
                 </button>
               ))}
             </div>
 
-            <form onSubmit={handleNextStep} className="space-y-10">
+            <form onSubmit={handleNextStep} className="space-y-8">
               {formActiveTab === 'pessoal' && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in slide-in-from-right-4 duration-300">
-                  <div className="md:col-span-2 space-y-3 text-left">
-                    <label className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">Nome Completo</label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8 animate-in slide-in-from-right-4 duration-300">
+                  <div className="md:col-span-2 space-y-2 text-left">
+                    <label className="text-[10px] font-black uppercase text-[#94A3B8] tracking-widest px-1">TIPO DE CONTRATAÇÃO</label>
+                    <div className="relative">
+                      <select
+                        className="w-full h-14 px-5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl text-sm font-semibold text-[#1E293B] outline-none focus:border-[#4F46E5] focus:ring-4 focus:ring-[#4F46E5]/5 transition-all appearance-none"
+                        value={formData.origin}
+                        onChange={e => setFormData({ ...formData, origin: e.target.value as any })}
+                      >
+                        <option value="Particular">Particular / Contratual</option>
+                        <option value="Defensoria">Defensoria / Convênio</option>
+                      </select>
+                      <i className="fa-solid fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-[#94A3B8] pointer-events-none"></i>
+                    </div>
+                  </div>
+
+                  <div className="md:col-span-2 space-y-2 text-left">
+                    <label className="text-[10px] font-black uppercase text-[#94A3B8] tracking-widest px-1">NOME COMPLETO</label>
                     <input
                       type="text"
                       required
-                      className="w-full h-16 px-6 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/5 transition-all"
+                      className="w-full h-14 px-5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl text-sm font-semibold text-[#1E293B] outline-none focus:border-[#4F46E5] focus:ring-4 focus:ring-[#4F46E5]/5 transition-all"
                       value={formData.name}
                       onChange={e => setFormData({ ...formData, name: e.target.value })}
                     />
                   </div>
-                  <div className="space-y-3 text-left">
-                    <label className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">CPF / CNPJ</label>
+
+                  <div className="space-y-2 text-left">
+                    <label className="text-[10px] font-black uppercase text-[#94A3B8] tracking-widest px-1">NACIONALIDADE</label>
                     <input
                       type="text"
-                      className="w-full h-16 px-6 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/5 transition-all"
+                      className="w-full h-14 px-5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl text-sm font-semibold text-[#1E293B] outline-none focus:border-[#4F46E5] transition-all"
+                      value={formData.nationality}
+                      onChange={e => setFormData({ ...formData, nationality: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="space-y-2 text-left">
+                    <label className="text-[10px] font-black uppercase text-[#94A3B8] tracking-widest px-1">ESTADO CIVIL</label>
+                    <div className="relative">
+                      <select
+                        className="w-full h-14 px-5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl text-sm font-semibold text-[#1E293B] outline-none focus:border-[#4F46E5] transition-all appearance-none"
+                        value={formData.maritalStatus}
+                        onChange={e => setFormData({ ...formData, maritalStatus: e.target.value as any })}
+                      >
+                        <option value="Solteiro(a)">Solteiro(a)</option>
+                        <option value="Casado(a)">Casado(a)</option>
+                        <option value="Divorciado(a)">Divorciado(a)</option>
+                        <option value="Viúvo(a)">Viúvo(a)</option>
+                        <option value="União Estável">União Estável</option>
+                      </select>
+                      <i className="fa-solid fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-[#94A3B8] pointer-events-none"></i>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2 text-left">
+                    <label className="text-[10px] font-black uppercase text-[#94A3B8] tracking-widest px-1">PROFISSÃO</label>
+                    <input
+                      type="text"
+                      className="w-full h-14 px-5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl text-sm font-semibold text-[#1E293B] outline-none focus:border-[#4F46E5] transition-all"
+                      value={formData.profession}
+                      onChange={e => setFormData({ ...formData, profession: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="space-y-2 text-left">
+                    <label className="text-[10px] font-black uppercase text-[#94A3B8] tracking-widest px-1">RENDA MENSAL (R$)</label>
+                    <input
+                      type="number"
+                      className="w-full h-14 px-5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl text-sm font-semibold text-[#1E293B] outline-none focus:border-[#4F46E5] transition-all"
+                      value={formData.monthlyIncome}
+                      onChange={e => setFormData({ ...formData, monthlyIncome: Number(e.target.value) })}
+                    />
+                  </div>
+
+                  <div className="space-y-2 text-left">
+                    <label className="text-[10px] font-black uppercase text-[#94A3B8] tracking-widest px-1">CPF / CNPJ</label>
+                    <input
+                      type="text"
+                      className="w-full h-14 px-5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl text-sm font-semibold text-[#1E293B] outline-none focus:border-[#4F46E5] transition-all"
                       value={formData.cpf_cnpj}
                       onChange={e => setFormData({ ...formData, cpf_cnpj: e.target.value })}
                     />
                   </div>
-                  <div className="space-y-3 text-left">
-                    <label className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">Telefone</label>
+
+                  <div className="grid grid-cols-5 md:grid-cols-5 gap-3">
+                    <div className="col-span-3 space-y-2 text-left">
+                      <label className="text-[10px] font-black uppercase text-[#94A3B8] tracking-widest px-1">RG</label>
+                      <input
+                        type="text"
+                        className="w-full h-14 px-5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl text-sm font-semibold text-[#1E293B] outline-none focus:border-[#4F46E5] transition-all"
+                        value={formData.rg}
+                        onChange={e => setFormData({ ...formData, rg: e.target.value })}
+                      />
+                    </div>
+                    <div className="col-span-2 space-y-2 text-left">
+                      <label className="text-[10px] font-black uppercase text-[#94A3B8] tracking-widest px-1">ORG. EMISSOR</label>
+                      <input
+                        type="text"
+                        placeholder="SSP/SP"
+                        className="w-full h-14 px-5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl text-sm font-semibold text-[#1E293B] outline-none focus:border-[#4F46E5] transition-all"
+                        value={formData.rgIssuingBody}
+                        onChange={e => setFormData({ ...formData, rgIssuingBody: e.target.value })}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="md:col-span-2 space-y-2 text-left">
+                    <label className="text-[10px] font-black uppercase text-[#94A3B8] tracking-widest px-1">E-MAIL (ENDEREÇO ELETRÔNICO)</label>
                     <input
-                      type="text"
-                      className="w-full h-16 px-6 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/5 transition-all"
-                      value={formData.phone}
-                      onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                      type="email"
+                      className="w-full h-14 px-5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl text-sm font-semibold text-[#1E293B] outline-none focus:border-[#4F46E5] transition-all"
+                      value={formData.email}
+                      onChange={e => setFormData({ ...formData, email: e.target.value })}
                     />
                   </div>
                 </div>
               )}
 
               {formActiveTab === 'endereco' && (
-                <div className="grid grid-cols-1 md:grid-cols-6 gap-8 animate-in slide-in-from-right-4 duration-300">
-                  <div className="md:col-span-2 space-y-3 text-left">
-                    <label className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">CEP</label>
-                    <input type="text" className="w-full h-16 px-6 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 outline-none focus:border-blue-500 transition-all" value={formData.zipCode} onChange={e => setFormData({ ...formData, zipCode: e.target.value })} />
+                <div className="grid grid-cols-1 md:grid-cols-6 gap-x-6 gap-y-8 animate-in slide-in-from-right-4 duration-300">
+                  <div className="md:col-span-2 space-y-2 text-left">
+                    <label className="text-[10px] font-black uppercase text-[#94A3B8] tracking-widest px-1">CEP</label>
+                    <input type="text" className="w-full h-14 px-5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl text-sm font-semibold text-[#1E293B] outline-none focus:border-[#4F46E5] transition-all" value={formData.zipCode} onChange={e => setFormData({ ...formData, zipCode: e.target.value })} />
                   </div>
-                  <div className="md:col-span-4 space-y-3 text-left">
-                    <label className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">Logradouro</label>
-                    <input type="text" className="w-full h-16 px-6 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 outline-none focus:border-blue-500 transition-all" value={formData.address} onChange={e => setFormData({ ...formData, address: e.target.value })} />
+                  <div className="md:col-span-4 space-y-2 text-left">
+                    <label className="text-[10px] font-black uppercase text-[#94A3B8] tracking-widest px-1">LOGRADOURO</label>
+                    <input type="text" className="w-full h-14 px-5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl text-sm font-semibold text-[#1E293B] outline-none focus:border-[#4F46E5] transition-all" value={formData.address} onChange={e => setFormData({ ...formData, address: e.target.value })} />
                   </div>
-                  <div className="md:col-span-2 space-y-3 text-left">
-                    <label className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">Número</label>
-                    <input type="text" className="w-full h-16 px-6 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 outline-none focus:border-blue-500 transition-all" value={formData.addressNumber} onChange={e => setFormData({ ...formData, addressNumber: e.target.value })} />
+                  <div className="md:col-span-2 space-y-2 text-left">
+                    <label className="text-[10px] font-black uppercase text-[#94A3B8] tracking-widest px-1">NÚMERO</label>
+                    <input type="text" className="w-full h-14 px-5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl text-sm font-semibold text-[#1E293B] outline-none focus:border-[#4F46E5] transition-all" value={formData.addressNumber} onChange={e => setFormData({ ...formData, addressNumber: e.target.value })} />
                   </div>
-                  <div className="md:col-span-4 space-y-3 text-left">
-                    <label className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">Bairro</label>
-                    <input type="text" className="w-full h-16 px-6 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 outline-none focus:border-blue-500 transition-all" value={formData.neighborhood} onChange={e => setFormData({ ...formData, neighborhood: e.target.value })} />
+                  <div className="md:col-span-4 space-y-2 text-left">
+                    <label className="text-[10px] font-black uppercase text-[#94A3B8] tracking-widest px-1">BAIRRO</label>
+                    <input type="text" className="w-full h-14 px-5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl text-sm font-semibold text-[#1E293B] outline-none focus:border-[#4F46E5] transition-all" value={formData.neighborhood} onChange={e => setFormData({ ...formData, neighborhood: e.target.value })} />
                   </div>
-                  <div className="md:col-span-4 space-y-3 text-left">
-                    <label className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">Cidade</label>
-                    <input type="text" className="w-full h-16 px-6 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 outline-none focus:border-blue-500 transition-all" value={formData.city} onChange={e => setFormData({ ...formData, city: e.target.value })} />
+                  <div className="md:col-span-4 space-y-2 text-left">
+                    <label className="text-[10px] font-black uppercase text-[#94A3B8] tracking-widest px-1">CIDADE</label>
+                    <input type="text" className="w-full h-14 px-5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl text-sm font-semibold text-[#1E293B] outline-none focus:border-[#4F46E5] transition-all" value={formData.city} onChange={e => setFormData({ ...formData, city: e.target.value })} />
                   </div>
-                  <div className="md:col-span-2 space-y-3 text-left">
-                    <label className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">Estado</label>
-                    <input type="text" className="w-full h-16 px-6 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 outline-none focus:border-blue-500 transition-all" value={formData.state} onChange={e => setFormData({ ...formData, state: e.target.value })} />
+                  <div className="md:col-span-2 space-y-2 text-left">
+                    <label className="text-[10px] font-black uppercase text-[#94A3B8] tracking-widest px-1">ESTADO</label>
+                    <input type="text" className="w-full h-14 px-5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl text-sm font-semibold text-[#1E293B] outline-none focus:border-[#4F46E5] transition-all" value={formData.state} onChange={e => setFormData({ ...formData, state: e.target.value })} />
                   </div>
                 </div>
               )}
 
               {formActiveTab === 'processo' && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in slide-in-from-right-4 duration-300">
-                  <div className="md:col-span-2 space-y-3 text-left">
-                    <label className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">Número do Processo</label>
-                    <input type="text" required className="w-full h-16 px-6 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 outline-none focus:border-blue-500 transition-all" value={formData.caseNumber} onChange={e => setFormData({ ...formData, caseNumber: e.target.value })} />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8 animate-in slide-in-from-right-4 duration-300">
+                  <div className="md:col-span-2 space-y-2 text-left">
+                    <label className="text-[10px] font-black uppercase text-[#94A3B8] tracking-widest px-1">NÚMERO DO PROCESSO</label>
+                    <input type="text" required className="w-full h-14 px-5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl text-sm font-semibold text-[#1E293B] outline-none focus:border-[#4F46E5] transition-all" value={formData.caseNumber} onChange={e => setFormData({ ...formData, caseNumber: e.target.value })} />
                   </div>
-                  <div className="space-y-3 text-left">
-                    <label className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">Tipo de Ação</label>
-                    <select className="w-full h-16 px-6 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 outline-none focus:border-blue-500 cursor-pointer" value={formData.caseType} onChange={e => setFormData({ ...formData, caseType: e.target.value as any })}>
-                      {['Cível', 'Criminal', 'Trabalhista', 'Família', 'Tributário', 'Previdenciário', 'Outros'].map(t => <option key={t} value={t}>{t}</option>)}
-                    </select>
+                  <div className="space-y-2 text-left">
+                    <label className="text-[10px] font-black uppercase text-[#94A3B8] tracking-widest px-1">TIPO DE AÇÃO</label>
+                    <div className="relative">
+                      <select className="w-full h-14 px-5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl text-sm font-semibold text-[#1E293B] outline-none focus:border-[#4F46E5] cursor-pointer appearance-none" value={formData.caseType} onChange={e => setFormData({ ...formData, caseType: e.target.value as any })}>
+                        {['Cível', 'Criminal', 'Trabalhista', 'Família', 'Tributário', 'Previdenciário', 'Outros'].map(t => <option key={t} value={t}>{t}</option>)}
+                      </select>
+                      <i className="fa-solid fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-[#94A3B8] pointer-events-none"></i>
+                    </div>
                   </div>
-                  <div className="space-y-3 text-left">
-                    <label className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">Origem</label>
-                    <select className="w-full h-16 px-6 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 outline-none focus:border-blue-500 cursor-pointer" value={formData.origin} onChange={e => setFormData({ ...formData, origin: e.target.value as any })}>
-                      <option value="Particular">Particular</option>
-                      <option value="Defensoria">Defensoria</option>
-                    </select>
+                  <div className="space-y-2 text-left">
+                    <label className="text-[10px] font-black uppercase text-[#94A3B8] tracking-widest px-1">ORIGEM</label>
+                    <div className="relative">
+                      <select className="w-full h-14 px-5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl text-sm font-semibold text-[#1E293B] outline-none focus:border-[#4F46E5] cursor-pointer appearance-none" value={formData.origin} onChange={e => setFormData({ ...formData, origin: e.target.value as any })}>
+                        <option value="Particular">Particular</option>
+                        <option value="Defensoria">Defensoria</option>
+                      </select>
+                      <i className="fa-solid fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-[#94A3B8] pointer-events-none"></i>
+                    </div>
                   </div>
                 </div>
               )}
 
-              <div className="flex items-center justify-between gap-6 pt-10 border-t border-slate-100">
-                <button type="button" onClick={() => setShowFormModal(false)} className="px-8 py-4 font-black text-slate-400 hover:text-slate-600 transition-all text-[11px] uppercase tracking-[0.2em]">
-                  Cancelar
+              <div className="flex items-center justify-between gap-6 pt-8 border-t border-[#F1F5F9]">
+                <button
+                  type="button"
+                  onClick={() => setShowFormModal(false)}
+                  className="px-6 py-4 font-black text-[#94A3B8] hover:text-[#64748B] transition-all text-xs uppercase tracking-widest"
+                >
+                  CANCELAR
                 </button>
-                <button type="submit" className="flex-1 max-w-md bg-blue-600 text-white py-5 rounded-xl font-black text-xs uppercase tracking-[0.2em] hover:bg-blue-700 transition-all active:scale-[0.98] shadow-xl shadow-blue-500/25">
-                  {formActiveTab === 'processo' ? 'Finalizar Cadastro' : 'Próximo Passo'}
+                <button
+                  type="submit"
+                  className="flex-1 max-w-lg bg-[#4F46E5] text-white py-4 rounded-3xl font-black text-xs uppercase tracking-[0.2em] hover:bg-[#4338CA] transition-all active:scale-[0.98] shadow-xl shadow-[#4F46E5]/30"
+                >
+                  {formActiveTab === 'processo' ? 'FINALIZAR CADASTRO' : 'PRÓXIMA ETAPA'}
                 </button>
               </div>
             </form>
