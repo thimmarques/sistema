@@ -15,13 +15,13 @@ const Reports: React.FC<ReportsProps> = ({ clients, movements, settings, current
   const [originFilter, setOriginFilter] = useState<'Both' | ClientOrigin>('Both');
 
   const AREA_COLORS: Record<string, string> = {
-    'Cível': '#C5A059',
-    'Criminal': '#F43F5E',
+    'Cível': '#3B82F6',
+    'Criminal': '#6366F1',
     'Trabalhista': '#10B981',
-    'Família': '#D97706',
+    'Família': '#F59E0B',
     'Tributário': '#06B6D4',
     'Previdenciário': '#8B5CF6',
-    'Outros': '#475569'
+    'Outros': '#64748B'
   };
 
   const filteredClients = useMemo(() => {
@@ -69,53 +69,58 @@ const Reports: React.FC<ReportsProps> = ({ clients, movements, settings, current
   }, [filteredClients, currentUserId]);
 
   return (
-    <div className="space-y-12 animate-fade-in pb-24">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 border-b border-white/5 pb-10">
-        <div className="space-y-4 text-left">
-          <p className="text-[10px] font-black text-brand-500 uppercase tracking-[0.5em]">CENTRAL ANALÍTICA</p>
-          <h2 className="text-5xl font-black text-white italic tracking-tighter uppercase font-serif">Relatórios</h2>
-          <p className="text-[10px] font-black text-slate-700 uppercase tracking-widest">Processamento de Performance LexAI</p>
+    <div className="space-y-10 animate-fade-in pb-24">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-slate-200 pb-8">
+        <div className="space-y-2 text-left">
+          <p className="text-xs font-bold text-cyan-600 uppercase tracking-wide">Inteligência de Negócio</p>
+          <h2 className="text-3xl font-bold text-slate-900 tracking-tight">Relatórios</h2>
+          <p className="text-sm text-slate-500 font-medium">Análise de performance e fluxo operacional</p>
         </div>
-        <div className="flex flex-wrap items-center gap-6 w-full md:w-auto">
-          <div className="flex bg-white/5 p-1 border border-white/5">
+        <div className="flex flex-wrap items-center gap-4 w-full md:w-auto">
+          <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-200 shadow-sm">
             {['Both', 'Particular', 'Defensoria'].map(f => (
-              <button key={f} onClick={() => setOriginFilter(f as any)} className={`px-8 py-3 font-black text-[9px] uppercase tracking-[0.3em] transition-all ${originFilter === f ? 'bg-brand-500 text-black shadow-lg shadow-brand-500/20' : 'text-slate-500 hover:text-white hover:bg-white/5'}`}>{f === 'Both' ? 'GERAL' : f.toUpperCase()}</button>
+              <button key={f} onClick={() => setOriginFilter(f as any)} className={`px-6 py-2 rounded-md font-bold text-[10px] uppercase tracking-wider transition-all ${originFilter === f ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}>{f === 'Both' ? 'GERAL' : f.toUpperCase()}</button>
             ))}
           </div>
-          <button onClick={() => generateFinancialReport(filteredClients, settings)} className="px-10 py-4 border border-white/5 text-white font-black text-[9px] uppercase tracking-[0.3em] hover:bg-white/5 transition-all flex items-center gap-4">
-            <i className="fa-solid fa-file-pdf text-brand-500"></i>
-            EXPORTAR PDF
+          <button onClick={() => generateFinancialReport(filteredClients, settings)} className="px-6 py-3 rounded-lg border border-slate-200 text-slate-700 bg-white font-bold text-[10px] uppercase tracking-wider hover:bg-slate-50 transition-all flex items-center gap-3 shadow-sm">
+            <i className="fa-solid fa-file-pdf text-rose-500"></i>
+            Exportar PDF
           </button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
-          { label: 'Demandas Totais', value: filteredClients.length, color: 'text-white' },
-          { label: 'Volume Acordado', value: formatCurrency(financialSummary.totalAgreed), color: 'text-brand-500' },
-          { label: 'Fluxo Realizado', value: formatCurrency(financialSummary.totalInitial), color: 'text-white' },
-          { label: 'Ativos em Aberto', value: formatCurrency(financialSummary.totalPending), color: 'text-slate-800' }
+          { label: 'Demandas Totais', value: filteredClients.length, color: 'text-slate-900', icon: 'fa-folder-open', iconBg: 'bg-blue-50 text-blue-500' },
+          { label: 'Volume Acordado', value: formatCurrency(financialSummary.totalAgreed), color: 'text-emerald-600', icon: 'fa-handshake', iconBg: 'bg-emerald-50 text-emerald-500' },
+          { label: 'Fluxo Realizado', value: formatCurrency(financialSummary.totalInitial), color: 'text-blue-600', icon: 'fa-money-bill-trend-up', iconBg: 'bg-blue-50 text-blue-500' },
+          { label: 'Ativos em Aberto', value: formatCurrency(financialSummary.totalPending), color: 'text-amber-600', icon: 'fa-clock-rotate-left', iconBg: 'bg-amber-50 text-amber-500' }
         ].map((s, i) => (
-          <div key={i} className="bg-white/5 border border-white/5 p-10 space-y-4 text-left group hover:border-white/10 transition-all">
-            <p className="text-[9px] font-black text-slate-700 uppercase tracking-[0.4em] mb-4">{s.label}</p>
-            <h3 className={`text-2xl font-black tracking-tighter ${s.color}`}>{s.value}</h3>
+          <div key={i} className="bg-white border border-slate-200 p-8 rounded-xl space-y-4 text-left group hover:shadow-md transition-all shadow-sm">
+            <div className={`h-10 w-10 ${s.iconBg} rounded-lg flex items-center justify-center mb-2`}>
+              <i className={`fa-solid ${s.icon} text-sm`}></i>
+            </div>
+            <div>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{s.label}</p>
+              <h3 className={`text-xl font-bold tracking-tight ${s.color}`}>{s.value}</h3>
+            </div>
           </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-        <div className="lg:col-span-2 bg-white/[0.02] border border-white/5 p-12 space-y-12">
-          <div className="space-y-4 border-l-2 border-brand-500 pl-8">
-            <h4 className="text-[10px] font-black text-white uppercase tracking-[0.5em]">EVOLUÇÃO POR CATEGORIA</h4>
-            <p className="text-[9px] font-black text-slate-700 uppercase tracking-[0.3em]">DISTRIBUIÇÃO DE LITIGIOSIDADE OPERACIONAL</p>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 bg-white border border-slate-200 rounded-xl p-10 shadow-sm space-y-10">
+          <div className="space-y-1 border-l-4 border-blue-600 pl-6">
+            <h4 className="text-xs font-bold text-slate-900 uppercase tracking-widest">Evolução por Categoria</h4>
+            <p className="text-[10px] font-medium text-slate-400 uppercase tracking-widest">Distribuição de pauta operacional</p>
           </div>
-          <div className="h-[400px] w-full">
+          <div className="h-[350px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={areaData} layout="vertical">
                 <XAxis type="number" hide />
-                <YAxis dataKey="name" type="category" width={100} tick={{ fontSize: 9, fontWeight: '900', fill: '#475569' }} axisLine={false} tickLine={false} />
-                <Tooltip cursor={{ fill: 'rgba(255,255,255,0.02)' }} contentStyle={{ backgroundColor: '#0B0C15', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '0px' }} />
-                <Bar dataKey="value" barSize={12} radius={[0, 0, 0, 0]}>
+                <YAxis dataKey="name" type="category" width={100} tick={{ fontSize: 10, fontWeight: '700', fill: '#64748B' }} axisLine={false} tickLine={false} />
+                <Tooltip cursor={{ fill: '#F8FAFC' }} contentStyle={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                <Bar dataKey="value" barSize={14} radius={[0, 4, 4, 0]}>
                   {areaData.map((e, idx) => <Cell key={idx} fill={e.fill} />)}
                 </Bar>
               </BarChart>
@@ -123,29 +128,29 @@ const Reports: React.FC<ReportsProps> = ({ clients, movements, settings, current
           </div>
         </div>
 
-        <div className="bg-white/[0.02] border border-white/5 p-12 flex flex-col items-center justify-between space-y-12">
-          <div className="text-center space-y-4">
-            <h4 className="text-[10px] font-black text-white uppercase tracking-[0.5em]">PROVENIÊNCIA</h4>
-            <div className="h-[1px] w-12 bg-brand-500 mx-auto mt-6"></div>
+        <div className="bg-white border border-slate-200 rounded-xl p-10 shadow-sm flex flex-col items-center justify-between space-y-10">
+          <div className="text-center space-y-2">
+            <h4 className="text-xs font-bold text-slate-900 uppercase tracking-widest">Proveniência</h4>
+            <div className="h-1 w-8 bg-blue-600 mx-auto rounded-full"></div>
           </div>
-          <div className="h-72 w-full relative">
+          <div className="h-64 w-full relative">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
-                <Pie data={originPieData} dataKey="value" innerRadius={80} outerRadius={100} paddingAngle={0} stroke="none">
-                  {originPieData.map((e, idx) => <Cell key={idx} fill={idx === 0 ? '#D4AF37' : 'rgba(255,255,255,0.05)'} />)}
+                <Pie data={originPieData} dataKey="value" innerRadius={70} outerRadius={90} paddingAngle={4} stroke="none" cornerRadius={4}>
+                  {originPieData.map((e, idx) => <Cell key={idx} fill={idx === 0 ? '#3B82F6' : '#F1F5F9'} />)}
                 </Pie>
               </PieChart>
             </ResponsiveContainer>
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-              <span className="text-5xl font-black text-white tracking-tighter leading-none">{filteredClients.length}</span>
-              <span className="text-[9px] font-black text-slate-700 uppercase tracking-[0.4em] mt-3">REGISTROS</span>
+              <span className="text-4xl font-black text-slate-900 tracking-tighter leading-none">{filteredClients.length}</span>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">Registros</span>
             </div>
           </div>
-          <div className="space-y-4 w-full">
+          <div className="space-y-3 w-full">
             {originPieData.map((e, idx) => (
-              <div key={idx} className="flex justify-between items-center p-6 border border-white/5 bg-white/[0.01]">
-                <span className="text-[9px] font-black text-slate-700 uppercase tracking-[0.3em]">{e.name}</span>
-                <span className="text-xl font-black text-white tracking-tighter">{e.value}</span>
+              <div key={idx} className="flex justify-between items-center p-5 border border-slate-100 rounded-xl bg-slate-50/50">
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{e.name}</span>
+                <span className="text-lg font-bold text-slate-900 tracking-tight">{e.value}</span>
               </div>
             ))}
           </div>
