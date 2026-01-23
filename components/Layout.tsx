@@ -34,7 +34,7 @@ const Layout: React.FC<LayoutProps> = ({
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     return (
-        <div className="flex min-h-screen bg-brand-900 font-sans text-brand-50 selection:bg-accent-gold/20 selection:text-accent-gold">
+        <div className="flex min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-blue-500/20 selection:text-blue-700">
             <Sidebar
                 activeSection={activeSection}
                 onSelectSection={onSelectSection}
@@ -44,10 +44,10 @@ const Layout: React.FC<LayoutProps> = ({
                 onClose={() => setIsMobileMenuOpen(false)}
             />
 
-            <main className="flex-1 relative h-screen flex flex-col overflow-hidden bg-brand-900">
+            <main className="flex-1 relative h-screen flex flex-col overflow-hidden bg-slate-50">
                 {isLoading && (
-                    <div className="absolute top-0 left-0 w-full h-1 bg-brand-800 overflow-hidden z-50">
-                        <div className="h-full bg-accent-gold animate-pulse origin-left"></div>
+                    <div className="absolute top-0 left-0 w-full h-1 bg-slate-200 overflow-hidden z-50">
+                        <div className="h-full bg-blue-600 animate-pulse origin-left"></div>
                     </div>
                 )}
 

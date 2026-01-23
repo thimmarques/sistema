@@ -40,17 +40,17 @@ const Dashboard: React.FC<DashboardProps> = ({ clients, movements, activities = 
   ];
 
   return (
-    <div className="space-y-12 animate-fade-in pb-20">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-brand-800 pb-10">
-        <div className="space-y-4">
-          <p className="text-[10px] font-black text-accent-gold uppercase tracking-[0.5em]">OPERADOR EM COMANDO</p>
-          <h1 className="text-5xl font-black text-brand-50 italic tracking-tighter uppercase font-serif leading-none">
-            {settings.name || 'ADVOGADO'}
+    <div className="space-y-8 animate-fade-in pb-20">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-slate-200 pb-8">
+        <div className="space-y-2">
+          <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Bem-vindo ao Sistema</p>
+          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
+            {settings.name || 'Advogado'}
           </h1>
         </div>
-        <div className="bg-brand-800 px-8 py-4 border border-brand-700 flex items-center gap-4">
-          <div className="h-1.5 w-1.5 rounded-full bg-accent-gold animate-pulse"></div>
-          <span className="text-[9px] font-black text-brand-400 uppercase tracking-[0.4em]">SISTEMA INTEGRADO</span>
+        <div className="bg-white px-6 py-2 rounded-full border border-slate-200 flex items-center gap-3 shadow-sm">
+          <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></div>
+          <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Sistema Online</span>
         </div>
       </div>
 
@@ -59,73 +59,75 @@ const Dashboard: React.FC<DashboardProps> = ({ clients, movements, activities = 
           <button
             key={idx}
             onClick={s.action}
-            className="bg-brand-800 border border-brand-700 p-10 hover:border-accent-gold/30 transition-all text-left group relative overflow-hidden"
+            className="bg-white border border-slate-200 p-6 rounded-xl shadow-sm hover:shadow-md hover:border-blue-200 transition-all text-left group relative overflow-hidden"
           >
-            <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-20 transition-all">
-              <i className="fa-solid fa-layer-group text-4xl text-brand-400"></i>
+            <div className="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:opacity-10 transition-all">
+              <i className="fa-solid fa-layer-group text-6xl text-slate-900"></i>
             </div>
-            <p className="text-[9px] font-black text-brand-400 uppercase tracking-[0.4em] mb-4 group-hover:text-accent-gold transition-colors">{s.label}</p>
-            <h3 className="text-4xl font-black text-brand-50 tracking-tighter">{s.value}</h3>
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 group-hover:text-blue-600 transition-colors">{s.label}</p>
+            <h3 className="text-3xl font-bold text-slate-900 tracking-tight">{s.value}</h3>
           </button>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-        <div className="lg:col-span-2 border border-brand-800 bg-brand-900">
-          <div className="p-8 border-b border-brand-800 flex justify-between items-center bg-brand-800/50">
-            <h3 className="text-[10px] font-black text-brand-100 uppercase tracking-[0.5em]">LOG DE OPERAÇÕES</h3>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+          <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Últimas Movimentações</h3>
             <button
               onClick={() => onSelectSection(AppSection.AGENDA)}
-              className="text-[9px] font-black text-accent-gold hover:tracking-[0.4em] uppercase tracking-[0.3em] transition-all"
+              className="text-xs font-semibold text-blue-600 hover:text-blue-800 transition-colors"
             >
-              ACESSAR TERMINAL
+              Ver Todas
             </button>
           </div>
-          <div className="divide-y divide-brand-800">
+          <div className="divide-y divide-slate-100">
             {movements.length > 0 ? movements.slice(0, 5).map((m, idx) => (
               <div
                 key={idx}
                 onClick={() => setSelectedMovement(m)}
-                className="p-8 hover:bg-brand-800/50 transition-all cursor-pointer flex items-center gap-8 group"
+                className="p-6 hover:bg-slate-50 transition-all cursor-pointer flex items-center gap-6 group"
               >
-                <div className="w-16 h-16 border border-brand-700 flex flex-col items-center justify-center text-brand-400 group-hover:border-accent-gold group-hover:text-accent-gold transition-all">
-                  <span className="text-xl font-black leading-none">{m.date.split('-')[2]}</span>
-                  <span className="text-[8px] uppercase font-black tracking-widest mt-1">PROTO</span>
+                <div className="w-14 h-14 bg-slate-100 rounded-lg flex flex-col items-center justify-center text-slate-500 group-hover:bg-blue-50 group-hover:text-blue-600 transition-all">
+                  <span className="text-lg font-bold leading-none">{m.date.split('-')[2]}</span>
+                  <span className="text-[10px] uppercase font-bold">DEZ</span>
                 </div>
-                <div className="flex-1 min-w-0 space-y-2">
-                  <h4 className="text-xs font-black text-brand-50 uppercase tracking-widest truncate">{m.description}</h4>
-                  <div className="flex items-center gap-4">
-                    <span className="text-[9px] text-brand-400 font-bold tracking-wider">{m.caseNumber}</span>
-                    <div className="h-1 w-1 bg-accent-gold"></div>
-                    <span className="text-[9px] text-accent-gold font-black uppercase tracking-tighter">{m.type}</span>
+                <div className="flex-1 min-w-0 space-y-1">
+                  <h4 className="text-sm font-semibold text-slate-900 truncate">{m.description}</h4>
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs text-slate-500 font-medium">{m.caseNumber}</span>
+                    <div className="h-1 w-1 rounded-full bg-slate-300"></div>
+                    <span className="text-[10px] font-bold text-blue-600 uppercase bg-blue-50 px-2 py-0.5 rounded-full">{m.type}</span>
                   </div>
                 </div>
-                <i className="fa-solid fa-chevron-right text-brand-600 group-hover:text-brand-50 transition-all"></i>
+                <i className="fa-solid fa-chevron-right text-slate-300 group-hover:text-slate-500 transition-all"></i>
               </div>
             )) : (
               <div className="p-20 text-center space-y-4">
-                <i className="fa-solid fa-radar text-4xl text-white/5"></i>
-                <p className="text-[10px] font-black text-slate-900 uppercase tracking-widest">Aguardando Novas Movimentações</p>
+                <i className="fa-solid fa-folder-open text-4xl text-slate-200"></i>
+                <p className="text-sm font-medium text-slate-500">Nenhuma movimentação recente</p>
               </div>
             )}
           </div>
         </div>
 
-        <div className="border border-brand-800 bg-brand-900">
-          <div className="p-8 border-b border-brand-800 bg-brand-800/50">
-            <h3 className="text-[10px] font-black text-brand-100 uppercase tracking-[0.5em]">SISTEMA ANALÍTICO</h3>
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden h-fit">
+          <div className="p-6 border-b border-slate-100 bg-slate-50/50">
+            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Atividade Recente</h3>
           </div>
-          <div className="p-8 space-y-10">
+          <div className="p-6 space-y-8">
             {activities.slice(0, 5).map((act, idx) => (
-              <div key={idx} className="flex gap-6 relative">
-                <div className="h-full w-[1px] bg-brand-800 absolute left-3 top-8"></div>
-                <div className="w-6 h-6 border border-brand-700 flex items-center justify-center text-accent-gold shrink-0 relative bg-brand-900">
-                  <i className="fa-solid fa-bolt text-[10px]"></i>
+              <div key={idx} className="flex gap-4 relative">
+                {idx !== activities.slice(0, 5).length - 1 && (
+                  <div className="h-full w-[1px] bg-slate-200 absolute left-2.5 top-6"></div>
+                )}
+                <div className="w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shrink-0 relative z-10 border-2 border-white">
+                  <i className="fa-solid fa-bolt text-[8px]"></i>
                 </div>
-                <div className="min-w-0 space-y-2">
-                  <p className="text-xs font-bold text-brand-400 leading-relaxed uppercase tracking-wide">{act.description}</p>
-                  <p className="text-[8px] text-brand-500 font-black uppercase tracking-[0.2em]">
-                    {new Date(act.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} • {act.userName || 'TERMINAL'}
+                <div className="min-w-0 space-y-1 pb-2">
+                  <p className="text-xs font-medium text-slate-700 leading-relaxed">{act.description}</p>
+                  <p className="text-[10px] text-slate-400 font-medium">
+                    {new Date(act.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} • {act.userName || 'Sistema'}
                   </p>
                 </div>
               </div>
@@ -133,7 +135,6 @@ const Dashboard: React.FC<DashboardProps> = ({ clients, movements, activities = 
           </div>
         </div>
       </div>
-
       {selectedMovement && (
         <MovementSummaryModal
           movement={selectedMovement}

@@ -37,47 +37,46 @@ const Sidebar: React.FC<SidebarProps> = ({ activeSection, onSelectSection, logo,
         ></div>
       )}
 
-      <aside className={`fixed inset-y-0 left-0 w-64 bg-brand-900 border-r border-brand-800 text-brand-400 flex flex-col z-50 transition-all duration-300 ease-in-out lg:relative lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="p-10 flex flex-col items-center border-b border-brand-800 space-y-6">
-          <div className="h-16 w-16 border border-accent-gold/30 flex items-center justify-center relative group overflow-hidden">
-            <div className="absolute inset-0 bg-accent-gold/10 blur-xl group-hover:bg-accent-gold/30 transition-all"></div>
+      <aside className={`fixed inset-y-0 left-0 w-64 bg-slate-900 text-slate-400 flex flex-col z-50 transition-all duration-300 ease-in-out lg:relative lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="p-6 flex flex-col items-center border-b border-slate-800 space-y-4">
+          <div className="h-12 w-12 flex items-center justify-center bg-blue-600 rounded-lg shadow-lg">
             {logo && logo.startsWith('data:image') ? (
-              <img src={logo} className="h-full w-full object-contain p-2 relative z-10" alt="Logo" />
+              <img src={logo} className="h-full w-full object-contain p-2" alt="Logo" />
             ) : (
-              <i className="fa-solid fa-scale-balanced text-accent-gold text-2xl relative z-10"></i>
+              <i className="fa-solid fa-scale-balanced text-white text-xl"></i>
             )}
           </div>
           <div className="text-center">
-            <h1 className="text-2xl font-black text-brand-50 italic tracking-tighter uppercase font-serif">LexAI</h1>
-            <p className="text-[8px] font-black text-brand-500 uppercase tracking-[0.4em] mt-1">Gestão de Elite</p>
+            <h1 className="text-xl font-bold text-white tracking-tight">LexAI</h1>
+            <p className="text-[10px] font-medium text-slate-400 uppercase tracking-widest mt-1">Gestão Jurídica</p>
           </div>
         </div>
 
-        <nav className="flex-1 px-6 py-10 space-y-4 overflow-y-auto custom-scrollbar">
+        <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto custom-scrollbar">
           {menuItems.map((item) => (
             <button
               key={item.id}
               onClick={() => handleSelect(item.id)}
-              className={`w-full flex flex-col items-center group transition-all ${activeSection === item.id ? 'opacity-100 scale-105' : 'opacity-60 hover:opacity-100'}`}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group ${activeSection === item.id
+                  ? 'bg-blue-600/10 text-blue-400 font-medium'
+                  : 'hover:bg-slate-800/50 hover:text-slate-200 text-slate-400'
+                }`}
             >
-              <div className={`w-full p-4 border border-brand-800 flex items-center gap-4 transition-all ${activeSection === item.id ? 'bg-accent-gold border-accent-gold text-brand-950 shadow-[0_0_30px_rgba(212,175,55,0.3)]' : 'hover:bg-brand-800 hover:border-brand-700'}`}>
-                <div className="w-5 text-center">
-                  <i className={`fa-solid ${item.icon} text-xs`}></i>
-                </div>
-                <span className="text-[9px] font-black uppercase tracking-[0.3em] truncate">{item.label}</span>
+              <div className={`w-6 flex justify-center ${activeSection === item.id ? 'text-blue-500' : 'group-hover:text-slate-300'}`}>
+                <i className={`fa-solid ${item.icon} text-sm`}></i>
               </div>
-              {activeSection === item.id && <div className="h-1 w-8 bg-accent-gold mt-2"></div>}
+              <span className="text-xs font-semibold uppercase tracking-wider">{item.label}</span>
+              {activeSection === item.id && (
+                <div className="ml-auto w-1.5 h-1.5 rounded-full bg-blue-500"></div>
+              )}
             </button>
           ))}
         </nav>
 
-        <div className="p-8 border-t border-brand-800 mt-auto">
-          <div className="flex flex-col items-center space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="h-1 w-1 rounded-full bg-accent-gold animate-ping"></div>
-              <p className="text-[8px] font-black text-brand-500 uppercase tracking-[0.5em]">Operacional</p>
-            </div>
-            <p className="text-[7px] text-brand-600 font-black uppercase tracking-[0.2em]">Protocolo v2.0</p>
+        <div className="p-6 border-t border-slate-800 mt-auto">
+          <div className="flex items-center justify-center gap-2 text-xs text-slate-500 font-medium">
+            <div className="h-1.5 w-1.5 rounded-full bg-emerald-500"></div>
+            <span>Sistema Operacional</span>
           </div>
         </div>
       </aside>

@@ -40,36 +40,33 @@ const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-30 bg-brand-900/90 backdrop-blur-2xl border-b border-brand-800 px-10 py-6">
+    <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-slate-200 px-6 py-4">
       <div className="flex items-center justify-between max-w-[1920px] mx-auto">
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4">
           <button
             onClick={onMenuClick}
-            className="p-3 text-slate-700 hover:text-white lg:hidden border border-white/5 rounded-none transition-all"
+            className="p-2 text-slate-600 hover:text-blue-600 lg:hidden transition-colors"
           >
-            <i className="fa-solid fa-bars-staggered text-xs"></i>
+            <i className="fa-solid fa-bars-staggered text-lg"></i>
           </button>
           <div className="flex flex-col text-left">
-            <span className="text-[9px] font-black text-accent-gold uppercase tracking-[0.4em] mb-1">PROTOCOLO OPERACIONAL</span>
-            <div className="flex items-center gap-3">
-              <div className="h-1 w-1 bg-accent-gold"></div>
-              <h1 className="text-sm font-black text-brand-50 uppercase tracking-[0.3em]">
-                {getSectionTitle()}
-              </h1>
-            </div>
+            <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-0.5">Área Administrativa</span>
+            <h1 className="text-lg font-bold text-slate-900 tracking-tight">
+              {getSectionTitle()}
+            </h1>
           </div>
         </div>
 
-        <div className="flex items-center gap-10">
+        <div className="flex items-center gap-8">
           {/* Notifications */}
           <div className="relative">
             <button
               onClick={() => setShowNotifications(!showNotifications)}
-              className={`relative p-3 border border-brand-800 transition-all ${showNotifications ? 'bg-accent-gold text-brand-950 border-accent-gold' : 'text-brand-400 hover:text-brand-50 hover:border-brand-600'}`}
+              className={`relative p-2 transition-all ${showNotifications ? 'text-blue-600' : 'text-slate-400 hover:text-slate-600'}`}
             >
-              <i className="fa-solid fa-bell text-xs"></i>
+              <i className="fa-solid fa-bell text-lg"></i>
               {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center bg-accent-gold text-[8px] font-black text-brand-950">
+                <span className="absolute top-0 right-0 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white border-2 border-white">
                   {unreadCount}
                 </span>
               )}
@@ -84,21 +81,21 @@ const Navbar: React.FC<NavbarProps> = ({
             )}
           </div>
 
-          <div className="h-10 w-[1px] bg-brand-800 hidden sm:block"></div>
+          <div className="h-8 w-[1px] bg-slate-200 hidden sm:block"></div>
 
           {/* User Profile */}
-          <div className="flex items-center gap-6 group cursor-pointer p-1" onClick={() => onLogout()}>
+          <div className="flex items-center gap-4 group cursor-pointer" onClick={() => onLogout()}>
             <div className="text-right hidden sm:block">
-              <p className="text-[10px] font-black text-brand-50 uppercase tracking-widest mb-1 group-hover:text-accent-gold transition-colors">{settings.name || 'ADVOGADO'}</p>
-              <p className="text-[8px] text-brand-500 font-black uppercase tracking-[0.2em]">OAB/{settings.oabState || 'SP'} {settings.oab || '...'}</p>
+              <p className="text-sm font-semibold text-slate-900 group-hover:text-blue-600 transition-colors">{settings.name || 'Advogado'}</p>
+              <p className="text-xs text-slate-500 font-medium">OAB/{settings.oabState || 'SP'} {settings.oab || '...'}</p>
             </div>
             <div className="relative">
               <img
-                src={settings.profileImage || `https://ui-avatars.com/api/?name=${settings.name || 'User'}&background=D4AF37&color=0B0C15&size=100`}
-                className="h-12 w-12 border border-brand-800 grayscale hover:grayscale-0 transition-all duration-700 object-cover"
+                src={settings.profileImage || `https://ui-avatars.com/api/?name=${settings.name || 'User'}&background=eff6ff&color=2563eb&size=100`}
+                className="h-10 w-10 rounded-full border border-slate-200 object-cover shadow-sm group-hover:border-blue-200 transition-all"
                 alt="Advogado"
               />
-              <div className="absolute -bottom-1 -right-1 h-3 w-3 bg-accent-gold"></div>
+              <div className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-500 border-2 border-white"></div>
             </div>
           </div>
         </div>

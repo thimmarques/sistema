@@ -207,120 +207,120 @@ const Finances: React.FC<FinancesProps> = ({ clients, currentUserId, onUpdateCli
   }, [tableData]);
 
   return (
-    <div className="space-y-12 animate-fade-in pb-20">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 border-b border-white/5 pb-10">
-        <div className="space-y-4 text-left">
-          <p className="text-[10px] font-black text-brand-500 uppercase tracking-[0.5em]">MONITORAMENTO DE ATIVOS</p>
-          <h2 className="text-5xl font-black text-white italic tracking-tighter uppercase font-serif">Financeiro Estratégico</h2>
-          <p className="text-[10px] font-black text-slate-700 uppercase tracking-widest">Protocolo de Operação de Capital</p>
+    <div className="space-y-8 animate-fade-in pb-20">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-slate-200 pb-8">
+        <div className="space-y-2 text-left">
+          <p className="text-xs font-bold text-blue-600 uppercase tracking-wide">Gestão de Ativos</p>
+          <h2 className="text-3xl font-bold text-slate-900 tracking-tight">Financeiro</h2>
+          <p className="text-sm text-slate-500 font-medium">Controle de receitas e honorários</p>
         </div>
-        <div className="bg-white/5 px-8 py-4 border border-white/10 flex items-center gap-4">
-          <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
-          <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.4em]">SISTEMA ANALÍTICO</span>
+        <div className="bg-white px-6 py-2 rounded-full border border-slate-200 flex items-center gap-3 shadow-sm">
+          <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></div>
+          <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Transações em Tempo Real</span>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[
-          { label: 'RECEITA CONSOLIDADA', value: stats.recebidos, color: 'text-brand-500', icon: 'fa-vault' },
-          { label: 'PREVISÃO PARTICULAR', value: stats.aReceber, color: 'text-white', icon: 'fa-arrow-trend-up' },
-          { label: 'EXPECTATIVA CONVÊNIO', value: stats.defensoriaPendente, color: 'text-slate-800', icon: 'fa-building-columns' }
+          { label: 'Receita Consolidada', value: stats.recebidos, color: 'text-blue-600', icon: 'fa-vault', bg: 'bg-blue-50' },
+          { label: 'A Receber (Particular)', value: stats.aReceber, color: 'text-slate-900', icon: 'fa-arrow-trend-up', bg: 'bg-white' },
+          { label: 'Estimativa (Convênio)', value: stats.defensoriaPendente, color: 'text-slate-600', icon: 'fa-building-columns', bg: 'bg-slate-50' }
         ].map((s, idx) => (
-          <div key={idx} className="bg-white/5 border border-white/5 p-10 space-y-6 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-all">
-              <i className={`fa-solid ${s.icon} text-4xl`}></i>
+          <div key={idx} className={`${s.bg} border border-slate-200 p-6 rounded-xl shadow-sm space-y-4 relative overflow-hidden group`}>
+            <div className="absolute top-0 right-0 p-4 opacity-[0.05] group-hover:opacity-10 transition-all">
+              <i className={`fa-solid ${s.icon} text-6xl`}></i>
             </div>
-            <p className="text-[9px] font-black text-slate-700 uppercase tracking-[0.4em] mb-4">{s.label}</p>
-            <div className="flex items-baseline gap-3 text-white">
-              <span className="text-sm font-black text-slate-800 tracking-tighter">BRL</span>
-              <h3 className={`text-4xl font-black tracking-tighter ${s.color}`}>{s.value.toLocaleString('pt-BR')}</h3>
+            <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">{s.label}</p>
+            <div className="flex items-baseline gap-2">
+              <span className="text-xs font-semibold text-slate-400">R$</span>
+              <h3 className={`text-3xl font-bold tracking-tight ${s.color}`}>{s.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</h3>
             </div>
           </div>
         ))}
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-8 items-center border-b border-white/5 pb-10">
-        <div className="flex bg-white/5 p-1 border border-white/5 w-full lg:w-fit">
+      <div className="flex flex-col lg:flex-row gap-6 items-center border-b border-slate-200 pb-8">
+        <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-200 w-full lg:w-fit">
           {['GERAL', 'PARTICULAR', 'DEFENSORIA'].map(tab => (
-            <button key={tab} onClick={() => setActiveTab(tab as any)} className={`px-10 py-3 font-black text-[9px] uppercase tracking-[0.3em] transition-all ${activeTab === tab ? 'bg-brand-500 text-black shadow-lg shadow-brand-500/20' : 'text-slate-500 hover:text-white hover:bg-white/5'}`}>
+            <button key={tab} onClick={() => setActiveTab(tab as any)} className={`px-6 py-2 rounded-md font-bold text-xs uppercase tracking-wider transition-all ${activeTab === tab ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}>
               {tab}
             </button>
           ))}
         </div>
         <div className="relative flex-1 w-full group">
-          <input type="text" placeholder="LOCALIZAR LANÇAMENTO..." className="w-full bg-white/5 border border-white/5 text-[10px] font-black uppercase tracking-[0.2em] text-white outline-none focus:border-brand-500 transition-all placeholder:text-slate-900 p-4 pl-12" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
-          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-800 group-focus-within:text-brand-500 transition-colors"><i className="fa-solid fa-magnifying-glass text-xs"></i></div>
+          <input type="text" placeholder="Localizar lançamento..." className="w-full bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-slate-400 p-3 pl-10" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors"><i className="fa-solid fa-magnifying-glass text-sm"></i></div>
         </div>
       </div>
 
-      <div className="bg-white/[0.02] border border-white/5">
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         <div className="overflow-x-auto custom-scrollbar">
           <table className="w-full text-left min-w-[1000px] border-collapse">
-            <thead className="bg-white/[0.03] text-[9px] font-black text-slate-500 uppercase tracking-[0.4em] border-b border-white/5">
+            <thead className="bg-slate-50 text-xs font-bold text-slate-500 uppercase tracking-wider border-b border-slate-200">
               <tr>
-                <th className="px-8 py-6">TITULARIDADE / REGISTRO</th>
-                <th className="px-8 py-6">ORIGEM</th>
-                <th className="px-8 py-6 text-center">STATUS OPERACIONAL</th>
-                <th className="px-8 py-6 text-right">VALOR</th>
-                <th className="px-8 py-6 text-right">TERMINAL</th>
+                <th className="px-6 py-4">Titularidade / Registro</th>
+                <th className="px-6 py-4">Origem</th>
+                <th className="px-6 py-4 text-center">Status</th>
+                <th className="px-6 py-4 text-right">Valor</th>
+                <th className="px-6 py-4 text-right">Ações</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-slate-100">
               {groupedData.map(group => {
                 const client = group[0].client;
                 const isExpanded = expandedClients.has(client.id);
                 return (
                   <React.Fragment key={client.id}>
-                    <tr className="hover:bg-white/5 transition-all cursor-pointer group/row" onClick={() => toggleClient(client.id)}>
-                      <td className="px-8 py-8">
-                        <div className="flex items-center gap-6">
-                          <i className={`fa-solid ${isExpanded ? 'fa-chevron-down' : 'fa-chevron-right'} text-[10px] text-slate-900 group-hover/row:text-brand-500`}></i>
-                          <div className="text-left space-y-1">
-                            <p className="font-black text-white uppercase tracking-widest text-sm group-hover/row:text-brand-500 transition-colors">{client.name}</p>
-                            <p className="text-[9px] font-bold text-slate-800 uppercase tracking-[0.2em]">{client.caseNumber || 'S/ PROC'}</p>
+                    <tr className="hover:bg-slate-50 transition-all cursor-pointer group/row" onClick={() => toggleClient(client.id)}>
+                      <td className="px-6 py-5">
+                        <div className="flex items-center gap-4">
+                          <i className={`fa-solid ${isExpanded ? 'fa-chevron-down' : 'fa-chevron-right'} text-xs text-slate-400 group-hover/row:text-blue-500 transition-colors`}></i>
+                          <div className="text-left">
+                            <p className="font-bold text-slate-900 text-sm">{client.name}</p>
+                            <p className="text-xs font-medium text-slate-500">{client.caseNumber || 'S/ Processo'}</p>
                           </div>
                         </div>
                       </td>
-                      <td className="px-8 py-8">
-                        <span className={`text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1 border ${client.origin === 'Particular' ? 'border-brand-500/20 text-brand-500' : 'border-emerald-500/20 text-emerald-500'}`}>{client.origin}</span>
+                      <td className="px-6 py-5">
+                        <span className={`text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded-md bg-slate-100 ${client.origin === 'Particular' ? 'text-blue-600' : 'text-emerald-600'}`}>{client.origin}</span>
                       </td>
-                      <td className="px-8 py-8 text-center">
-                        <span className="text-[10px] font-black text-slate-800 uppercase tracking-[0.3em]">{isExpanded ? 'DETALHISTA' : 'RESUMIDO'}</span>
+                      <td className="px-6 py-5 text-center">
+                        <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">{isExpanded ? 'Expandido' : 'Resumido'}</span>
                       </td>
-                      <td className="px-8 py-8 text-right">
-                        <p className="text-sm font-black text-white tracking-widest">
+                      <td className="px-6 py-5 text-right">
+                        <p className="text-sm font-bold text-slate-900">
                           {formatCurrency(client.financials?.totalAgreed || 0)}
                         </p>
                       </td>
-                      <td className="px-8 py-8 text-right">
-                        <button onClick={(e) => { e.stopPropagation(); setEditingClient(client); }} className="p-3 border border-white/5 text-slate-800 hover:text-white hover:border-white/20 transition-all">
-                          <i className="fa-solid fa-pen-to-square text-xs"></i>
+                      <td className="px-6 py-5 text-right">
+                        <button onClick={(e) => { e.stopPropagation(); setEditingClient(client); }} className="p-2 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-all">
+                          <i className="fa-solid fa-pen-to-square text-sm"></i>
                         </button>
                       </td>
                     </tr>
                     {isExpanded && group.map((item, idx) => (
-                      <tr key={item.id} className="bg-white/[0.01]">
-                        <td className="px-8 py-6 pl-20">
-                          <div className="flex items-center gap-4">
-                            <div className="h-[1px] w-4 bg-white/5"></div>
-                            <span className="text-[9px] font-black text-slate-700 uppercase tracking-[0.3em]">{item.type}</span>
+                      <tr key={item.id} className="bg-slate-50/50">
+                        <td className="px-6 py-4 pl-16">
+                          <div className="flex items-center gap-3">
+                            <div className="h-1.5 w-1.5 rounded-full bg-slate-300"></div>
+                            <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide">{item.type}</span>
                           </div>
                         </td>
-                        <td className="px-8 py-6 text-[9px] font-black text-slate-800 uppercase tracking-widest">
+                        <td className="px-6 py-4 text-xs font-medium text-slate-500">
                           {item.date.includes('T') ? new Date(item.date).toLocaleDateString('pt-BR') : item.date.split('-').reverse().join('/')}
                         </td>
-                        <td className="px-8 py-6 text-center">
-                          <span className={`px-4 py-2 text-[8px] font-black tracking-[0.3em] uppercase border ${item.status === 'LIQUIDADO' || item.status === 'PAGO PELO ESTADO' ? 'border-emerald-500/20 text-emerald-500' : 'border-slate-500/10 text-slate-800'}`}>
+                        <td className="px-6 py-4 text-center">
+                          <span className={`px-2 py-1 rounded text-[10px] font-bold tracking-wide uppercase ${item.status === 'LIQUIDADO' || item.status === 'PAGO PELO ESTADO' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600'}`}>
                             {item.status}
                           </span>
                         </td>
-                        <td className="px-8 py-6 text-right">
-                          <p className="text-xs font-black text-white tracking-widest">{formatCurrency(item.value)}</p>
+                        <td className="px-6 py-4 text-right">
+                          <p className="text-sm font-bold text-slate-700">{formatCurrency(item.value)}</p>
                         </td>
-                        <td className="px-8 py-6 text-right">
+                        <td className="px-6 py-4 text-right">
                           {item.isParticular && (
-                            <button onClick={() => togglePaymentStatus(item.client, item.id, item.status)} className={`p-3 border transition-all ${item.status === 'LIQUIDADO' ? 'border-brand-500 text-brand-500 bg-brand-500/5' : 'border-white/5 text-slate-900 hover:text-white hover:border-white/20'}`}>
-                              <i className={`fa-solid ${item.status === 'LIQUIDADO' ? 'fa-check-double text-[10px]' : 'fa-check text-[10px]'}`}></i>
+                            <button onClick={() => togglePaymentStatus(item.client, item.id, item.status)} className={`p-2 rounded-lg transition-all ${item.status === 'LIQUIDADO' ? 'bg-emerald-100 text-emerald-600' : 'text-slate-400 hover:bg-emerald-50 hover:text-emerald-600'}`}>
+                              <i className={`fa-solid ${item.status === 'LIQUIDADO' ? 'fa-check-double text-xs' : 'fa-check text-xs'}`}></i>
                             </button>
                           )}
                         </td>
@@ -333,8 +333,8 @@ const Finances: React.FC<FinancesProps> = ({ clients, currentUserId, onUpdateCli
           </table>
           {groupedData.length === 0 && (
             <div className="py-20 text-center space-y-4">
-              <i className="fa-solid fa-radar text-4xl text-white/5"></i>
-              <p className="text-[10px] font-black text-slate-900 uppercase tracking-widest">Aguardando Novas Movimentações</p>
+              <i className="fa-solid fa-folder-open text-4xl text-slate-200"></i>
+              <p className="text-sm font-medium text-slate-500">Nenhum registro financeiro encontrado</p>
             </div>
           )}
         </div>
