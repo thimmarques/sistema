@@ -38,20 +38,24 @@ const Sidebar: React.FC<SidebarProps> = ({ activeSection, onSelectSection, logo,
       )}
 
       <aside className={`fixed inset-y-0 left-0 w-64 bg-slate-900 text-slate-400 flex flex-col z-50 transition-all duration-300 ease-in-out lg:relative lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="px-6 py-10 flex items-center gap-4 border-b border-slate-800/40">
-          <div className="h-12 w-12 flex items-center justify-center bg-blue-600 rounded-xl shadow-lg border border-blue-400/20 overflow-hidden">
-            {logo && logo.startsWith('data:image') ? (
-              <img src={logo} className="h-full w-full object-contain" alt="Logo" />
-            ) : (
-              <i className="fa-solid fa-scale-balanced text-white text-xl"></i>
-            )}
-          </div>
-          <div className="flex flex-col">
-            <h1 className="text-xl font-bold text-white tracking-tight cursor-default">
-              Lex<span className="text-blue-500">AI</span>
-            </h1>
-            <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest mt-0.5">Gestão Jurídica</p>
-          </div>
+        <div className="px-6 py-12 flex flex-col items-center border-b border-slate-800/40">
+          {logo && logo.startsWith('data:image') ? (
+            <div className="w-full flex justify-center animate-in fade-in zoom-in duration-500">
+              <img src={logo} className="max-h-20 w-auto object-contain drop-shadow-2xl" alt="Logo" />
+            </div>
+          ) : (
+            <div className="flex items-center gap-4">
+              <div className="h-12 w-12 flex items-center justify-center bg-blue-600 rounded-xl shadow-lg border border-blue-400/20">
+                <i className="fa-solid fa-scale-balanced text-white text-xl"></i>
+              </div>
+              <div className="flex flex-col">
+                <h1 className="text-xl font-bold text-white tracking-tight cursor-default">
+                  Lex<span className="text-blue-500">AI</span>
+                </h1>
+                <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest mt-0.5">Gestão Jurídica</p>
+              </div>
+            </div>
+          )}
         </div>
 
         <nav className="flex-1 px-4 py-8 space-y-1 overflow-y-auto custom-scrollbar">
