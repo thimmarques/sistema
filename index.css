@@ -1,42 +1,46 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand-50: #f5f7ff;
-  --color-brand-100: #ebf0fe;
-  --color-brand-200: #dce4fd;
-  --color-brand-300: #c2cdfa;
-  --color-brand-400: #a2aff5;
-  --color-brand-500: #7e8aee;
-  --color-brand-600: #6366e6;
-  --color-brand-700: #5453d1;
-  --color-brand-800: #4644aa;
-  --color-brand-900: #3d3c88;
-  --color-brand-950: #25244f;
+  --color-brand-50: #F4F4F6;
+  --color-brand-100: #E4E4E9;
+  --color-brand-200: #C8C8D2;
+  --color-brand-300: #A3A3B4;
+  --color-brand-400: #7B7B92;
+  --color-brand-500: #56566F;
+  --color-brand-600: #3B3C4D;
+  --color-brand-700: #262734;
+  --color-brand-800: #151621;
+  --color-brand-900: #0B0C15;
+  --color-brand-950: #08080C;
 
-  --color-accent-violet: #8b5cf6;
-  --color-accent-emerald: #10b981;
-  --color-accent-rose: #f43f5e;
-  --color-accent-amber: #f59e0b;
-  --color-accent-sky: #0ea5e9;
+  --color-accent-violet: #D4AF37;
+  /* Legacy mapping to Gold */
+  --color-accent-gold: #D4AF37;
+  --color-accent-emerald: #059669;
+  --color-accent-rose: #9F1239;
+  --color-accent-amber: #D4AF37;
+  --color-accent-sky: #0C4A6E;
 
-  --radius-xl: 0rem;
-  --radius-2xl: 0rem;
-  --radius-3xl: 0rem;
-  --radius-4xl: 0rem;
-  --radius-5xl: 0rem;
+  --radius-sm: 0.125rem;
+  --radius-md: 0.25rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
 
   --shadow-premium: 0 20px 50px -12px rgba(0, 0, 0, 0.5);
-  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+  --shadow-glow: 0 0 20px -5px rgba(212, 175, 55, 0.3);
 }
 
 @layer base {
   :root {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
     line-height: 1.5;
     font-weight: 400;
     color-scheme: dark;
-    background-color: #0A0A0B;
-    color: #f8fafc;
+    background-color: var(--color-brand-900);
+    color: #E4E4E9;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -45,6 +49,7 @@
     margin: 0;
     min-width: 320px;
     min-height: 100vh;
+    background-color: var(--color-brand-900);
   }
 }
 

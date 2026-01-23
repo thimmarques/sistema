@@ -9,10 +9,10 @@ interface NotificationCenterProps {
 
 const NotificationCenter: React.FC<NotificationCenterProps> = ({ notifications, onClose, onMarkRead }) => {
   return (
-    <div className="absolute right-0 mt-8 w-[420px] max-h-[600px] bg-[#0A0A0B] border border-white/10 shadow-[0_30px_60px_-12px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col animate-in fade-in slide-in-from-top-4 duration-500 z-[200]">
+    <div className="absolute right-0 mt-8 w-[420px] max-h-[600px] bg-brand-900 border border-brand-800 shadow-[0_30px_60px_-12px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col animate-in fade-in slide-in-from-top-4 duration-500 z-[200]">
       <div className="p-8 border-b border-white/5 bg-white/[0.02] flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <div className="h-1.5 w-1.5 rounded-full bg-brand-500 shadow-[0_0_10px_#7e8aee]"></div>
+          <div className="h-1.5 w-1.5 rounded-full bg-accent-gold shadow-[0_0_10px_#D4AF37]"></div>
           <h3 className="text-[10px] font-black text-white uppercase tracking-[0.5em]">Central de Alertas</h3>
         </div>
         <button onClick={onClose} className="h-10 w-10 flex items-center justify-center text-slate-800 hover:text-white hover:bg-white/5 transition-all">
@@ -29,7 +29,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ notifications, 
                 className={`p-8 hover:bg-white/5 transition-all cursor-pointer relative group ${!n.read ? 'bg-brand-500/[0.03]' : ''}`}
                 onClick={() => onMarkRead(n.id)}
               >
-                {!n.read && <div className="absolute top-10 left-4 h-1 w-1 bg-brand-500 shadow-[0_0_8px_#7e8aee]"></div>}
+                {!n.read && <div className="absolute top-10 left-4 h-1 w-1 bg-accent-gold shadow-[0_0_8px_#D4AF37]"></div>}
                 <div className="pl-6 space-y-3 text-left">
                   <div className="flex justify-between items-start">
                     <p className={`text-[9px] font-black uppercase tracking-[0.3em] ${n.type === 'alert' ? 'text-rose-500' : 'text-brand-500'}`}>

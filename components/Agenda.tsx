@@ -209,7 +209,7 @@ const Agenda: React.FC<AgendaProps> = ({
                         <span className={`text-base font-black ${d.currentMonth ? (dayIsToday ? 'text-brand-500' : 'text-slate-500') : 'text-slate-900'}`}>
                           {d.day}
                         </span>
-                        {dayIsToday && <div className="h-1 w-1 bg-brand-500 shadow-[0_0_10px_#7e8aee]"></div>}
+                        {dayIsToday && <div className="h-1 w-1 bg-accent-gold shadow-[0_0_10px_#D4AF37]"></div>}
                       </div>
                       <div className="space-y-2">
                         {dayMovements.slice(0, 3).map((m) => (
@@ -271,7 +271,7 @@ const Agenda: React.FC<AgendaProps> = ({
                       {currentDate.toLocaleString('pt-BR', { month: 'long', year: 'numeric' })}
                     </p>
                     <div className="flex items-center gap-4">
-                      <div className="h-1.5 w-1.5 bg-brand-500 shadow-[0_0_10px_#7e8aee]"></div>
+                      <div className="h-1.5 w-1.5 bg-accent-gold shadow-[0_0_10px_#D4AF37]"></div>
                       <p className="text-[10px] font-black text-slate-700 uppercase tracking-[0.4em]">ATIVIDADE OPERACIONAL DISPONÍVEL</p>
                     </div>
                   </div>
@@ -346,7 +346,7 @@ const Agenda: React.FC<AgendaProps> = ({
               <div className="space-y-5">
                 <div className="flex items-center gap-4"><div className="h-1.5 w-1.5 bg-orange-500 shadow-[0_0_10px_#f97316]"></div><span className="text-[9px] font-black uppercase text-slate-700 tracking-[0.3em]">Audiência</span></div>
                 <div className="flex items-center gap-4"><div className="h-1.5 w-1.5 bg-rose-500 shadow-[0_0_10px_#f43f5e]"></div><span className="text-[9px] font-black uppercase text-slate-700 tracking-[0.3em]">Prazo Fatal</span></div>
-                <div className="flex items-center gap-4"><div className="h-1.5 w-1.5 bg-brand-500 shadow-[0_0_10px_#7e8aee]"></div><span className="text-[9px] font-black uppercase text-slate-700 tracking-[0.3em]">Operacional</span></div>
+                <div className="flex items-center gap-4"><div className="h-1.5 w-1.5 bg-accent-gold shadow-[0_0_10px_#D4AF37]"></div><span className="text-[9px] font-black uppercase text-brand-400 tracking-[0.3em]">Operacional</span></div>
               </div>
             </div>
           </div>

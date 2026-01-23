@@ -114,7 +114,7 @@ const Reports: React.FC<ReportsProps> = ({ clients, movements, settings, current
               <BarChart data={areaData} layout="vertical">
                 <XAxis type="number" hide />
                 <YAxis dataKey="name" type="category" width={100} tick={{ fontSize: 9, fontWeight: '900', fill: '#475569' }} axisLine={false} tickLine={false} />
-                <Tooltip cursor={{ fill: 'rgba(255,255,255,0.02)' }} contentStyle={{ backgroundColor: '#0A0A0B', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '0px' }} />
+                <Tooltip cursor={{ fill: 'rgba(255,255,255,0.02)' }} contentStyle={{ backgroundColor: '#0B0C15', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '0px' }} />
                 <Bar dataKey="value" barSize={12} radius={[0, 0, 0, 0]}>
                   {areaData.map((e, idx) => <Cell key={idx} fill={e.fill} />)}
                 </Bar>
@@ -132,7 +132,7 @@ const Reports: React.FC<ReportsProps> = ({ clients, movements, settings, current
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie data={originPieData} dataKey="value" innerRadius={80} outerRadius={100} paddingAngle={0} stroke="none">
-                  {originPieData.map((e, idx) => <Cell key={idx} fill={idx === 0 ? '#7e8aee' : 'rgba(255,255,255,0.05)'} />)}
+                  {originPieData.map((e, idx) => <Cell key={idx} fill={idx === 0 ? '#D4AF37' : 'rgba(255,255,255,0.05)'} />)}
                 </Pie>
               </PieChart>
             </ResponsiveContainer>

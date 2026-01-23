@@ -175,7 +175,7 @@ const Settings: React.FC<SettingsProps> = ({
 
       {showDeleteModal && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/95 backdrop-blur-xl p-4 animate-in fade-in duration-500">
-          <div className="bg-[#0A0A0B] border border-white/10 w-full max-w-lg p-16 space-y-12 animate-in zoom-in-95">
+          <div className="bg-brand-900 border border-brand-800 w-full max-lg p-16 space-y-12 animate-in zoom-in-95">
             <div className="text-center space-y-8">
               <div className="h-24 w-24 bg-rose-500/10 text-rose-500 border border-rose-500/20 flex items-center justify-center mx-auto transition-all">
                 <i className="fa-solid fa-triangle-exclamation text-4xl"></i>

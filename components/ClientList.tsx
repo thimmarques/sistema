@@ -129,29 +129,29 @@ const ClientList: React.FC<ClientListProps> = ({
 
   return (
     <div className="space-y-12 animate-fade-in pb-20">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 border-b border-white/5 pb-10">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 border-b border-brand-800 pb-10">
         <div className="space-y-4 text-left">
-          <p className="text-[10px] font-black text-brand-500 uppercase tracking-[0.5em]">CONTROLE DE CUSTÓDIA</p>
-          <h2 className="text-5xl font-black text-white italic tracking-tighter uppercase font-serif">Cadastro de Clientes</h2>
-          <p className="text-[10px] font-black text-slate-700 uppercase tracking-widest">Protocolo de Registro Integrado</p>
+          <p className="text-[10px] font-black text-accent-gold uppercase tracking-[0.5em]">CONTROLE DE CUSTÓDIA</p>
+          <h2 className="text-5xl font-black text-brand-50 italic tracking-tighter uppercase font-serif">Cadastro de Clientes</h2>
+          <p className="text-[10px] font-black text-brand-400 uppercase tracking-widest">Protocolo de Registro Integrado</p>
         </div>
         <button
           onClick={handleOpenCreate}
-          className="bg-brand-500 text-black px-12 py-5 font-black text-[11px] uppercase tracking-[0.4em] hover:bg-brand-600 transition-all active:scale-95 shadow-2xl relative group"
+          className="bg-accent-gold text-brand-950 px-12 py-5 font-black text-[11px] uppercase tracking-[0.4em] hover:bg-accent-goldLight transition-all active:scale-95 shadow-2xl relative group"
         >
           <span className="group-hover:tracking-[0.5em] transition-all">Novo Cliente</span>
         </button>
       </div>
 
       <div className="flex flex-col xl:flex-row gap-8 items-center justify-between">
-        <div className="flex bg-white/5 p-1 border border-white/5 w-full xl:w-fit">
+        <div className="flex bg-brand-800 p-1 border border-brand-700 w-full xl:w-fit">
           {(['Geral', 'Particular', 'Defensoria'] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`px-10 py-3 font-black text-[9px] uppercase tracking-[0.3em] transition-all ${activeTab === tab
-                ? 'bg-brand-500 text-black shadow-[0_0_20px_rgba(126,138,238,0.2)]'
-                : 'text-slate-500 hover:text-white hover:bg-white/5'
+                ? 'bg-accent-gold text-brand-950 shadow-[0_0_20px_rgba(212,175,55,0.2)]'
+                : 'text-brand-400 hover:text-brand-50 hover:bg-brand-700'
                 }`}
             >
               {tab}
@@ -162,20 +162,20 @@ const ClientList: React.FC<ClientListProps> = ({
           <input
             type="text"
             placeholder="PESQUISAR REGISTRO..."
-            className="w-full pl-12 pr-6 py-4 bg-white/5 border border-white/5 text-[10px] font-black uppercase tracking-[0.2em] text-white outline-none focus:border-brand-500 transition-all placeholder:text-slate-900"
+            className="w-full pl-12 pr-6 py-4 bg-brand-800 border border-brand-700 text-[10px] font-black uppercase tracking-[0.2em] text-brand-50 outline-none focus:border-accent-gold transition-all placeholder:text-brand-500"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-800 group-focus-within:text-brand-500 transition-colors">
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-500 group-focus-within:text-accent-gold transition-colors">
             <i className="fa-solid fa-magnifying-glass text-xs"></i>
           </div>
         </div>
       </div>
 
-      <div className="bg-white/[0.02] border border-white/5">
+      <div className="bg-brand-900/50 border border-brand-800">
         <div className="overflow-x-auto custom-scrollbar">
           <table className="w-full text-left min-w-[1000px] border-collapse">
-            <thead className="bg-white/[0.03] text-[9px] font-black text-slate-500 uppercase tracking-[0.4em] border-b border-white/5">
+            <thead className="bg-brand-800/50 text-[9px] font-black text-brand-400 uppercase tracking-[0.4em] border-b border-brand-800">
               <tr>
                 <th className="px-8 py-6">IDENTIFICAÇÃO OPERACIONAL</th>
                 <th className="px-8 py-6 text-center">NATUREZA</th>
@@ -183,36 +183,36 @@ const ClientList: React.FC<ClientListProps> = ({
                 <th className="px-8 py-6 text-right">TERMINAL</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-brand-800">
               {paginatedClients.map(client => (
-                <tr key={client.id} className="hover:bg-white/5 transition-all group/row">
+                <tr key={client.id} className="hover:bg-brand-800/30 transition-all group/row">
                   <td className="px-8 py-8">
                     <div className="flex items-center gap-6">
-                      <div className={`h-12 w-12 border flex items-center justify-center text-[10px] font-black ${client.origin === 'Particular' ? 'border-brand-500 text-brand-500 bg-brand-500/5' : 'border-emerald-500 text-emerald-500 bg-emerald-500/5'}`}>
+                      <div className={`h-12 w-12 border flex items-center justify-center text-[10px] font-black ${client.origin === 'Particular' ? 'border-accent-gold text-accent-gold bg-accent-gold/5' : 'border-emerald-500 text-emerald-500 bg-emerald-500/5'}`}>
                         {client.name.substring(0, 2).toUpperCase()}
                       </div>
                       <div className="text-left space-y-1">
-                        <p className="font-black text-white uppercase tracking-widest text-sm group-hover/row:text-brand-500 transition-colors">{client.name}</p>
+                        <p className="font-black text-brand-50 uppercase tracking-widest text-sm group-hover/row:text-accent-gold transition-colors">{client.name}</p>
                         <div className="flex items-center gap-3">
-                          <span className="text-[9px] font-bold text-slate-800 uppercase tracking-[0.2em]">{client.caseNumber || 'S/ PROC'}</span>
-                          {client.status === 'Active' && <div className="h-1 w-1 bg-brand-500"></div>}
+                          <span className="text-[9px] font-bold text-brand-500 uppercase tracking-[0.2em]">{client.caseNumber || 'S/ PROC'}</span>
+                          {client.status === 'Active' && <div className="h-1 w-1 bg-accent-gold"></div>}
                         </div>
                       </div>
                     </div>
                   </td>
                   <td className="px-8 py-8 text-center">
-                    <span className={`px-4 py-2 text-[9px] font-black uppercase tracking-[0.2em] border ${getCaseTypeStyle(client.caseType).replace('bg-', 'bg-white/5 border-')}`}>
+                    <span className={`px-4 py-2 text-[9px] font-black uppercase tracking-[0.2em] border ${getCaseTypeStyle(client.caseType).replace('bg-', 'bg-brand-800/5 border-')}`}>
                       {client.caseType}
                     </span>
                   </td>
                   <td className="px-8 py-8 text-right">
                     <div className="flex flex-col items-end space-y-1">
-                      <span className="text-sm font-black text-white tracking-widest">
+                      <span className="text-sm font-black text-brand-50 tracking-widest">
                         {client.userId === currentUserId
                           ? `R$ ${(client.financials?.totalAgreed || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
                           : "PROTEGIDO"}
                       </span>
-                      <span className="text-[8px] font-black text-slate-800 uppercase tracking-[0.3em]">FLUXO CAPITAL</span>
+                      <span className="text-[8px] font-black text-brand-500 uppercase tracking-[0.3em]">FLUXO CAPITAL</span>
                     </div>
                   </td>
                   <td className="px-8 py-8 text-right">
@@ -221,14 +221,14 @@ const ClientList: React.FC<ClientListProps> = ({
                         <>
                           <button
                             onClick={() => generateClientPDF('procuration', client, settings!)}
-                            className="p-3 border border-white/5 text-slate-800 hover:text-white hover:border-white/20 transition-all"
+                            className="p-3 border border-brand-800 text-brand-400 hover:text-brand-50 hover:border-brand-600 transition-all"
                             title="Procuração"
                           >
                             <i className="fa-solid fa-file-signature text-xs"></i>
                           </button>
                           <button
                             onClick={() => generateClientPDF('declaration', client, settings!)}
-                            className="p-3 border border-white/5 text-slate-800 hover:text-white hover:border-white/20 transition-all"
+                            className="p-3 border border-brand-800 text-brand-400 hover:text-brand-50 hover:border-brand-600 transition-all"
                             title="Declaração"
                           >
                             <i className="fa-solid fa-hand-holding-dollar text-xs"></i>
@@ -239,21 +239,21 @@ const ClientList: React.FC<ClientListProps> = ({
                         <>
                           <button
                             onClick={() => handleOpenEdit(client)}
-                            className="p-3 border border-white/5 text-slate-800 hover:text-white hover:border-white/20 transition-all"
+                            className="p-3 border border-brand-800 text-brand-400 hover:text-brand-50 hover:border-brand-600 transition-all"
                             title="Editar"
                           >
                             <i className="fa-solid fa-pen-to-square text-xs"></i>
                           </button>
                           <button
                             onClick={() => { setClientToDelete(client); setShowDeleteModal(true); onDeleteClient(client.id); }}
-                            className="p-3 border border-white/5 text-slate-800 hover:text-rose-500 hover:border-rose-500/20 transition-all"
+                            className="p-3 border border-brand-800 text-brand-400 hover:text-rose-500 hover:border-rose-500/20 transition-all"
                             title="Excluir"
                           >
                             <i className="fa-solid fa-trash-can text-xs"></i>
                           </button>
                         </>
                       ) : (
-                        <div className="px-4 py-2 bg-white/5 border border-white/10 text-[8px] font-black uppercase text-slate-800 tracking-widest flex items-center gap-3">
+                        <div className="px-4 py-2 bg-brand-800 border border-brand-700 text-[8px] font-black uppercase text-brand-400 tracking-widest flex items-center gap-3">
                           <i className="fa-solid fa-eye-slash"></i> PRIVADO
                         </div>
                       )}
@@ -278,7 +278,7 @@ const ClientList: React.FC<ClientListProps> = ({
 
       {showFormModal && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/95 backdrop-blur-xl p-4 overflow-y-auto animate-in fade-in duration-500">
-          <div className="bg-[#0A0A0B] border border-white/10 w-full max-w-4xl p-16 space-y-12 animate-in zoom-in-95 my-8">
+          <div className="bg-brand-900 border border-brand-800 w-full max-w-4xl p-16 space-y-12 animate-in zoom-in-95 my-8">
             <div className="flex justify-between items-start border-b border-white/5 pb-10">
               <div className="space-y-4 text-left">
                 <p className="text-[10px] font-black text-brand-500 uppercase tracking-[0.5em]">PROTOCOLO DE DADOS</p>

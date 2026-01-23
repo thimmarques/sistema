@@ -40,7 +40,7 @@ const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-30 bg-[#0A0A0B]/90 backdrop-blur-2xl border-b border-white/5 px-10 py-6">
+    <header className="sticky top-0 z-30 bg-brand-900/90 backdrop-blur-2xl border-b border-brand-800 px-10 py-6">
       <div className="flex items-center justify-between max-w-[1920px] mx-auto">
         <div className="flex items-center gap-6">
           <button
@@ -50,10 +50,10 @@ const Navbar: React.FC<NavbarProps> = ({
             <i className="fa-solid fa-bars-staggered text-xs"></i>
           </button>
           <div className="flex flex-col text-left">
-            <span className="text-[9px] font-black text-brand-500 uppercase tracking-[0.4em] mb-1">PROTOCOLO OPERACIONAL</span>
+            <span className="text-[9px] font-black text-accent-gold uppercase tracking-[0.4em] mb-1">PROTOCOLO OPERACIONAL</span>
             <div className="flex items-center gap-3">
-              <div className="h-1 w-1 bg-brand-500"></div>
-              <h1 className="text-sm font-black text-white uppercase tracking-[0.3em]">
+              <div className="h-1 w-1 bg-accent-gold"></div>
+              <h1 className="text-sm font-black text-brand-50 uppercase tracking-[0.3em]">
                 {getSectionTitle()}
               </h1>
             </div>
@@ -65,11 +65,11 @@ const Navbar: React.FC<NavbarProps> = ({
           <div className="relative">
             <button
               onClick={() => setShowNotifications(!showNotifications)}
-              className={`relative p-3 border border-white/5 transition-all ${showNotifications ? 'bg-brand-500 text-black border-brand-500' : 'text-slate-800 hover:text-white hover:border-white/20'}`}
+              className={`relative p-3 border border-brand-800 transition-all ${showNotifications ? 'bg-accent-gold text-brand-950 border-accent-gold' : 'text-brand-400 hover:text-brand-50 hover:border-brand-600'}`}
             >
               <i className="fa-solid fa-bell text-xs"></i>
               {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center bg-brand-500 text-[8px] font-black text-black">
+                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center bg-accent-gold text-[8px] font-black text-brand-950">
                   {unreadCount}
                 </span>
               )}
@@ -84,21 +84,21 @@ const Navbar: React.FC<NavbarProps> = ({
             )}
           </div>
 
-          <div className="h-10 w-[1px] bg-white/5 hidden sm:block"></div>
+          <div className="h-10 w-[1px] bg-brand-800 hidden sm:block"></div>
 
           {/* User Profile */}
           <div className="flex items-center gap-6 group cursor-pointer p-1" onClick={() => onLogout()}>
             <div className="text-right hidden sm:block">
-              <p className="text-[10px] font-black text-white uppercase tracking-widest mb-1 group-hover:text-brand-500 transition-colors">{settings.name || 'ADVOGADO'}</p>
-              <p className="text-[8px] text-slate-800 font-black uppercase tracking-[0.2em]">OAB/{settings.oabState || 'SP'} {settings.oab || '...'}</p>
+              <p className="text-[10px] font-black text-brand-50 uppercase tracking-widest mb-1 group-hover:text-accent-gold transition-colors">{settings.name || 'ADVOGADO'}</p>
+              <p className="text-[8px] text-brand-500 font-black uppercase tracking-[0.2em]">OAB/{settings.oabState || 'SP'} {settings.oab || '...'}</p>
             </div>
             <div className="relative">
               <img
-                src={settings.profileImage || `https://ui-avatars.com/api/?name=${settings.name || 'User'}&background=7e8aee&color=fff&size=100`}
-                className="h-12 w-12 border border-white/10 grayscale hover:grayscale-0 transition-all duration-700 object-cover"
+                src={settings.profileImage || `https://ui-avatars.com/api/?name=${settings.name || 'User'}&background=D4AF37&color=0B0C15&size=100`}
+                className="h-12 w-12 border border-brand-800 grayscale hover:grayscale-0 transition-all duration-700 object-cover"
                 alt="Advogado"
               />
-              <div className="absolute -bottom-1 -right-1 h-3 w-3 bg-brand-500"></div>
+              <div className="absolute -bottom-1 -right-1 h-3 w-3 bg-accent-gold"></div>
             </div>
           </div>
         </div>

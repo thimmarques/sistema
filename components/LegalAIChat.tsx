@@ -45,7 +45,7 @@ const LegalAIChat: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-160px)] bg-[#0A0A0B] border border-white/10 overflow-hidden animate-in fade-in duration-1000">
+    <div className="flex flex-col h-[calc(100vh-160px)] bg-brand-900 border border-brand-800 overflow-hidden animate-in fade-in duration-1000">
       <div className="p-8 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
         <div className="flex items-center gap-6">
           <div className="h-12 w-12 border border-brand-500 flex items-center justify-center relative">
@@ -81,7 +81,7 @@ const LegalAIChat: React.FC = () => {
                 <i className={`fa-solid ${msg.role === 'user' ? 'fa-user text-xs' : 'fa-terminal text-xs'}`}></i>
               </div>
               <div className="space-y-4">
-                <div className={`p-8 border leading-relaxed text-xs font-black uppercase tracking-widest ${msg.role === 'user' ? 'bg-white/5 border-white/10 text-white' : 'bg-[#0A0A0B] border-brand-500/30 text-slate-300'}`}>
+                <div className={`p-8 border leading-relaxed text-xs font-black uppercase tracking-widest ${msg.role === 'user' ? 'bg-brand-800/50 border-brand-800 text-brand-50' : 'bg-brand-900 border-accent-gold/30 text-brand-300'}`}>
                   <p className="whitespace-pre-wrap">{msg.text}</p>
                   {msg.sources && msg.sources.length > 0 && (
                     <div className="mt-8 pt-8 border-t border-white/5 space-y-4">

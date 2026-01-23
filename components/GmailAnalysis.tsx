@@ -120,7 +120,7 @@ const GmailAnalysis: React.FC<GmailAnalysisProps> = ({ onMovementDetected, monit
   return (
     <div className="flex flex-col lg:flex-row gap-0 h-[calc(100vh-180px)] border border-white/5 animate-in fade-in duration-1000">
       {/* Inbox Column */}
-      <div className="w-full lg:w-1/3 bg-[#0A0A0B] border-r border-white/5 flex flex-col overflow-hidden">
+      <div className="w-full lg:w-1/3 bg-brand-900 border-r border-brand-800 flex flex-col overflow-hidden">
         <div className="p-8 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
           <div className="space-y-1">
             <h3 className="text-[11px] font-black text-white uppercase tracking-[0.4em] italic">Monitoramento Core</h3>
@@ -157,7 +157,7 @@ const GmailAnalysis: React.FC<GmailAnalysisProps> = ({ onMovementDetected, monit
       </div>
 
       {/* Analysis Column */}
-      <div className="flex-1 bg-[#0A0A0B] overflow-hidden flex flex-col">
+      <div className="flex-1 bg-brand-900 overflow-hidden flex flex-col">
         {selectedEmail ? (
           <div className="flex flex-col h-full">
             <div className="p-12 border-b border-white/5 bg-white/[0.01]">
